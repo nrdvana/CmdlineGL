@@ -1,6 +1,15 @@
 all: build clean
 
-build: IntConstHash.o CmdHash.o
+build: IntConstHash.o CmdHash.o Main.o
+
+Main.o: Main.c Client.h Server.h Global.h
+	gcc -c Main.c
+
+Client.o: Client.c Client.h Global.h
+	gcc -c Client.c
+	
+Server.o: Server.c Server.h Global.h
+	gcc -c Server.c
 
 IntConstHash.o: SymbolHash.h IntConstHash.c IntConstHash.autogen.c
 	gcc -c IntConstHash.c
