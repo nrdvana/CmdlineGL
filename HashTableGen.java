@@ -63,7 +63,7 @@ public class HashTableGen {
 			out.println("struct "+TableName+"Bucket { int EntryCount; "+EntryStruct+" *Entries; }; ");
 			out.println("#define "+TableName+"Size "+table.length);
 			out.println("#define EMPTY {0, 0}");
-			out.println("const "+TableName+"Bucket "+TableName+"["+table.length+"] = {");
+			out.println("const struct "+TableName+"Bucket "+TableName+"["+table.length+"] = {");
 			for (int i=0; i<table.length; i++) {
 				if ((i&0x07) == 0) out.print("\t");
 				if (table[i] != null)
