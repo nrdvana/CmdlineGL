@@ -1,0 +1,35 @@
+<html>
+<body>
+	<center>
+	<h2>Introducing</h2>
+ 	<h1>OpenGL Bindings for BASH</h1>
+	</center>
+	<h3>"Oh, God!, Please say it isn't true!"</h3>
+	<p>But it is! Mua-ha-ha! All the normal languages have OpenGL,
+	and some scripting languages have OpenGL bindings like Perl and Python,
+ 	and now Bash does too!</p>
+	<h3>"But how?  Bash doesn't support modules..."</h3>
+	<p>Right.  So I gave it an interface just like all the others it uses:
+	a simple command that can be given parameters or fed commands on standatd input.</p>
+	When invoked, CmdlineGL will either start a server which creates an OpenGL window,
+	or act as a client that sends commands to the server.  When started as a server,
+	it creates a unix socket as specified on the command line, and then listens for
+	commands.  When a client instance is executed, it connects to the socket
+	(also specified on its command line) and then sends binary codes to the server that
+	tell it to execute any of the OpenGL, GLU, or GLUT API calls.
+	The client itself takes the text of an OpenGL command either in the command line arguments
+	or one-per-line on standard input, or both.
+	</p>
+	<h3>"But isn't that incredibly slow?"</h3>
+	<p>Yes! and thats what makes it so wrong.  But, it might not be as slow as you think:
+	CmdlineGL is written in straight C with as little overhead as possible.
+	It also uses a statically defined hash table to interpret the names of the commands.
+	And, in a 3D application, most of the time is spent drawing pixels and texturing them,
+	and this is probably done by the graphics card,
+	so there's plenty of CPU time left over for running data through a pipe and a socket,
+	and running string-to-float conversions,
+ 	and repeatedly forking thousands of times per frame per second,
+	Especially with the speed of today's computers ;-)
+	</p>
+</body>
+</html>
