@@ -3,7 +3,7 @@
 
 struct CmdHashEntry {
 	char* Key;
-	int Value;
+	void (*Value)(int,char**);
 };
 
 struct IntConstHashEntry {

@@ -14,7 +14,7 @@ IntConstHash.autogen.c: HashTableGen.class ConstList.txt
 	 | java HashTableGen 1024 IntConstLookup Bucket 'struct IntConstHashEntry' >> IntConstHash.autogen.c
 
 CmdHash.autogen.c: HashTableGen.class CmdHash.c
-	java HashTableGen 256 CmdLookup Bucket 'struct CmdHashEntry' < CmdHash.c > CmdHash.autogen.c
+	java HashTableGen 256 CmdLookup Bucket 'struct CmdHashEntry' < FuncLib.h > CmdHash.autogen.c
 
 HashTableGen.class: HashTableGen.java
 	javac HashTableGen.java
