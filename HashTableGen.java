@@ -16,7 +16,7 @@ public class HashTableGen {
 		byte[] bytes= key.getBytes();
 		int result= 0;
 		for (int i=0; i<bytes.length; i++)
-			result= (result<<4) + (result ^ (bytes[i]&0xFF)) & mask;
+			result= ((result<<4) + (result ^ (bytes[i]&0xFF))) & mask;
 		return result;
 	}
     public static void main(String[] args) {
@@ -34,8 +34,9 @@ public class HashTableGen {
 			String line= null;
 			try {
 				while ((line= lineIn.readLine()) != null) {
-					if (line.startsWith("DATA")) {
-						StringTokenizer st= new StringTokenizer(line, "\t ");
+					int dataPos= line.indexOf("DATA");
+					if (dataPos != -1) {
+						StringTokenizer st= new StringTokenizer(line.substring(dataPos), "\t ");
 						st.nextToken(); // DATA
 						String key= st.nextToken();
 						String value= st.nextToken("");
