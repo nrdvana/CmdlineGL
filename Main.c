@@ -4,7 +4,7 @@
 
 void PrintUsage();
 
-int main(int argc, char argv**) {
+int main(int argc, char **argv) {
 	int arg= 1, WantServer= 0, WantHelp= 0, NeedHelp= 0;
 
 	// Read through and flags or switches
@@ -16,7 +16,7 @@ int main(int argc, char argv**) {
 			WantHelp= 1;
 		else
 			NeedHelp= 1;
-		arg++
+		arg++;
 	}
 
 	// Pick an action
@@ -30,7 +30,7 @@ int main(int argc, char argv**) {
 	}
 	else if (WantHelp || NeedHelp) {
 		ExitWithUsage();
-		return WantHelp? 0 : -1
+		return WantHelp? 0 : -1;
 	}
 	else {
 		ExecClient(argv[arg], argc-1-arg, argv+1+arg);

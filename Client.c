@@ -4,11 +4,15 @@
 #include "Client.h"
 #include "SymbolHash.h"
 
-socket ServerConn;
+int ServerConn;
 
 #define CMD_LEN_MAX 256
 #define ARG_COUNT_MAX 8
 #define READ_BUFFER_SIZE 1024
+
+void SendCommand(int ArgCount, char **Args);
+bool ReadCommand(int *ArgCountResult, char **ArgResult);
+char* Readline();
 
 void ExecClient(char *SocketName, int argc, char **argv) {
 	struct sockaddr_un Addr;
@@ -16,7 +20,7 @@ void ExecClient(char *SocketName, int argc, char **argv) {
 	char *NewArgs[ARG_COUNT_MAX];
 
 	// build the address
-	Addr.sa_family_t= AF_UNIX;
+	Addr.sun_family= AF_UNIX;
 	if (strlen(SocketName) >= sizeof(Addr.sun_path))
 		Err_InvalidSocket();
 	strcpy(SocketName, Addr.sun_path);
@@ -29,18 +33,19 @@ void ExecClient(char *SocketName, int argc, char **argv) {
 	if (argc > 0)
 		SendCommand(argc, argv);
 
-	while (ReadCommand(Buffer, &argc, NewArgs))
+	while (ReadCommand(&argc, NewArgs))
 		SendCommand(argc, NewArgs);
 
 	close(ServerConn);
 }
 
 void SendCommand(int ArgCount, char **Args) {
+	struct CmdHashEntry *Cmd;
 	if (ArgCount == 0)
 		Err_BadCommand();
 	else {
-		CmdHashEntry *Cmd= GetCmd(Args[0]);
-		if (Cmd != null)
+		Cmd= GetCmd(Args[0]);
+		if (Cmd != NULL)
 			Cmd->Value(ArgCount-1, Args+1);
 		else
 			Err_BadCommand();
@@ -50,13 +55,13 @@ void SendCommand(int ArgCount, char **Args) {
 bool ReadCommand(int *ArgCountResult, char **ArgResult) {
 	char *LastArg, *temp, *Line;
 
-	Line= ReadLine();
+	Line= Readline();
 	if (!Line) return false;
 
 	*ArgCountResult= 0;
-	LastArg= null;
-	temp= strtok(ArgResult, " \t");
-	while (temp != null && *ArgCountResult < ARG_COUNT_MAX) {
+	LastArg= NULL;
+	temp= strtok(Line, " \t");
+	while (temp != NULL && *ArgCountResult < ARG_COUNT_MAX) {
 		if (temp > LastArg + 1)
 			ArgResult[(*ArgCountResult)++]= temp;
 		LastArg= temp;
@@ -68,7 +73,7 @@ bool ReadCommand(int *ArgCountResult, char **ArgResult) {
 char ReadBuffer[READ_BUFFER_SIZE];
 char const *StopPos= ReadBuffer+READ_BUFFER_SIZE-1;
 char *Pos= ReadBuffer;
-char *DataPos= Pos;
+char *DataPos= ReadBuffer;
 
 char* Readline() {
 	int shift, red;
@@ -82,7 +87,7 @@ char* Readline() {
 		}
 		*DataPos= '\0';
 		Pos= strchr(Pos, '\n');
-		if (Pos == StopPos && LineStart != LineBuffer) {
+		if (Pos == StopPos && LineStart != ReadBuffer) {
 			memmove(ReadBuffer, LineStart, Pos-LineStart);
 			shift= LineStart - ReadBuffer;
 			Pos-= shift;
@@ -92,10 +97,10 @@ char* Readline() {
 	} while (*Pos != '\n' && Pos < StopPos);
 	
 	if (Pos == LineStart)
-		return null;
+		return NULL;
 	if (Pos == StopPos) {
 		Err_LineTooLong();
-		return null;
+		return NULL;
 	}
 	*Pos= '\0';
 	return LineStart;
