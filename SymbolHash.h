@@ -2,13 +2,13 @@
 #define SYMBOL_HASH_H
 
 struct CmdHashEntry {
-	char* String;
-	int Code;
+	char* Key;
+	int Value;
 };
 
 struct IntConstHashEntry {
-	char* String;
-	int Code;
+	char* Key;
+	int Value;
 };
 
 struct CmdHashEntry *GetCmd(char *Key);

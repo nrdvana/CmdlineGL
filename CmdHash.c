@@ -11,7 +11,7 @@ int CalcHash(char* String) {
 #include "CmdHash.autogen.c"
 
 struct CmdHashEntry *GetCmd(char *Key) {
-	int code;
+	int code, i;
 
 	code= CalcHash(Key);
 	for (i=CmdLookup[code].EntryCount-1; i>=0; i--) {
