@@ -1,7 +1,44 @@
 #include "Global.h"
 #include "Server.h"
 
-void StartServer(char* Socketname) {
+int Shutdown= 0;
+
+void ExecServer(char *SocketName, int argc, char **argv) {
+	struct sockaddr_un Addr;
+	char Buffer[CMD_LEN_MAX];
+	char *NewArgs[ARG_COUNT_MAX];
+	int red;
+
+	// build the address
+	Addr.sun_family= AF_UNIX;
+//	if (strlen(SocketName) >= sizeof(Addr.sun_path))
+//		Err_InvalidSocket();
+	strcpy(Addr.sun_path, SocketName);
+
+	// try connecting
+	ServerConn= socket(PF_UNIX, SOCK_DGRAM, 0);
+	if (ServerConn < 0) {
+		perror("Socket: ");
+//		Err_InvalidSocket();
+	}
+
+	if (bind(ServerConn, (struct sockaddr*) &Addr, sizeof(Addr)))
+		perror("Bind: ");
+
+
+//	if (argc > 0)
+//		SendCommand(argc, argv);
+
+	while (!Shutdown) {
+		red= recv(ServerConn, Buffer, CMD_LEN_MAX, 0);
+		write(1, Buffer, red);
+//		while (ReadCommand(&argc, NewArgs))
+//			InvokeCommand(argc, NewArgs);
+		if (strncmp(Buffer, "quit", 4) == 0)
+			Shutdown= 1;
+	}
+
+	close(ServerConn);
 }
 
 void RunCommand(void *Data) {
