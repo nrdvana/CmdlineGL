@@ -1,18 +1,18 @@
 #ifndef SYMBOL_HASH_H
 #define SYMBOL_HASH_H
 
-struct CmdHashEntry {
-	char* Key;
+typedef struct {
+	const char* Key;
 	void (*Value)(int,char**);
-};
+} CmdHashEntry;
 
-struct IntConstHashEntry {
-	char* Key;
+typedef struct {
+	const char* Key;
 	int Value;
-};
+} IntConstHashEntry;
 
-struct CmdHashEntry *GetCmd(char *Key);
+const CmdHashEntry *GetCmd(const char *Key);
 
-struct IntConstHashEntry *GetIntConst(char *Key);
+const IntConstHashEntry *GetIntConst(const char *Key);
 
 #endif

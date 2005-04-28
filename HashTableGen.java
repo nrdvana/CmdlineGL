@@ -16,8 +16,8 @@ public class HashTableGen {
 		byte[] bytes= key.getBytes();
 		int result= 0;
 		for (int i=0; i<bytes.length; i++)
-			result= ((result<<4) + (result ^ (bytes[i]&0xFF))) & mask;
-		return result;
+			result= (result<<1) + (result ^ (bytes[i]&0xFF));
+		return result & mask;
 	}
     public static void main(String[] args) {
 		try {

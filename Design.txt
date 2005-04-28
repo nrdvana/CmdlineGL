@@ -1,0 +1,17 @@
+
+
+	New design:
+
+		Server.c
+			Everything to do with setting up the window and watching file descriptors.
+
+		ProcessInput.c
+			Everything to do with reading input from a file descriptor, and sending it to the ParseGL
+			module for execution.
+
+		ParseGL.c
+			Everything to do with taking a parsed line of text, and determining whether it can be
+			executed, and executing it.
+
+		SymbolHash.c
+			All the hash table stuff.

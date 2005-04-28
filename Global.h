@@ -5,6 +5,8 @@
 #define NULL ((void*)0)
 #endif
 
+#define PUBLISHED(name,fn) void fn(int argc, char** argv)
+
 #ifndef bool
 #define bool int
 #endif
