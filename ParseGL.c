@@ -341,15 +341,19 @@ bool ParseInt(const char* Text, GLint *Result) {
 	char *EndPtr;
 	
 	if (Text[0] == 'G' && Text[1] == 'L' && Text[2] != '\0') {
-		SymConst= GetIntConst(Text+2);
+		SymConst= GetIntConst(Text);
 		if (SymConst) {
 			*Result= SymConst->Value;
 			return true;
 		}
 		else return false;
 	}
+	else if (Text[0] == '0' && Text[1] == 'x') {
+		*Result= strtol(Text, &EndPtr, 16);
+		return (EndPtr != Text);
+	}
 	else {
-		*Result= strtoi(Text, &EndPtr, 0);
+		*Result= strtol(Text, &EndPtr, 10);
 		return (EndPtr != Text);
 	}
 }
