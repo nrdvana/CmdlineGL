@@ -14,6 +14,7 @@ PUBLISHED(glClearColor, DoClearColor);
 PUBLISHED(glClearDepth, DoClearDepth);
 PUBLISHED(glBegin, DoBegin);
 PUBLISHED(glEnd, DoEnd);
+PUBLISHED(glFlush, DoFlush);
 
 //----------------------------------------------------------------------------
 // Vertex Functions

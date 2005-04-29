@@ -32,40 +32,62 @@ PUBLISHED(glMatrixMode, DoMatrixMode) {
 	if (argc == 1)
 		if (ScanParams("i", argv))
 			glMatrixMode(iParams[0]);
+		else
+			DEBUGMSG("Err.");
 }
 PUBLISHED(glEnable, DoEnable) {
 	if (argc == 1)
 		if (ScanParams("i", argv))
 			glEnable(iParams[0]);
+		else
+			DEBUGMSG("Err.");
 }
 PUBLISHED(glDisable, DoDisable) {
 	if (argc == 1)
 		if (ScanParams("i", argv))
 			glDisable(iParams[0]);
+		else
+			DEBUGMSG("Err.");
 }
 PUBLISHED(glClear, DoClear) {
 	if (argc == 1)
 		if (ScanParams("i", argv))
 			glClear(iParams[0]);
+		else
+			DEBUGMSG("Err.");
 }
 PUBLISHED(glClearColor, DoClearColor) {
 	if (argc == 4)
 		if (ScanParams("ffff", argv))
 			glClearColor(fParams[0], fParams[1], fParams[2], fParams[3]);
+		else
+			DEBUGMSG("Err.");
 }
 PUBLISHED(glClearDepth, DoClearDepth) {
 	if (argc == 1)
 		if (ScanParams("f", argv))
 			glClearDepth(fParams[0]);
+		else
+			DEBUGMSG("Err.");
 }
 PUBLISHED(glBegin, DoBegin) {
 	if (argc == 1)
 		if (ScanParams("i", argv))
 			glBegin(iParams[0]);
+		else
+			DEBUGMSG("Err.");
 }
 PUBLISHED(glEnd, DoEnd) {
 	if (argc == 0)
 		glEnd();
+	else
+		DEBUGMSG("Err.");
+}
+PUBLISHED(glFlush, DoFlush) {
+	if (argc == 0)
+		glFlush();
+	else
+		DEBUGMSG("Err.");
 }
 
 //----------------------------------------------------------------------------
@@ -75,20 +97,28 @@ PUBLISHED(glVertex, DoVertex) {
 	if (argc == 2) {
 		if (ScanParams("dd", argv))
 			glVertex2dv(dParams);
+		else
+			DEBUGMSG("Err.");
 	}
 	else if (argc == 3) {
 		if (ScanParams("ddd", argv))
 			glVertex3dv(dParams);
+		else
+			DEBUGMSG("Err.");
 	}
 	else if (argc == 4) {
 		if (ScanParams("dddd", argv))
 			glVertex4dv(dParams);
+		else
+			DEBUGMSG("Err.");
 	}
 }
 PUBLISHED(glNormal, DoNormal) {
 	if (argc == 3)
 		if (ScanParams("ddd", argv))
 			glNormal3dv(dParams);
+		else
+			DEBUGMSG("Err.");
 }
 
 //----------------------------------------------------------------------------
@@ -98,20 +128,28 @@ PUBLISHED(glColorub, DoColorub) {
 	if (argc == 3) {
 		if (ScanParams("iii", argv))
 			glColor3ub((GLbyte)iParams[0], (GLbyte)iParams[1], (GLbyte)iParams[2]);
+		else
+			DEBUGMSG("Err.");
 	}
 	else if (argc == 4) {
 		if (ScanParams("iiii", argv))
 			glColor4ub((GLbyte)iParams[0], (GLbyte)iParams[1], (GLbyte)iParams[2], (GLbyte)iParams[3]);
+		else
+			DEBUGMSG("Err.");
 	}
 }
 PUBLISHED(glColor, DoColor) {
 	if (argc == 3) {
 		if (ScanParams("ddd", argv))
 			glColor3dv(dParams);
+		else
+			DEBUGMSG("Err.");
 	}
 	else if (argc == 4) {
 		if (ScanParams("dddd", argv))
 			glColor4dv(dParams);
+		else
+			DEBUGMSG("Err.");
 	}
 }
 
@@ -123,6 +161,8 @@ PUBLISHED(glLight, DoLight) {
 	if (argc > FIXED_PARAMS && argc < MAX_PARAMS) {
 		if (ScanParams("ii", argv) && ScanParams(VAR_FLOAT+(VAR_FLOAT_LEN+FIXED_PARAMS-argc), argv+FIXED_PARAMS))
 			glLightfv(iParams[0], iParams[1], fParams);
+		else
+			DEBUGMSG("Err.");
 	}
 }
 PUBLISHED(glLightModel, DoLightModel) {
@@ -130,6 +170,8 @@ PUBLISHED(glLightModel, DoLightModel) {
 	if (argc > FIXED_PARAMS && argc < MAX_PARAMS) {
 		if (ScanParams("i", argv) && ScanParams(VAR_FLOAT+(VAR_FLOAT_LEN+FIXED_PARAMS-argc), argv+FIXED_PARAMS))
 			glLightModelfv(iParams[0], fParams);
+		else
+			DEBUGMSG("Err.");
 	}
 }
 PUBLISHED(glMaterial, DoMaterial) {
@@ -137,11 +179,15 @@ PUBLISHED(glMaterial, DoMaterial) {
 	if (argc > FIXED_PARAMS && argc < MAX_PARAMS)
 		if (ScanParams("ii", argv) && ScanParams(VAR_FLOAT+(VAR_FLOAT_LEN+FIXED_PARAMS-argc), argv+FIXED_PARAMS))
 			glMaterialfv(iParams[0], iParams[1], fParams);
+		else
+			DEBUGMSG("Err.");
 }
 PUBLISHED(glColorMaterial, DoColorMaterial) {
 	if (argc == 2)
 		if (ScanParams("ii", argv))
 			glLightModelf(iParams[0], iParams[1]);
+		else
+			DEBUGMSG("Err.");
 }
 
 //----------------------------------------------------------------------------
@@ -157,6 +203,8 @@ PUBLISHED(glTexCoord, DoTexCoord) {
 			case 4: glTexCoord4dv(dParams); break;
 			}
 		}
+		else
+			DEBUGMSG("Err.");
 }
 
 //----------------------------------------------------------------------------
@@ -165,29 +213,41 @@ PUBLISHED(glTexCoord, DoTexCoord) {
 PUBLISHED(glLoadIdentity, DoLoadIdentity) {
 	if (argc == 0)
 		glLoadIdentity();
+	else
+		DEBUGMSG("Err.");
 }
 PUBLISHED(glPushMatrix, DoPushMatrix) {
 	if (argc == 0)
 		glPushMatrix();
+	else
+		DEBUGMSG("Err.");
 }
 PUBLISHED(glPopMatrix, DoPopMatrix) {
 	if (argc == 0)
 		glPopMatrix();
+	else
+		DEBUGMSG("Err.");
 }
 PUBLISHED(glScale, DoScale) {
 	if (argc == 3)
 		if (ScanParams("ddd", argv))
-			glScaledv(dParams);
+			glScaled(dParams[0], dParams[1], dParams[2]);
+		else
+			DEBUGMSG("Err.");
 }
 PUBLISHED(glTranslate, DoTranslate) {
 	if (argc == 3)
 		if (ScanParams("ddd", argv))
-			glTranslatedv(dParams);
+			glTranslated(dParams[0], dParams[1], dParams[2]);
+		else
+			DEBUGMSG("Err.");
 }
 PUBLISHED(glRotate, DoRotate) {
 	if (argc == 4)
 		if (ScanParams("dddd", argv))
 			glRotated(dParams[0], dParams[1], dParams[2], dParams[3]);
+		else
+			DEBUGMSG("Err.");
 }
 
 //----------------------------------------------------------------------------
@@ -197,16 +257,22 @@ PUBLISHED(glViewport, DoViewport) {
 	if (argc == 4)
 		if (ScanParams("iiii", argv))
 			glViewport(iParams[0], iParams[1], iParams[2], iParams[3]);
+		else
+			DEBUGMSG("Err.");
 }
 PUBLISHED(glOrtho, DoOrtho) {
 	if (argc == 6)
 		if (ScanParams("dddddd", argv))
 			glOrtho(dParams[0], dParams[1], dParams[2], dParams[3], dParams[4], dParams[5]);
+		else
+			DEBUGMSG("Err.");
 }
 PUBLISHED(glFrustum, DoFrustum) {
 	if (argc == 6)
 		if (ScanParams("dddddd", argv))
 			glFrustum(dParams[0], dParams[1], dParams[2], dParams[3], dParams[4], dParams[5]);
+		else
+			DEBUGMSG("Err.");
 }
 
 //----------------------------------------------------------------------------
@@ -216,15 +282,21 @@ PUBLISHED(glNewList, DoNewList) {
 	if (argc == 2)
 		if (ScanParams("ii", argv))
 			glNewList(iParams[0], iParams[1]);
+		else
+			DEBUGMSG("Err.");
 }
 PUBLISHED(glEndList, DoEndList) {
 	if (argc == 0)
 		glEndList();
+	else
+		DEBUGMSG("Err.");
 }
 PUBLISHED(glCallList, DoCallList) {
 	if (argc == 1)
 		if (ScanParams("i", argv))
 			glCallList(iParams[0]);
+		else
+			DEBUGMSG("Err.");
 }
 
 //----------------------------------------------------------------------------
@@ -233,6 +305,8 @@ PUBLISHED(glCallList, DoCallList) {
 PUBLISHED(glutSwapBuffers, DoSwapBuffers) {
 	if (argc == 0)
 		glutSwapBuffers();
+	else
+		DEBUGMSG("Err.");
 }
 
 PUBLISHED(gluCylinder, DoCylinder) {
