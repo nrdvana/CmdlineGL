@@ -5,6 +5,7 @@
 #include "Global.h"
 #include "SymbolHash.h"
 #include "ParseGL.h"
+#include "Server.h"
 
 int CalcHash(const char* String) {
 	int Result= 0;

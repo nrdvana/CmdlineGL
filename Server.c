@@ -3,11 +3,10 @@
 
 int Shutdown= 0;
 
-void ExecServer(char *SocketName, int argc, char **argv) {
-	struct sockaddr_un Addr;
-	char Buffer[CMD_LEN_MAX];
-	char *NewArgs[ARG_COUNT_MAX];
-	int red;
+PUBLISHED(quit,DoQuit);
+PUBLISHED(exit,DoQuit) {
+	Shutdown= true;
+}
 
 	// build the address
 	Addr.sun_family= AF_UNIX;
