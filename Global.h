@@ -17,4 +17,15 @@
 #define false 0
 #endif
 
+#define DEBUG
+
+#ifdef DEBUG
+#include <stdarg.h>
+#define DEBUGMSG DebugMsg
+void DebugMsg(char *str, ...);
+#else
+#define DEBUGMSG
+#endif
+
+
 #endif
