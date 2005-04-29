@@ -1,103 +1,174 @@
+#include <sys/socket.h>
+#include <sys/types.h>
+#include <sys/un.h>
+#include <stdio.h>
+#include <GL/gl.h>
+#include <GL/glut.h>
+
 #include "Global.h"
 #include "Server.h"
+#include "ProcessInput.h"
 
-int Shutdown= 0;
+bool Shutdown= false;
 
 PUBLISHED(quit,DoQuit);
 PUBLISHED(exit,DoQuit) {
 	Shutdown= true;
 }
 
-	// build the address
-	Addr.sun_family= AF_UNIX;
-//	if (strlen(SocketName) >= sizeof(Addr.sun_path))
-//		Err_InvalidSocket();
-	strcpy(Addr.sun_path, SocketName);
+bool ReadParams(char **args, char **SocketName, bool *TerminateOnEOF);
+bool CreateListenSocket(char *SocketName, int *ListenSocket);
+void WatchSocket(int id);
 
-	// try connecting
-	ServerConn= socket(PF_UNIX, SOCK_DGRAM, 0);
-	if (ServerConn < 0) {
-		perror("Socket: ");
-//		Err_InvalidSocket();
+void display(void) {}
+void mouse(int btn, int state, int x, int y) {}
+void mouseMotion(int x, int y) {}
+void myReshape(int w, int h);
+
+char Buffer[1024];
+int InputFD= 0;
+char *SocketName= NULL;
+bool TerminateOnEOF= false;
+
+int main(int Argc, char**Args) {
+	if (!ReadParams(Args, &SocketName, &TerminateOnEOF))
+		return 1;
+	
+	if (SocketName) {
+		if (CreateListenSocket(SocketName, &InputFD))
+			close(0);
+		else
+			return 2;
 	}
 
-	if (bind(ServerConn, (struct sockaddr*) &Addr, sizeof(Addr)))
-		perror("Bind: ");
+	DEBUGMSG("Initializing glut\n");
+	glutInit(&Argc, Args);
+	glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGB | GLUT_DEPTH);
+	glutCreateWindow("CmdlineGL");
 
+	DEBUGMSG("Assigning functions\n");
+	glutReshapeFunc(myReshape);
+	glutDisplayFunc(display);
+	glutMouseFunc(mouse);
+	glutMotionFunc(mouseMotion);
 
-//	if (argc > 0)
-//		SendCommand(argc, argv);
+	DEBUGMSG("Setting timer\n");
+	glutTimerFunc(1, WatchSocket, 0);
 
-	while (!Shutdown) {
-		red= recv(ServerConn, Buffer, CMD_LEN_MAX, 0);
-		write(1, Buffer, red);
-//		while (ReadCommand(&argc, NewArgs))
-//			InvokeCommand(argc, NewArgs);
-		if (strncmp(Buffer, "quit", 4) == 0)
-			Shutdown= 1;
-	}
+	DEBUGMSG("Resizing window\n");
+	glutInitWindowSize(500, 501);
 
-	close(ServerConn);
+	DEBUGMSG("Entering glut loop\n");
+	glutMainLoop();
 }
 
-void RunCommand(void *Data) {
-	int i, code= * (int*) Data;
-	char* AsChar= ((char*) Data)+4;
-	char** AsCharPtr= ((char**) Data)+1;
-	int* AsInt= ((int*) Data)+1;
-	double* AsDouble= (double*)(((char*)Data)+4);
-	
-	switch (code) {
-	GLUT_INIT:
-		for (i=0; i<AsInt[0]; i++)
-			AsInt[1+i]+= (int) AsInt;
-		glutInit(AsInt[0], AsCharPtr[1]);
-		break;
-	GLUT_INITDISPLAYMODE: glutInitDisplayMode(AsInt[0]); break;
-	GLUT_CREATEWINDOW:    glutCreateWindow(AsChar); break;
-	GLUT_INITWINDOWSIZE:  glutInitWindowSize(AsInt[0], AsInt[1]); break;
-	
-	GL_BEGIN:        glBegin(AsInt[0]); break;
-	GL_END:          glEnd(); break;
-	GL_VERTEX2I:     glVertex2iv(AsInt); break;
-	GL_VERTEX2:      glVertex2dv(AsDouble); break;
-	GL_VERTEX3:      glVertex3dv(AsDouble); break;
-	GL_VERTEX4:      glVertex4dv(AsDouble); break;
-	GL_NORMAL:       glNormal3dv(AsDouble); break;
-	GL_COLOR3:       glColor3dv(AsDouble); break;
-	GL_COLOR4:       glColor4dv(AsDouble); break;
-	GL_COLOR3b:      glColor3bv(AsChar); break;
-	GL_COLOR4b:      glColor4bv(AsChar); break;
-
-	GL_TEXCOORD1:    glTexCoord1dv(AsDouble); break;
-	GL_TEXCOORD2:    glTexCoord2dv(AsDouble); break;
-	GL_TEXCOORD3:    glTexCoord3dv(AsDouble); break;
-	GL_TEXCOORD4:    glTexCoord4dv(AsDouble); break;
-
-	GL_LIGHT:        glLighti(AsInt[0], AsInt[1], (float) AsDouble[1]); break;
-	GL_LIGHTMODEL:   glLightModelf(AsInt[0], * (double*) &AsInt[1]); break;
-	GL_MATERIAL:     glMaterialf(AsInt[0], AsInt[1], (float) AsDouble[1]); break;
-	GL_COLORMATERIAL:glColorMaterial(AsInt[0], AsInt[1]); break;
-
-	GL_BITMAP:       glBitmap(AsInt[0], AsInt[1],
-							AsDouble[1], AsDouble[2], AsDouble[3], AsDouble[4]
-							(void*) &AsDouble[5]); break;
-
-	GL_MATRIXMODE:   glMatrixMode(AsInt[0]); break;
-	GL_ORTHO:        glOrtho(AsDouble[0], AsDouble[1], AsDouble[2], AsDouble[3], AsDouble[4], AsDouble[5]); break;
-	GL_FRUSTUM:      glFrustum(AsDouble[0], AsDouble[1], AsDouble[2], AsDouble[3], AsDouble[4], AsDouble[5]); break;
-	GL_VIEWPORT:     glViewport(AsInt[0], AsInt[1], AsInt[2], AsInt[3]); break;
-	GL_PUSHMATRIX:   glPushMatrix(); break;
-	GL_POPMATRIX:    glPopMatrix(); break;
-	GL_LOADIDENTITY: glLoadIdentity(); break;
-	GL_ROTATE:       glRotated(AsDouble[0], AsDouble[1], AsDouble[2], AsDouble[3]); break;
-	GL_SCALE:        glScaled(AsDouble[0], AsDouble[1], AsDouble[2]); break;
-	GL_TRANSLATE:    glTranslatef(AsDouble[0], AsDouble[1], AsDouble[2]); break;
-	
-	GL_NEWLIST:      glNewList(AsInt[0], AsInt[1]); break;
-	GL_ENDLIST:      glEndList(); break;
-	GL_CALLLIST:     glCallList(AsInt[0]); break;
+void WatchSocket(int id) {
+	// Read an process one command
+	int result= ProcessFD(InputFD);
+	if (result == P_EOF) {
+		DEBUGMSG("Received EOF.\n");
+ 		if (TerminateOnEOF)
+			Shutdown= 1;
 	}
+	else
+		glutTimerFunc(1, WatchSocket, 0);
+
+	if (Shutdown) {
+		DEBUGMSG("Shutting down.\n");
+		close(InputFD);
+		// this might be a socket
+		if (SocketName) {
+			unlink(SocketName);
+		}
+		exit(0);
+	}
+}
+
+bool ReadParams(char **Args, char **SocketNameResult, bool *TerminateOnEOFResult) {
+	char **NextArg= Args+1;
+	bool ReadingArgs= true;
+	// Note: this function takes advantage of the part of the program argument specification
+	//   that says all argv lists must end with a NULL pointer.
+	while (ReadingArgs && *NextArg && (*NextArg)[0] == '-') {
+		switch ((*NextArg)[1]) {
+		case 'l': *SocketNameResult= *++NextArg; break; // '-l BLAH' = listen on socket BLAH
+		case 't': *TerminateOnEOFResult= true; break;
+		case '\0': ReadingArgs= false; break; // "-" = end of arguments
+		case '-': // "--" => long-option
+		default:
+			fprintf(stderr, "Unrecognized argument: %s", *NextArg);
+			return false;
+		}
+		NextArg++;
+	}
+	return true;
+}
+
+bool CreateListenSocket(char *SocketName, int *ListenSocket) {
+	int sock;
+	struct sockaddr_un Addr;
+
+	// build the address
+	Addr.sun_family= AF_UNIX;
+	if (strlen(SocketName) >= sizeof(Addr.sun_path)) {
+		fprintf(stderr, "Socket name too long.");
+		return false;
+	}
+	strcpy(Addr.sun_path, SocketName);
+
+	sock= socket(PF_UNIX, SOCK_DGRAM, 0);
+	if (sock < 0) {
+		perror("create socket");
+		return false;
+	}
+
+	if (bind(sock, (struct sockaddr*) &Addr, sizeof(Addr))) {
+		perror("bind socket");
+		return false;
+	}
+
+	*ListenSocket= sock;
+}
+
+void DebugMsg(char *msg, ...) {
+	va_list ap;
+	va_start(ap, msg);
+	vfprintf(stderr, msg, ap);
+	va_end(ap);
+	fflush(stderr);
+}
+
+void myReshape(int w, int h) {
+	// Use the entire window for rendering.
+	glViewport(0, 0, w, h);
+	// Recalculate the projection matrix.
+	glMatrixMode(GL_PROJECTION);
+	glLoadIdentity();
+	GLfloat top, bottom, left, right;
+	if (w<h) {
+		// if the width is less than the height, make the viewable width
+		// 20 world units wide, and calculate the viewable height assuming
+		// as aspect ratio of "1".
+		left= -10;
+		right= 10;
+		bottom= -10.0 * ((GLfloat)h) / w;
+		top= 10.0 * ((GLfloat)h) / w;
+	}
+	else {
+		// if the height is less than the width, make the viewable height
+		// 20 world units tall, and calculate the viewable width assuming
+		// as aspect ratio of "1".
+		left= -10.0 * ((GLfloat)w) / h;
+		right= 10.0 * ((GLfloat)w) / h;
+		bottom= -10;
+		top= 10;
+	}
+
+	// In perspective mode, use 1/10 the world width|height at the near
+	//  clipping plane.
+	glFrustum(left/10, right/10, bottom/10, top/10, 1.0, 100.0);
+
+	glMatrixMode(GL_MODELVIEW);
 }
 
 
