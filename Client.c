@@ -18,14 +18,16 @@ bool CalledAsCommand;
 
 int main(int Argc, char**Args) {
 	char *SocketName= NULL;
-	char **NextArg;
+	char **NextArg= Args+1;
 	bool TerminateOnEOF= false;
 	int len, pos, red, result;
 
 	CalledAsCommand= IsCalledAsCommand(Args[0]);
-	
-	if (!ReadParams(Args, &SocketName, &NextArg))
-		return 1;
+
+	// only read params when called as a normal name
+	if (!CalledAsCommand)
+		if (!ReadParams(Args, &SocketName, &NextArg))
+			return 1;
 	
 	if (!SocketName)
 		SocketName= getenv("CMDLINEGL_SOCKET");
@@ -95,8 +97,11 @@ bool SendArgsAsCommand(char *CmdName, char **NextArg) {
 	}
 	// otherwise, do a simple check for bad parameters
 	else if (NextArg[0][0] != 'g' || NextArg[0][1] != 'l') {
-		fprintf(stderr, "All non-switch parameters must be part of an OpenGL command\n");
-		return false;
+		// special case these two 'cause I'm too lazy to do it a more elegant way
+		if (strcmp(NextArg[0], "quit") != 0 && strcmp(NextArg[0], "exit") != 0) {
+			fprintf(stderr, "All non-switch parameters must be part of an OpenGL command\n");
+			return false;
+		}
 	}
 	// now attach the rest of the params
 	while (*NextArg) {
