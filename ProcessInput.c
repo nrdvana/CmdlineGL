@@ -1,5 +1,6 @@
 #include <sys/un.h>
 #include <stdio.h>
+#include <GL/gl.h>
 #include "ProcessInput.h"
 #include "Global.h"
 #include "SymbolHash.h"
@@ -19,27 +20,32 @@ char LineBuffer[CMD_LEN_MAX];
 
 int ProcessFD(int fd) {
 	const CmdHashEntry *Cmd;
-	int TokenCount;
+	int TokenCount, Result;
 	char *TokenPointers[ARG_COUNT_MAX];
 
-	DEBUGMSG("Read command: ");
 	if (ReadCommand(fd, &TokenCount, TokenPointers)) {
-		DEBUGMSG("Check token count.. ");
 		if (TokenCount > 0) {
-			DEBUGMSG("Look up function.. ");
 			Cmd= GetCmd(TokenPointers[0]);
 			if (Cmd != NULL) {
-				DEBUGMSG("\"%s\".\n", Cmd->Key);
-				Cmd->Value(TokenCount-1, TokenPointers+1); // run command
+				Result= Cmd->Value(TokenCount-1, TokenPointers+1); // run command
+				switch (Result) {
+				case 0:
+//					while (true) {
+//						Result= glGetError();
+// 						if (Result == GL_NO_ERROR || Result == 0) break;
+//						fprintf(stderr, "GL error while executing %s: %d.\n", TokenPointers[0], Result);
+//					}
+					break;
+				case ERR_PARAMCOUNT: fprintf(stderr, "Wrong number of parameters for %s\n", TokenPointers[0]); break;
+				case ERR_PARAMPARSE: fprintf(stderr, "Cannot parse parameters for %s\n", TokenPointers[0]); break;
+				}
 				return P_SUCCESS;
 			}
 			else {
-				DEBUGMSG("Not found.\n");
+				fprintf(stderr, "Unknown command: \"%s\".\n", TokenPointers[0]);
 				return P_NOT_FOUND;
 			}
 		}
-		else
-			return P_CMD_ERR;
 	}
 	else
 		return P_EOF;
@@ -50,8 +56,7 @@ bool ReadCommand(int fd, int *ArgCountResult, char **ArgResult) {
 
 	Line= Readline(fd);
 	if (!Line) return false;
-
-	DEBUGMSG("Parse command.. ");
+	DEBUGMSG("%s\n", Line);
 	*ArgCountResult= 0;
 	LastArgPos= NULL;
 	temp= strtok(Line, " \t");
