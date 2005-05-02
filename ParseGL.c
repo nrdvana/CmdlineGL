@@ -19,11 +19,15 @@ const char* VAR_DBL="dddddddddddddddddddddddddddddddd";
 GLint iParams[MAX_PARAMS];
 GLfloat fParams[MAX_PARAMS];
 GLdouble dParams[MAX_PARAMS];
+int dlistParams[MAX_PARAMS];
+GLUquadric* quadricParams[MAX_PARAMS];
 
 bool ScanParams(const char* ParamType, char** Args);
 bool ParseInt(const char* Text, GLint *Result);
 bool ParseFloat(const char* Text, GLfloat *Result);
 bool ParseDouble(const char* Text, GLdouble *Result);
+bool ParseNamedDList(const char* Text, int *Result, bool AutoCreate);
+bool ParseNamedQuadric(const char* Text, GLUquadric **Result, bool AutoCreate);
 
 //----------------------------------------------------------------------------
 // Setup Functions
@@ -309,10 +313,20 @@ PUBLISHED(glutSwapBuffers, DoSwapBuffers) {
 		DEBUGMSG("Err.");
 }
 
+//----------------------------------------------------------------------------
+// Glu Functions
+//
 PUBLISHED(gluCylinder, DoCylinder) {
-//	if (argc == 0)
+	if (argc != 6) return ERR_PARAMCOUNT;
+	if (!ScanParams("Qdddii", argv)) return ERR_PARAMPARSE;
+	gluCylinder(quadricParams[0], dParams[0], dParams[1], dParams[2], iParams[0], iParams[2]);
+	return 0;
 }
 PUBLISHED(gluSphere, DoSphere) {
+	if (argc != 4) return ERR_PARAMCOUNT;
+	if (!ScanParams("Qdii", argv)) return ERR_PARAMPARSE;
+	gluSphere(quadricParams[0], dParams[0], iParams[0], iParams[2]);
+	return 0;
 }
 
 //----------------------------------------------------------------------------
@@ -322,12 +336,18 @@ bool ScanParams(const char* ParamType, char** Args) {
 	GLint *iParam= iParams;
 	GLfloat *fParam= fParams;
 	GLdouble *dParam= dParams;
+	int *dlistParam= dlistParams;
+	GLUquadric **quadricParam= quadricParams;
 	bool Success= true;
 	while (Success && *ParamType != '\0') {
 		switch (*ParamType) {
 		case 'i': Success= ParseInt(*Args, iParam++); break;
 		case 'f': Success= ParseFloat(*Args, fParam++); break;
 		case 'd': Success= ParseDouble(*Args, dParam++); break;
+		case 'l': Success= ParseNamedDList(*Args, dlistParam++, false); break;
+		case 'L': Success= ParseNamedDList(*Args, dlistParam++, true); break;
+		case 'q': Success= ParseNamedQuadric(*Args, quadricParam++, false); break;
+		case 'Q': Success= ParseNamedQuadric(*Args, quadricParam++, true); break;
 		default: Success= false;
 		}
 		Args++;
@@ -358,6 +378,16 @@ bool ParseInt(const char* Text, GLint *Result) {
 	}
 }
 
+bool ParseSymbol(const char* Text, int *Result) {
+	const SymbVarEntry *SymbVar;
+	SymbVar= GetSymbVar(Text);
+	if (SymbVar) {
+		*Result= SymbVar->Value;
+		return true;
+	}
+	else return false;
+}
+
 bool ParseFloat(const char* Text, GLfloat *Result) {
 	char *EndPtr;
 	*Result= strtod(Text, &EndPtr);
@@ -368,5 +398,41 @@ bool ParseDouble(const char* Text, GLdouble *Result) {
 	char *EndPtr;
 	*Result= strtod(Text, &EndPtr);
 	return (EndPtr != Text);
+}
+
+bool ParseNamedDList(const char* Text, int *Result, bool AutoCreate) {
+	const SymbVarEntry *Entry= GetSymbVar(Text);
+	SymbVarEntry *NewEntry; // this exists to avoid the "const pointer" warning.
+	
+	if (!Entry && AutoCreate) {
+		NewEntry= CreateSymbVar(Text);
+		NewEntry->Value= glGenLists(1);
+		NewEntry->Type= NAMED_LIST;
+		DEBUGMSG("Created named list %s = %d\n", Text, NewEntry->Value);
+		Entry= NewEntry;
+	}
+	if (Entry && Entry->Type == NAMED_LIST) {
+		*Result= Entry->Value;
+		return true;
+	}
+	else return false;
+}
+
+bool ParseNamedQuadric(const char* Text, GLUquadric **Result, bool AutoCreate) {
+	const SymbVarEntry *Entry= GetSymbVar(Text);
+	SymbVarEntry *NewEntry; // this exists to avoid the "const pointer" warning.
+
+	if (!Entry && AutoCreate) {
+		NewEntry= CreateSymbVar(Text);
+		NewEntry->Value= (int) gluNewQuadric();
+		NewEntry->Type= NAMED_QUADRIC;
+		DEBUGMSG("Created quadric %s = %d\n", Text, NewEntry->Value);
+		Entry= NewEntry;
+	}
+	if (Entry && Entry->Type == NAMED_QUADRIC) {
+		*Result= (GLUquadric*) Entry->Value;
+		return true;
+	}
+	else return false;
 }
 
