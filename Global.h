@@ -5,7 +5,10 @@
   #define NULL ((void*)0)
 #endif
 
-#define PUBLISHED(name,fn) void fn(int argc, char** argv)
+#define PUBLISHED(name,fn) int fn(int argc, char** argv)
+#define ERR_PARAMCOUNT 1
+#define ERR_PARAMPARSE 2
+#define ERR_EXEC	   3
 
 #ifndef bool
   #define bool int

@@ -3,7 +3,7 @@
 
 typedef struct {
 	const char* Key;
-	void (*Value)(int,char**);
+	int (*Value)(int,char**);
 } CmdHashEntry;
 
 typedef struct {
