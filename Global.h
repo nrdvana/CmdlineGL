@@ -2,29 +2,28 @@
 #define GLOBAL_H
 
 #ifndef NULL
-#define NULL ((void*)0)
+  #define NULL ((void*)0)
 #endif
 
 #define PUBLISHED(name,fn) void fn(int argc, char** argv)
 
 #ifndef bool
-#define bool int
+  #define bool int
 #endif
 #ifndef true
-#define true 1
+  #define true 1
 #endif
 #ifndef false
-#define false 0
+  #define false 0
 #endif
 
-#define DEBUG
+//#define DEBUG
 
 #ifdef DEBUG
-#include <stdarg.h>
-#define DEBUGMSG DebugMsg
-void DebugMsg(char *str, ...);
+  #define DEBUGMSG DebugMsg
+  void DebugMsg(char *str, ...);
 #else
-#define DEBUGMSG
+  #define DEBUGMSG
 #endif
 
 

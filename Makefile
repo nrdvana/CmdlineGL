@@ -2,11 +2,11 @@ all: build
 
 build: CmdlineGL CmdlineGLClient
 
-CmdlineGL: SymbolHash.o Server.o ProcessInput.o ParseGL.o bin
-	gcc -o bin/CmdlineGL -lGL -lGLU -lglut SymbolHash.o Server.o ProcessInput.o ParseGL.o
+CmdlineGL: SymbolHash.o Server.o ProcessInput.o ParseGL.o Global.o bin
+	gcc -o bin/CmdlineGL -lGL -lGLU -lglut SymbolHash.o Server.o ProcessInput.o Global.o ParseGL.o
 
-CmdlineGLClient: Client.c Global.h bin
-	gcc -o bin/CmdlineGLClient Client.c && \
+CmdlineGLClient: Client.c Global.o bin
+	gcc -o bin/CmdlineGLClient Client.c Global.o && \
 	sed -rn '/^PUBLISHED\(([^,]*),.*/s//\1/p' *.h \
 	 | while read fn; do ln -fs CmdlineGLClient bin/$$fn; done
 
@@ -15,6 +15,9 @@ Server.o: Server.c Server.h Global.h
 
 ParseGL.o: ParseGL.c ParseGL.h Global.h
 	gcc -c ParseGL.c
+
+Global.o: Global.h
+	gcc -c Global.c
 	
 ProcessInput.o: ProcessInput.c ProcessInput.h Global.h ParseGL.h
 	gcc -c ProcessInput.c
