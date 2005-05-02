@@ -68,36 +68,52 @@ char ReadBuffer[READ_BUFFER_SIZE];
 char const *StopPos= ReadBuffer+READ_BUFFER_SIZE;
 char *Pos= ReadBuffer;
 char *DataPos= ReadBuffer;
+char *LineStart;
+
+void ShiftBuffer() {
+	int shift= LineStart - ReadBuffer;
+	if (DataPos != LineStart)
+		memmove(ReadBuffer, LineStart, DataPos - LineStart);
+	DataPos-= shift;
+	Pos-= shift;
+	LineStart= ReadBuffer;
+}
 
 char* Readline(int fd) {
-	int shift, red;
-	char* LineStart= Pos;
+	int red;
+
+	LineStart= Pos;
+	if (Pos != ReadBuffer && DataPos - Pos < 16)
+		ShiftBuffer();
 	do {
 //		DEBUGMSG("LineStart = %d, Pos = %d, DataPos = %d, StopPos = %d\n", LineStart-ReadBuffer, Pos-ReadBuffer, DataPos-ReadBuffer, StopPos-ReadBuffer);
+		// do we need more?
 		if (Pos == DataPos) {
+			// do we need to shift?
+			if (DataPos == StopPos) {
+				// can we shift?
+				if (LineStart != ReadBuffer)
+					ShiftBuffer();
+				else {
+					// Full buffer.  Abort, and reset the buffer pointers.
+					DataPos= Pos= ReadBuffer;
+					fprintf(stderr, "Input line too long\n");
+					return NULL;
+				}
+			}
 			red= read(fd, DataPos, StopPos-DataPos);
-			if (red <= 0)
-				break;
+			if (red <= 0) {
+				if (red == 0)
+					DEBUGMSG("Read 0 bytes.\n");
+				else
+					perror("read line");
+				return NULL;
+			}
 			DataPos+= red;
 		}
 		while (Pos < DataPos && *Pos != '\n')
 			Pos++;
-		// Pos is now either at DataPos or a newline character, or both
-		if (Pos == StopPos && LineStart != ReadBuffer) {
-			shift= LineStart - ReadBuffer;
-			memmove(ReadBuffer, LineStart, Pos-LineStart);
-			Pos-= shift;
-			DataPos-= shift;
-			LineStart-= shift;
-		}
-	} while (*Pos != '\n' && Pos < StopPos);
-	
-	if (Pos == LineStart)
-		return NULL;
-	if (Pos == StopPos) {
-		fprintf(stderr, "Input line too long\n");
-		return NULL;
-	}
+	} while (*Pos != '\n');
 	*Pos++= '\0';
 	return LineStart;
 }
