@@ -56,7 +56,7 @@ bool ReadCommand(int fd, int *ArgCountResult, char **ArgResult) {
 
 	Line= Readline(fd);
 	if (!Line) return false;
-	DEBUGMSG("%s\n", Line);
+	DEBUGMSG(("%s\n", Line));
 	*ArgCountResult= 0;
 	LastArgPos= NULL;
 	temp= strtok(Line, " \t");
@@ -91,7 +91,7 @@ char* Readline(int fd) {
 	if (Pos != ReadBuffer && DataPos - Pos < 16)
 		ShiftBuffer();
 	do {
-//		DEBUGMSG("LineStart = %d, Pos = %d, DataPos = %d, StopPos = %d\n", LineStart-ReadBuffer, Pos-ReadBuffer, DataPos-ReadBuffer, StopPos-ReadBuffer);
+//		DEBUGMSG(("LineStart = %d, Pos = %d, DataPos = %d, StopPos = %d\n", LineStart-ReadBuffer, Pos-ReadBuffer, DataPos-ReadBuffer, StopPos-ReadBuffer));
 		// do we need more?
 		if (Pos == DataPos) {
 			// do we need to shift?
@@ -109,7 +109,7 @@ char* Readline(int fd) {
 			red= read(fd, DataPos, StopPos-DataPos);
 			if (red <= 0) {
 				if (red == 0)
-					DEBUGMSG("Read 0 bytes.\n");
+					DEBUGMSG(("Read 0 bytes.\n"));
 				else
 					perror("read line");
 				return NULL;

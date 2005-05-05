@@ -384,7 +384,7 @@ bool ParseNamedDList(const char* Text, int *Result, bool AutoCreate) {
 		NewEntry= CreateSymbVar(Text);
 		NewEntry->Value= glGenLists(1);
 		NewEntry->Type= NAMED_LIST;
-		DEBUGMSG("Created named list %s = %d\n", Text, NewEntry->Value);
+		DEBUGMSG(("Created named list %s = %d\n", Text, NewEntry->Value));
 		Entry= NewEntry;
 	}
 	if (Entry && Entry->Type == NAMED_LIST) {
@@ -402,7 +402,7 @@ bool ParseNamedQuadric(const char* Text, GLUquadric **Result, bool AutoCreate) {
 		NewEntry= CreateSymbVar(Text);
 		NewEntry->Value= (int) gluNewQuadric();
 		NewEntry->Type= NAMED_QUADRIC;
-		DEBUGMSG("Created quadric %s = %d\n", Text, NewEntry->Value);
+		DEBUGMSG(("Created quadric %s = %d\n", Text, NewEntry->Value));
 		Entry= NewEntry;
 	}
 	if (Entry && Entry->Type == NAMED_QUADRIC) {

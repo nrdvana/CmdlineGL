@@ -23,10 +23,10 @@
 //#define DEBUG
 
 #ifdef DEBUG
-  #define DEBUGMSG DebugMsg
+  #define DEBUGMSG(a) DebugMsg a
   void DebugMsg(char *str, ...);
 #else
-  #define DEBUGMSG
+  #define DEBUGMSG(a) do{}while(0)
 #endif
 
 

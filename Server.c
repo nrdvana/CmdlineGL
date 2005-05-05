@@ -41,24 +41,24 @@ int main(int Argc, char**Args) {
 			return 2;
 	}
 
-	DEBUGMSG("Initializing glut\n");
+	DEBUGMSG(("Initializing glut\n"));
 	glutInit(&Argc, Args);
 	glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGB | GLUT_DEPTH);
 	glutCreateWindow("CmdlineGL");
 
-	DEBUGMSG("Assigning functions\n");
+	DEBUGMSG(("Assigning functions\n"));
 	glutReshapeFunc(myReshape);
 	glutDisplayFunc(display);
 	glutMouseFunc(mouse);
 	glutMotionFunc(mouseMotion);
 
-	DEBUGMSG("Setting timer\n");
+	DEBUGMSG(("Setting timer\n"));
 	glutTimerFunc(1, WatchSocket, 0);
 
-	DEBUGMSG("Resizing window\n");
+	DEBUGMSG(("Resizing window\n"));
 	glutInitWindowSize(500, 501);
 
-	DEBUGMSG("Entering glut loop\n");
+	DEBUGMSG(("Entering glut loop\n"));
 	glutMainLoop();
 }
 
@@ -66,7 +66,7 @@ void WatchSocket(int id) {
 	// Read an process one command
 	int result= ProcessFD(InputFD);
 	if (result == P_EOF) {
-		DEBUGMSG("Received EOF.\n");
+		DEBUGMSG(("Received EOF.\n"));
  		if (TerminateOnEOF)
 			Shutdown= 1;
 	}
@@ -74,7 +74,7 @@ void WatchSocket(int id) {
 		glutTimerFunc(1, WatchSocket, 0);
 
 	if (Shutdown) {
-		DEBUGMSG("Shutting down.\n");
+		DEBUGMSG(("Shutting down.\n"));
 		close(InputFD);
 		// this might be a socket
 		if (SocketName) {
