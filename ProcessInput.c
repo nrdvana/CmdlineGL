@@ -6,8 +6,8 @@
 #include "SymbolHash.h"
 
 #define CMD_LEN_MAX 256
-#define ARG_COUNT_MAX 32
 #define READ_BUFFER_SIZE 1024
+#define TOK_COUNT_MAX MAX_GL_PARAMS+1
 
 bool ReadCommand(int fd, int *ArgCountResult, char **ArgResult);
 char* Readline(int fd);
@@ -60,7 +60,7 @@ bool ReadCommand(int fd, int *ArgCountResult, char **ArgResult) {
 	*ArgCountResult= 0;
 	LastArgPos= NULL;
 	temp= strtok(Line, " \t");
-	while (temp != NULL && *ArgCountResult < ARG_COUNT_MAX) {
+	while (temp != NULL && *ArgCountResult < TOK_COUNT_MAX) {
 		if (temp > LastArgPos + 1)
 			ArgResult[(*ArgCountResult)++]= temp;
 		LastArgPos= temp;

@@ -7,8 +7,6 @@
 #include "ParseGL.h"
 #include "SymbolHash.h"
 	
-#define MAX_PARAMS 32
-
 const char* VAR_INT="iiiiiiiiiiiiiiiiiiiiiiiiiiiiiiii";
 #define VAR_INT_LEN 32
 const char* VAR_FLOAT="ffffffffffffffffffffffffffffffff";
@@ -16,11 +14,16 @@ const char* VAR_FLOAT="ffffffffffffffffffffffffffffffff";
 const char* VAR_DBL="dddddddddddddddddddddddddddddddd";
 #define VAR_DBL_LEN 32
 
-GLint iParams[MAX_PARAMS];
-GLfloat fParams[MAX_PARAMS];
-GLdouble dParams[MAX_PARAMS];
-int dlistParams[MAX_PARAMS];
-GLUquadric* quadricParams[MAX_PARAMS];
+#if VAR_INT_LEN != MAX_GL_PARAMS
+  #error Edit the strings in ParseGL.h to match the value of MAX_GL_PARAMS
+#endif
+
+
+GLint iParams[MAX_GL_PARAMS];
+GLfloat fParams[MAX_GL_PARAMS];
+GLdouble dParams[MAX_GL_PARAMS];
+int dlistParams[MAX_GL_PARAMS];
+GLUquadric* quadricParams[MAX_GL_PARAMS];
 
 bool ScanParams(const char* ParamType, char** Args);
 bool ParseInt(const char* Text, GLint *Result);
@@ -144,7 +147,7 @@ PUBLISHED(glColor, DoColor) {
 //
 PUBLISHED(glLight, DoLight) {
 	const int FIXED_PARAMS= 2;
-	if (argc > FIXED_PARAMS && argc < MAX_PARAMS) {
+	if (argc > FIXED_PARAMS && argc < MAX_GL_PARAMS) {
 		if (ScanParams("ii", argv) && ScanParams(VAR_FLOAT+(VAR_FLOAT_LEN+FIXED_PARAMS-argc), argv+FIXED_PARAMS))
 			glLightfv(iParams[0], iParams[1], fParams);
 		else
@@ -155,7 +158,7 @@ PUBLISHED(glLight, DoLight) {
 }
 PUBLISHED(glLightModel, DoLightModel) {
 	const int FIXED_PARAMS= 1;
-	if (argc > FIXED_PARAMS && argc < MAX_PARAMS) {
+	if (argc > FIXED_PARAMS && argc < MAX_GL_PARAMS) {
 		if (ScanParams("i", argv) && ScanParams(VAR_FLOAT+(VAR_FLOAT_LEN+FIXED_PARAMS-argc), argv+FIXED_PARAMS))
 			glLightModelfv(iParams[0], fParams);
 		else
@@ -166,7 +169,7 @@ PUBLISHED(glLightModel, DoLightModel) {
 }
 PUBLISHED(glMaterial, DoMaterial) {
 	const int FIXED_PARAMS= 2;
-	if (argc > FIXED_PARAMS && argc < MAX_PARAMS) {
+	if (argc > FIXED_PARAMS && argc < MAX_GL_PARAMS) {
 		if (ScanParams("ii", argv) && ScanParams(VAR_FLOAT+(VAR_FLOAT_LEN+FIXED_PARAMS-argc), argv+FIXED_PARAMS))
 			glMaterialfv(iParams[0], iParams[1], fParams);
 		else

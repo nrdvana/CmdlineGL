@@ -5,11 +5,6 @@
   #define NULL ((void*)0)
 #endif
 
-#define PUBLISHED(name,fn) int fn(int argc, char** argv)
-#define ERR_PARAMCOUNT 1
-#define ERR_PARAMPARSE 2
-#define ERR_EXEC	   3
-
 #ifndef bool
   #define bool int
 #endif
@@ -19,6 +14,13 @@
 #ifndef false
   #define false 0
 #endif
+
+#define MAX_GL_PARAMS 32
+
+#define PUBLISHED(name,fn) int fn(int argc, char** argv)
+#define ERR_PARAMCOUNT 1
+#define ERR_PARAMPARSE 2
+#define ERR_EXEC	   3
 
 //#define DEBUG
 
