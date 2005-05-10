@@ -12,12 +12,13 @@ CmdHashEntry CmdBucket19[1] = {{"glVertex",   DoVertex }};
 CmdHashEntry CmdBucket21[1] = {{"glScale",   DoScale }};
 CmdHashEntry CmdBucket22[1] = {{"glLightModel",   DoLightModel }};
 CmdHashEntry CmdBucket23[1] = {{"glLight",   DoLight }};
-CmdHashEntry CmdBucket25[2] = {{"glFlush",   DoFlush }, {"glColorMaterial",   DoColorMaterial }};
+CmdHashEntry CmdBucket25[3] = {{"glFlush",   DoFlush }, {"glColorMaterial",   DoColorMaterial }, {"sync",  DoSync }};
 CmdHashEntry CmdBucket27[1] = {{"glColorub",   DoColorub }};
 CmdHashEntry CmdBucket28[1] = {{"glEndList",   DoEndList }};
 CmdHashEntry CmdBucket29[1] = {{"glTranslate",   DoTranslate }};
 CmdHashEntry CmdBucket32[2] = {{"glBegin",   DoBegin }, {"exit",  DoQuit }};
 CmdHashEntry CmdBucket37[2] = {{"glClearColor",   DoClearColor }, {"quit",  DoQuit }};
+CmdHashEntry CmdBucket39[1] = {{"echo",  DoEcho }};
 CmdHashEntry CmdBucket42[1] = {{"glPushMatrix",   DoPushMatrix }};
 CmdHashEntry CmdBucket44[1] = {{"glNormal",   DoNormal }};
 CmdHashEntry CmdBucket45[2] = {{"glOrtho",   DoOrtho }, {"gluSphere",   DoSphere }};
@@ -34,8 +35,8 @@ const struct CmdLookupBucket CmdLookup[64] = {
 	{1, CmdBucket0}, EMPTY, EMPTY, EMPTY, EMPTY, {1, CmdBucket5}, {1, CmdBucket6}, {1, CmdBucket7}, 
 	{2, CmdBucket8}, {1, CmdBucket9}, EMPTY, {1, CmdBucket11}, EMPTY, {2, CmdBucket13}, EMPTY, EMPTY, 
 	{1, CmdBucket16}, EMPTY, EMPTY, {1, CmdBucket19}, EMPTY, {1, CmdBucket21}, {1, CmdBucket22}, {1, CmdBucket23}, 
-	EMPTY, {2, CmdBucket25}, EMPTY, {1, CmdBucket27}, {1, CmdBucket28}, {1, CmdBucket29}, EMPTY, EMPTY, 
-	{2, CmdBucket32}, EMPTY, EMPTY, EMPTY, EMPTY, {2, CmdBucket37}, EMPTY, EMPTY, 
+	EMPTY, {3, CmdBucket25}, EMPTY, {1, CmdBucket27}, {1, CmdBucket28}, {1, CmdBucket29}, EMPTY, EMPTY, 
+	{2, CmdBucket32}, EMPTY, EMPTY, EMPTY, EMPTY, {2, CmdBucket37}, EMPTY, {1, CmdBucket39}, 
 	EMPTY, EMPTY, {1, CmdBucket42}, EMPTY, {1, CmdBucket44}, {2, CmdBucket45}, EMPTY, {1, CmdBucket47}, 
 	{1, CmdBucket48}, EMPTY, EMPTY, EMPTY, EMPTY, EMPTY, EMPTY, {1, CmdBucket55}, 
 	{1, CmdBucket56}, EMPTY, EMPTY, EMPTY, EMPTY, EMPTY, {1, CmdBucket62}, {2, CmdBucket63}
