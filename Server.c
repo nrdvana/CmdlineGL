@@ -11,12 +11,20 @@
 
 bool Shutdown= false;
 
+typedef struct {
+	char *FifoName;
+	bool TerminateOnEOF;
+	bool WantHelp;
+	bool NeedHelp;
+} CmdlineOptions;
+
 PUBLISHED(quit,DoQuit);
 PUBLISHED(exit,DoQuit) {
 	Shutdown= true;
 }
 
-bool ReadParams(char **args, char **SocketName, bool *TerminateOnEOF);
+void ReadParams(char **args, CmdlineOptions *Options);
+void PrintUsage();
 bool CreateListenSocket(char *SocketName, int *ListenSocket);
 void WatchSocket(int id);
 
@@ -27,15 +35,19 @@ void myReshape(int w, int h);
 
 char Buffer[1024];
 int InputFD= 0;
-char *SocketName= NULL;
-bool TerminateOnEOF= false;
+
+CmdlineOptions Options= { NULL, false, false, false };
 
 int main(int Argc, char**Args) {
-	if (!ReadParams(Args, &SocketName, &TerminateOnEOF))
-		return 1;
+	ReadParams(Args, &Options);
 	
-	if (SocketName) {
-		if (CreateListenSocket(SocketName, &InputFD))
+	if (Options.WantHelp || Options.NeedHelp) {
+		PrintUsage();
+		return Options.WantHelp? 0 : -1;
+	}
+	
+	if (Options.FifoName) {
+		if (CreateListenSocket(Options.FifoName, &InputFD))
 			close(0);
 		else
 			return 2;
@@ -84,24 +96,48 @@ void WatchSocket(int id) {
 	}
 }
 
-bool ReadParams(char **Args, char **SocketNameResult, bool *TerminateOnEOFResult) {
+void ReadParams(char **Args, CmdlineOptions *Options) {
 	char **NextArg= Args+1;
 	bool ReadingArgs= true;
 	// Note: this function takes advantage of the part of the program argument specification
 	//   that says all argv lists must end with a NULL pointer.
 	while (ReadingArgs && *NextArg && (*NextArg)[0] == '-') {
 		switch ((*NextArg)[1]) {
-		case 'l': *SocketNameResult= *++NextArg; break; // '-l BLAH' = listen on socket BLAH
-		case 't': *TerminateOnEOFResult= true; break;
+		case 'f': Options->FifoName= *++NextArg; break; // '-f <blah>' = read from FIFO "blah"
+		case 't': Options->TerminateOnEOF= true; break;
+		case 'h':
+		case '?': Options->WantHelp= true; break;
 		case '\0': ReadingArgs= false; break; // "-" = end of arguments
 		case '-': // "--" => long-option
+			if (strcmp(*NextArg, "--help") == 0) { Options->WantHelp= true; break; }
 		default:
 			fprintf(stderr, "Unrecognized argument: %s", *NextArg);
-			return false;
+			Options->NeedHelp= true;
+			return;
 		}
 		NextArg++;
 	}
-	return true;
+}
+
+void PrintUsage() {
+	fprintf(stderr, "%s",
+	"Usage:\n"
+	"  CmdlineGL -f <fifoname> [-t] | <input-processor>\n"
+	"     Read commands from the named fifo, and write user input to stdout.\n"
+	"\n"
+	"  <command-stream> | CmdlineGL [-t] | <input-processor>\n"
+	"     Read commands from stdin, and write user input to stdout.\n"
+	"\n"
+	"  CmdlineGL -h\n"
+	"     Display this help message.\n"
+	"\n"
+	"socketname : a path/filename for a unix socket, which the server creates\n"
+	"-t         : terminate after receiving EOF\n"
+	"\n"
+	"\n"
+	"Note: Each line of input is broken on space characters and treated as a\n"
+ 	"      command.  There is currently no escaping mechanism, although I'm not\n"
+ 	"      opposed to the idea.\n\n");
 }
 
 bool CreateListenSocket(char *SocketName, int *ListenSocket) {
