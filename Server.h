@@ -5,6 +5,7 @@
 
 PUBLISHED(quit,DoQuit);
 PUBLISHED(exit,DoQuit);
+PUBLISHED(sync,DoSync);
 
 void StartServer(char* Socketname);
 

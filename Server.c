@@ -4,6 +4,8 @@
 #include <stdio.h>
 #include <GL/gl.h>
 #include <GL/glut.h>
+#include <sys/time.h>
+#include <unistd.h>
 
 #include "Global.h"
 #include "Server.h"
@@ -18,15 +20,12 @@ typedef struct {
 	bool NeedHelp;
 } CmdlineOptions;
 
-PUBLISHED(quit,DoQuit);
-PUBLISHED(exit,DoQuit) {
-	Shutdown= true;
-}
-
 void ReadParams(char **args, CmdlineOptions *Options);
 void PrintUsage();
 bool CreateListenSocket(char *SocketName, int *ListenSocket);
 void WatchSocket(int id);
+
+long microseconds(struct timeval *time);
 
 void display(void) {}
 void mouse(int btn, int state, int x, int y) {}
@@ -36,9 +35,13 @@ void myReshape(int w, int h);
 char Buffer[1024];
 int InputFD= 0;
 
+long StartTime;
+
 CmdlineOptions Options= { NULL, false, false, false };
 
 int main(int Argc, char**Args) {
+	struct timeval curtime;
+	
 	ReadParams(Args, &Options);
 	
 	if (Options.WantHelp || Options.NeedHelp) {
@@ -70,6 +73,10 @@ int main(int Argc, char**Args) {
 	DEBUGMSG(("Resizing window\n"));
 	glutInitWindowSize(500, 501);
 
+	DEBUGMSG(("Recording time\n"));
+	gettimeofday(&curtime, NULL);
+	StartTime= microseconds(&curtime);
+	
 	DEBUGMSG(("Entering glut loop\n"));
 	glutMainLoop();
 }
@@ -138,6 +145,29 @@ void PrintUsage() {
 	"Note: Each line of input is broken on space characters and treated as a\n"
  	"      command.  There is currently no escaping mechanism, although I'm not\n"
  	"      opposed to the idea.\n\n");
+}
+
+long microseconds(struct timeval *time) {
+	return time->tv_usec + ((long) time->tv_sec)*1000000;
+}
+
+PUBLISHED(exit,DoQuit) {
+	Shutdown= true;
+}
+
+PUBLISHED(sync,DoSync) {
+	struct timeval curtime;
+	long target, t;
+	char *endptr;
+	
+	if (argc != 1) return ERR_PARAMCOUNT;
+	target= strtol(argv[0], endptr, 10) * 1000;
+	if (endptr != '\0') return ERR_PARAMPARSE;
+	
+	gettimeofday(&curtime, NULL);
+	t= microseconds(&curtime) - StartTime;
+	if (target - t > 0)
+		usleep(target - t);
 }
 
 bool CreateListenSocket(char *SocketName, int *ListenSocket) {
