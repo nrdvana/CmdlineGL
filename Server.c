@@ -1,7 +1,8 @@
-#include <sys/socket.h>
 #include <sys/types.h>
-#include <sys/un.h>
+#include <sys/stat.h>
+#include <fcntl.h>
 #include <stdio.h>
+#include <errno.h>
 #include <GL/gl.h>
 #include <GL/glut.h>
 #include <sys/time.h>
@@ -22,8 +23,7 @@ typedef struct {
 
 void ReadParams(char **args, CmdlineOptions *Options);
 void PrintUsage();
-bool CreateListenSocket(char *SocketName, int *ListenSocket);
-void WatchSocket(int id);
+void CheckInput();
 
 long microseconds(struct timeval *time);
 
@@ -52,15 +52,29 @@ int main(int Argc, char**Args) {
 		PrintUsage();
 		return Options.WantHelp? 0 : -1;
 	}
-	
 	if (Options.FifoName) {
-		if (CreateListenSocket(Options.FifoName, &InputFD))
-			close(0);
-		else
+//		if (CreateListenSocket(Options.SocketName, &InputFD))
+		if (mkfifo(Options.FifoName, 0x1FF) < 0) {
+			perror("mkfifo");
 			return 2;
+		}
+		InputFD= open(Options.FifoName, O_RDONLY | O_NONBLOCK);
+		if (InputFD < 0) {
+			perror("open(fifo, read|nonblock)");
+			return 3;
+		}
+		close(0); // Done with stdin.
+	}
+	else {
+		DEBUGMSG(("Enabling nonblocking mode on stdin\n"));
+		if (fcntl(InputFD, F_SETFL, O_NONBLOCK) < 0) {
+			perror("fnctl(stdin, F_SETFL, O_NONBLOCK)");
+			return 3;
+		}
 	}
 
 	DEBUGMSG(("Initializing glut\n"));
+
 	glutInit(&Argc, Args);
 	glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGB | GLUT_DEPTH);
 	glutCreateWindow("CmdlineGL");
@@ -77,9 +91,6 @@ int main(int Argc, char**Args) {
 	glutSpecialUpFunc(specialKeyUp);
 	glutDisplayFunc(display);
 
-	DEBUGMSG(("Setting timer\n"));
-	glutTimerFunc(1, WatchSocket, 0);
-
 	DEBUGMSG(("Resizing window\n"));
 	glutInitWindowSize(500, 501);
 
@@ -89,28 +100,6 @@ int main(int Argc, char**Args) {
 	
 	DEBUGMSG(("Entering glut loop\n"));
 	glutMainLoop();
-}
-
-void WatchSocket(int id) {
-	// Read an process one command
-	int result= ProcessFD(InputFD);
-	if (result == P_EOF) {
-		DEBUGMSG(("Received EOF.\n"));
- 		if (TerminateOnEOF)
-			Shutdown= 1;
-	}
-	else
-		glutTimerFunc(1, WatchSocket, 0);
-
-	if (Shutdown) {
-		DEBUGMSG(("Shutting down.\n"));
-		close(InputFD);
-		// this might be a socket
-		if (SocketName) {
-			unlink(SocketName);
-		}
-		exit(0);
-	}
 }
 
 void ReadParams(char **Args, CmdlineOptions *Options) {
@@ -193,6 +182,34 @@ PUBLISHED(repeat,DoRepeat) {
 	return 0;
 }
 
+void CheckInput() {
+	int result;
+	int TokenCount;
+	char *Line, *TokenPointers[MAX_GL_PARAMS+1];
+
+	while (Line= ReadLine(InputFD)) {
+		DEBUGMSG(("%s\n", Line));
+		if (ParseLine(Line, &TokenCount, TokenPointers))
+			ProcessCommand(TokenPointers, TokenCount);
+	}
+	if (errno != EAGAIN) {
+		DEBUGMSG(("Received EOF.\n"));
+ 		if (Options.TerminateOnEOF)
+			Shutdown= 1;
+	}
+
+	if (Shutdown) {
+		DEBUGMSG(("Shutting down.\n"));
+		close(InputFD);
+		// this might be a socket
+		if (Options.FifoName) {
+			unlink(Options.FifoName);
+		}
+		exit(0);
+	}
+}
+
+/*
 bool CreateListenSocket(char *SocketName, int *ListenSocket) {
 	int sock;
 	struct sockaddr_un Addr;
@@ -218,7 +235,7 @@ bool CreateListenSocket(char *SocketName, int *ListenSocket) {
 
 	*ListenSocket= sock;
 }
-
+*/
 void handleResize(int w, int h) {
 	// Use the entire window for rendering.
 	glViewport(0, 0, w, h);
@@ -251,6 +268,7 @@ void handleResize(int w, int h) {
 
 	glMatrixMode(GL_MODELVIEW);
 }
+
 void mouse(int btn, int state, int x, int y) {
 	const char* BtnName;
 	mouseMotion(x,y);

@@ -18,45 +18,9 @@ void *CmdData;
 int CmdDataLen;
 char LineBuffer[CMD_LEN_MAX];
 
-int ProcessFD(int fd) {
-	const CmdHashEntry *Cmd;
-	int TokenCount, Result;
-	char *TokenPointers[ARG_COUNT_MAX];
+bool ParseLine(char *Line, int *ArgCountResult, char **ArgResult) {
+	char *LastArgPos, *temp;
 
-	if (ReadCommand(fd, &TokenCount, TokenPointers)) {
-		if (TokenCount > 0) {
-			Cmd= GetCmd(TokenPointers[0]);
-			if (Cmd != NULL) {
-				Result= Cmd->Value(TokenCount-1, TokenPointers+1); // run command
-				switch (Result) {
-				case 0:
-//					while (true) {
-//						Result= glGetError();
-// 						if (Result == GL_NO_ERROR || Result == 0) break;
-//						fprintf(stderr, "GL error while executing %s: %d.\n", TokenPointers[0], Result);
-//					}
-					break;
-				case ERR_PARAMCOUNT: fprintf(stderr, "Wrong number of parameters for %s\n", TokenPointers[0]); break;
-				case ERR_PARAMPARSE: fprintf(stderr, "Cannot parse parameters for %s\n", TokenPointers[0]); break;
-				}
-				return P_SUCCESS;
-			}
-			else {
-				fprintf(stderr, "Unknown command: \"%s\".\n", TokenPointers[0]);
-				return P_NOT_FOUND;
-			}
-		}
-	}
-	else
-		return P_EOF;
-}
-
-bool ReadCommand(int fd, int *ArgCountResult, char **ArgResult) {
-	char *LastArgPos, *temp, *Line;
-
-	Line= Readline(fd);
-	if (!Line) return false;
-	DEBUGMSG(("%s\n", Line));
 	*ArgCountResult= 0;
 	LastArgPos= NULL;
 	temp= strtok(Line, " \t");
@@ -66,7 +30,35 @@ bool ReadCommand(int fd, int *ArgCountResult, char **ArgResult) {
 		LastArgPos= temp;
 		temp= strtok(NULL, " \t");
 	}
-	return true;
+	return ArgCountResult > 0;
+}
+
+int ProcessCommand(char **TokenPointers, int TokenCount) {
+	const CmdHashEntry *Cmd;
+	int Result;
+	
+	Cmd= GetCmd(TokenPointers[0]);
+	if (Cmd != NULL) {
+		Result= Cmd->Value(TokenCount-1, TokenPointers+1); // run command
+		switch (Result) {
+		case 0:
+//			while (true) {
+//				Result= glGetError();
+//					if (Result == GL_NO_ERROR || Result == 0) break;
+//				fprintf(stderr, "GL error while executing %s: %d.\n", TokenPointers[0], Result);
+//			}
+			return P_SUCCESS;
+		case ERR_PARAMCOUNT:
+			fprintf(stderr, "Wrong number of parameters for %s\n", TokenPointers[0]); break;
+		case ERR_PARAMPARSE:
+			fprintf(stderr, "Cannot parse parameters for %s\n", TokenPointers[0]); break;
+		}
+		return P_CMD_ERR;
+	}
+	else {
+		fprintf(stderr, "Unknown command: \"%s\".\n", TokenPointers[0]);
+		return P_NOT_FOUND;
+	}
 }
 
 char ReadBuffer[READ_BUFFER_SIZE];
@@ -84,7 +76,7 @@ void ShiftBuffer() {
 	LineStart= ReadBuffer;
 }
 
-char* Readline(int fd) {
+char* ReadLine(int fd) {
 	int red;
 
 	LineStart= Pos;
@@ -110,8 +102,11 @@ char* Readline(int fd) {
 			if (red <= 0) {
 				if (red == 0)
 					DEBUGMSG(("Read 0 bytes.\n"));
-				else
-					perror("read line");
+				else {
+#ifdef DEBUG
+					perror("read");
+#endif
+				}
 				return NULL;
 			}
 			DataPos+= red;

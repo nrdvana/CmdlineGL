@@ -8,6 +8,8 @@
 #define P_NOT_FOUND 2
 #define P_EOF 3
 
-int ProcessFD(int fd);
+char* ReadLine(int fd);
+bool ParseLine(char *Line, int *ArgCountResult, char **ArgResult);
+int ProcessCommand(char **TokenPointers, int TokenCount);
 
 #endif
