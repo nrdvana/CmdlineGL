@@ -27,10 +27,14 @@ void WatchSocket(int id);
 
 long microseconds(struct timeval *time);
 
-void display(void) {}
-void mouse(int btn, int state, int x, int y) {}
-void mouseMotion(int x, int y) {}
-void myReshape(int w, int h);
+void handleResize(int w, int h);
+void display() {}
+void mouse(int btn, int state, int x, int y);
+void mouseMotion(int x, int y);
+void asciiKeyDown(unsigned char key, int x, int y);
+void asciiKeyUp(unsigned char key, int x, int y);
+void specialKeyDown(int key, int x, int y);
+void specialKeyUp(int key, int x, int y);
 
 char Buffer[1024];
 int InputFD= 0;
@@ -60,12 +64,18 @@ int main(int Argc, char**Args) {
 	glutInit(&Argc, Args);
 	glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGB | GLUT_DEPTH);
 	glutCreateWindow("CmdlineGL");
+	glutIgnoreKeyRepeat(GLUT_KEY_REPEAT_OFF);
 
 	DEBUGMSG(("Assigning functions\n"));
-	glutReshapeFunc(myReshape);
-	glutDisplayFunc(display);
+	glutReshapeFunc(handleResize);
+	glutIdleFunc(CheckInput);
 	glutMouseFunc(mouse);
 	glutMotionFunc(mouseMotion);
+	glutKeyboardFunc(asciiKeyDown);
+	glutKeyboardUpFunc(asciiKeyUp);
+	glutSpecialFunc(specialKeyDown);
+	glutSpecialUpFunc(specialKeyUp);
+	glutDisplayFunc(display);
 
 	DEBUGMSG(("Setting timer\n"));
 	glutTimerFunc(1, WatchSocket, 0);
@@ -170,6 +180,19 @@ PUBLISHED(sync,DoSync) {
 		usleep(target - t);
 }
 
+PUBLISHED(repeat,DoRepeat) {
+	int i;
+	if (argc == 0)
+		printf("\n");
+	else {
+		for (i=0; i<argc-1; i++)
+			printf("%s ", argv[i]);
+		printf("%s\n", argv[i]);
+	}
+	fflush(stdout);
+	return 0;
+}
+
 bool CreateListenSocket(char *SocketName, int *ListenSocket) {
 	int sock;
 	struct sockaddr_un Addr;
@@ -196,7 +219,7 @@ bool CreateListenSocket(char *SocketName, int *ListenSocket) {
 	*ListenSocket= sock;
 }
 
-void myReshape(int w, int h) {
+void handleResize(int w, int h) {
 	// Use the entire window for rendering.
 	glViewport(0, 0, w, h);
 	// Recalculate the projection matrix.
@@ -228,5 +251,57 @@ void myReshape(int w, int h) {
 
 	glMatrixMode(GL_MODELVIEW);
 }
-
+void mouse(int btn, int state, int x, int y) {
+	const char* BtnName;
+	mouseMotion(x,y);
+	switch (btn) {
+		case GLUT_LEFT_BUTTON: BtnName= "MOUSE_LEFT"; break;
+ 		case GLUT_RIGHT_BUTTON: BtnName= "MOUSE_RIGHT"; break;
+		case GLUT_MIDDLE_BUTTON: BtnName= "MOUSE_MIDDLE"; break;
+		default: BtnName= "MOUSE_UNDEFINED";
+	}
+	printf("%c%s\n", (state == GLUT_UP)? '-':'+', BtnName);
+}
+void mouseMotion(int x, int y) {
+	printf("@%i,%i\n", x, y);
+}
+void asciiKeyDown(unsigned char key, int x, int y) {
+	printf("+%c\n", key);
+}
+void asciiKeyUp(unsigned char key, int x, int y) {
+	printf("-%c\n", key);
+}
+const char* GetSpecialKeyName(int key);
+void specialKeyDown(int key, int x, int y) {
+	printf("+%s\n", GetSpecialKeyName(key));
+}
+void specialKeyUp(int key, int x, int y) {
+	printf("-%s\n", GetSpecialKeyName(key));
+}
+const char* GetSpecialKeyName(int key) {
+	switch (key) {
+	case GLUT_KEY_F1 : return "F1";
+	case GLUT_KEY_F2 : return "F2";
+	case GLUT_KEY_F3 : return "F3";
+	case GLUT_KEY_F4 : return "F4";
+	case GLUT_KEY_F5 : return "F5";
+	case GLUT_KEY_F6 : return "F6";
+	case GLUT_KEY_F7 : return "F7";
+	case GLUT_KEY_F8 : return "F8";
+	case GLUT_KEY_F9 : return "F9";
+	case GLUT_KEY_F10: return "F10";
+	case GLUT_KEY_F11: return "F11";
+	case GLUT_KEY_F12: return "F12";
+	case GLUT_KEY_LEFT     : return "LEFT";
+	case GLUT_KEY_RIGHT    : return "RIGHT";
+	case GLUT_KEY_UP       : return "UP";
+	case GLUT_KEY_DOWN     : return "DOWN";
+	case GLUT_KEY_PAGE_UP  : return "PAGEUP";
+	case GLUT_KEY_PAGE_DOWN: return "PAGEDOWN";
+	case GLUT_KEY_HOME     : return "HOME";
+	case GLUT_KEY_END      : return "END";
+	case GLUT_KEY_INSERT   : return "INSERT";
+	default: return "KEY_UNKNOWN";
+	}
+}
 
