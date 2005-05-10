@@ -1,14 +1,18 @@
 all: build
 
-build: CmdlineGL CmdlineGLClient
+build: CmdlineGL ShellBindings CmdlineGL_BashBindings
 
 CmdlineGL: SymbolHash.o Server.o ProcessInput.o ParseGL.o Global.o bin Contained_RBTree.o
 	gcc -o bin/CmdlineGL -lGL -lGLU -lglut SymbolHash.o Server.o ProcessInput.o Global.o ParseGL.o Contained_RBTree.o
 
-CmdlineGLClient: Client.c Global.o bin
-	gcc -o bin/CmdlineGLClient Client.c Global.o && \
+ShellBindings: bin CmdlineGLClient *.h
+	chmod a+rx CmdlineGLClient \
+	&& sed -rn '/^PUBLISHED\(([^,]*),.*/s//\1/p' *.h \
+	 | while read fn; do ln -f CmdlineGLClient bin/$$fn; done
+
+CmdlineGL_BashBindings: bin *.h
 	sed -rn '/^PUBLISHED\(([^,]*),.*/s//\1/p' *.h \
-	 | while read fn; do ln -fs CmdlineGLClient bin/$$fn; done
+	 | while read fn; do echo "$$fn() { echo \"$$fn \$$@\"; }"; done > bin/CmdlineGL_BashBindings
 
 Server.o: Server.c Server.h Global.h
 	gcc -c Server.c
@@ -56,3 +60,4 @@ clean:
 	rm *.class
 	rm *.o
 	rm bin/*
+
