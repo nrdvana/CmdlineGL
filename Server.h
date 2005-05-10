@@ -6,6 +6,6 @@
 PUBLISHED(quit,DoQuit);
 PUBLISHED(exit,DoQuit);
 PUBLISHED(sync,DoSync);
-PUBLISHED(repeat,DoRepeat);
+PUBLISHED(echo,DoEcho);
 
 #endif

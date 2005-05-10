@@ -169,7 +169,7 @@ PUBLISHED(sync,DoSync) {
 		usleep(target - t);
 }
 
-PUBLISHED(repeat,DoRepeat) {
+PUBLISHED(echo,DoEcho) {
 	int i;
 	if (argc == 0)
 		printf("\n");
