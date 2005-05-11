@@ -7,14 +7,6 @@
 #include "ParseGL.h"
 #include "Server.h"
 
-int CalcHash(const char* String) {
-	int Result= 0;
-	const char *Pos= String;
-	while (*Pos)
-		Result= ((Result<<1) + (Result ^ *Pos++));
-	return Result;
-}
-
 #include "CmdHash.autogen.c"
 
 const CmdHashEntry *GetCmd(const char *Key) {

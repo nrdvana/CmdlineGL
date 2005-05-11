@@ -3,7 +3,7 @@ all: build
 build: CmdlineGL ShellBindings CmdlineGL_BashBindings
 
 CmdlineGL: SymbolHash.o Server.o ProcessInput.o ParseGL.o Global.o bin Contained_RBTree.o
-	gcc -o bin/CmdlineGL -lGL -lGLU -lglut SymbolHash.o Server.o ProcessInput.o Global.o ParseGL.o Contained_RBTree.o
+	gcc -o bin/CmdlineGL -lGL -lGLU -lglut SymbolHash.o Server.o ProcessInput.o Global.o ParseGL.o Contained_RBTree.o HashFunc.o
 
 ShellBindings: bin CmdlineGLClient *.h
 	chmod a+rx CmdlineGLClient \
@@ -25,6 +25,9 @@ Global.o: Global.h
 	
 ProcessInput.o: ProcessInput.c ProcessInput.h Global.h ParseGL.h
 	gcc -c ProcessInput.c
+
+HashFunc.o: HashFunc.c
+	gcc -c HashFunc.c
 
 SymbolHash.o: SymbolHash.h SymbolHash.c CmdHash.autogen.c IntConstHash.autogen.c
 	gcc -c SymbolHash.c
