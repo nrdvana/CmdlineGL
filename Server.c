@@ -150,11 +150,11 @@ long microseconds(struct timeval *time) {
 	return time->tv_usec + ((long) time->tv_sec)*1000000;
 }
 
-PUBLISHED(exit,DoQuit) {
+PUBLISHED(cglExit,DoQuit) {
 	Shutdown= true;
 }
 
-PUBLISHED(sync,DoSync) {
+PUBLISHED(cglSync,DoSync) {
 	struct timeval curtime;
 	long target, t;
 	char *endptr;
@@ -169,7 +169,7 @@ PUBLISHED(sync,DoSync) {
 		usleep(target - t);
 }
 
-PUBLISHED(echo,DoEcho) {
+PUBLISHED(cglEcho,DoEcho) {
 	int i;
 	if (argc == 0)
 		printf("\n");

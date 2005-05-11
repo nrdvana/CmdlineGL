@@ -3,9 +3,9 @@
 
 #include "Global.h"
 
-PUBLISHED(quit,DoQuit);
-PUBLISHED(exit,DoQuit);
-PUBLISHED(sync,DoSync);
-PUBLISHED(echo,DoEcho);
+PUBLISHED(cglQuit,DoQuit);
+PUBLISHED(cglExit,DoQuit);
+PUBLISHED(cglSync,DoSync);
+PUBLISHED(cglEcho,DoEcho);
 
 #endif
