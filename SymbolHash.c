@@ -1,13 +1,7 @@
-#include <GL/gl.h>
-#include <GL/glu.h>
-#include <GL/glut.h>
-
 #include "Global.h"
 #include "SymbolHash.h"
-#include "ParseGL.h"
-#include "Server.h"
 
-#include "CmdHash.autogen.c"
+#include "HashFunc.c"
 
 const CmdHashEntry *GetCmd(const char *Key) {
 	int code, i;
@@ -19,8 +13,6 @@ const CmdHashEntry *GetCmd(const char *Key) {
 	}
 	return (CmdHashEntry*) 0;
 }
-
-#include "IntConstHash.autogen.c"
 
 const IntConstHashEntry *GetIntConst(const char *Key) {
 	int code, i;
@@ -93,3 +85,4 @@ SymbVarEntry *CreateSymbVar(const char *Name) {
 	RBTree_Add(&SymbVarTree.RootSentinel, &(Entry->node), SymbVar_inorder_func);
 	return Entry;
 }
+

@@ -31,4 +31,13 @@ const IntConstHashEntry *GetIntConst(const char *Key);
 SymbVarEntry *CreateSymbVar(const char *Name);
 const SymbVarEntry *GetSymbVar(const char *Name);
 
+#define CmdLookupSize 64
+struct CmdLookupBucket { int EntryCount; CmdHashEntry *Entries; };
+extern const struct CmdLookupBucket CmdLookup[CmdLookupSize];
+
+#define IntConstLookupSize 1024
+struct IntConstLookupBucket { int EntryCount; IntConstHashEntry *Entries; };
+extern const struct IntConstLookupBucket IntConstLookup[IntConstLookupSize];
+
 #endif
+
