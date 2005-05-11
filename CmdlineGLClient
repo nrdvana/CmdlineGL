@@ -1,6 +1,6 @@
 #!/bin/bash
 if [ "z$CMDLINEGL" = "z" ]; then
-	echo "${0##.*/} $@"
+	echo "${0##*/} $@"
 else
-	echo "${0##.*/} $@" >> $CMDLINEGL_PIPE
+	echo "${0##*/} $@" >> $CMDLINEGL_PIPE
 fi
