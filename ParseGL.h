@@ -9,6 +9,7 @@
 PUBLISHED(glMatrixMode, DoMatrixMode);
 PUBLISHED(glEnable, DoEnable);
 PUBLISHED(glDisable, DoDisable);
+PUBLISHED(glHint, DoHint);
 PUBLISHED(glClear, DoClear);
 PUBLISHED(glClearColor, DoClearColor);
 PUBLISHED(glClearDepth, DoClearDepth);
@@ -33,6 +34,7 @@ PUBLISHED(glColor, DoColor);
 //
 PUBLISHED(glLight, DoLight);
 PUBLISHED(glLightModel, DoLightModel);
+PUBLISHED(glShadeModel, DoShadeModel);
 PUBLISHED(glMaterial, DoMaterial);
 PUBLISHED(glColorMaterial, DoColorMaterial);
 
@@ -66,10 +68,17 @@ PUBLISHED(glEndList, DoEndList);
 PUBLISHED(glCallList, DoCallList);
 
 //----------------------------------------------------------------------------
-// Glut Functions
+// glu Functions
 //
-PUBLISHED(glutSwapBuffers, DoSwapBuffers);
+PUBLISHED(gluNewQuadric, DoNewQuadric);
+PUBLISHED(gluQuadricDrawStyle, DoQuadricDrawStyle);
 PUBLISHED(gluCylinder, DoCylinder);
 PUBLISHED(gluSphere, DoSphere);
+
+//----------------------------------------------------------------------------
+// Glut Functions
+//
+PUBLISHED(glutIgnoreKeyRepeat, DoIgnoreKeyRepeat);
+PUBLISHED(glutSwapBuffers, DoSwapBuffers);
 
 #endif

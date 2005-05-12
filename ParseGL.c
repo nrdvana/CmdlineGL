@@ -54,6 +54,12 @@ PUBLISHED(glDisable, DoDisable) {
 	glDisable(iParams[0]);
 	return 0;
 }
+PUBLISHED(glHint, DoHint) {
+	if (argc != 2) return ERR_PARAMCOUNT;
+	if (!ScanParams("ii", argv)) return ERR_PARAMPARSE;
+	glHint(iParams[0], iParams[1]);
+	return 0;
+}
 PUBLISHED(glClear, DoClear) {
 	if (argc != 1) return ERR_PARAMCOUNT;
 	if (!ScanParams("i", argv)) return ERR_PARAMPARSE;
@@ -174,6 +180,12 @@ PUBLISHED(glLightModel, DoLightModel) {
 	else return ERR_PARAMCOUNT;
 	return 0;
 }
+PUBLISHED(glShadeModel, DoShadeModel) {
+	if (argc != 1) return ERR_PARAMCOUNT;
+	if (!ScanParams("i", argv)) return ERR_PARAMPARSE;
+	glShadeModel(iParams[0]);
+	return 0;
+}
 PUBLISHED(glMaterial, DoMaterial) {
 	const int FIXED_PARAMS= 2;
 	if (argc > FIXED_PARAMS && argc < MAX_GL_PARAMS) {
@@ -291,27 +303,45 @@ PUBLISHED(glCallList, DoCallList) {
 }
 
 //----------------------------------------------------------------------------
-// Glut Functions
-//
-PUBLISHED(glutSwapBuffers, DoSwapBuffers) {
-	if (argc != 0) return ERR_PARAMCOUNT;
-	glutSwapBuffers();
-	return 0;
-}
-
-//----------------------------------------------------------------------------
 // Glu Functions
 //
+PUBLISHED(gluNewQuadric, DoNewQuadric) {
+	if (argc != 1) return ERR_PARAMCOUNT;
+	if (!ScanParams("Q", argv)) return ERR_PARAMPARSE;
+	// nothing to do- scan params already created it.
+	return 0;
+}
+PUBLISHED(gluQuadricDrawStyle, DoQuadricDrawStyle) {
+	if (argc != 2) return ERR_PARAMCOUNT;
+	if (!ScanParams("qi", argv)) return ERR_PARAMPARSE;
+	gluQuadricDrawStyle(quadricParams[0], iParams[0]);
+	return 0;
+}
 PUBLISHED(gluCylinder, DoCylinder) {
 	if (argc != 6) return ERR_PARAMCOUNT;
-	if (!ScanParams("Qdddii", argv)) return ERR_PARAMPARSE;
-	gluCylinder(quadricParams[0], dParams[0], dParams[1], dParams[2], iParams[0], iParams[2]);
+	if (!ScanParams("qdddii", argv)) return ERR_PARAMPARSE;
+	gluCylinder(quadricParams[0], dParams[0], dParams[1], dParams[2], iParams[0], iParams[1]);
 	return 0;
 }
 PUBLISHED(gluSphere, DoSphere) {
 	if (argc != 4) return ERR_PARAMCOUNT;
-	if (!ScanParams("Qdii", argv)) return ERR_PARAMPARSE;
-	gluSphere(quadricParams[0], dParams[0], iParams[0], iParams[2]);
+	if (!ScanParams("qdii", argv)) return ERR_PARAMPARSE;
+	gluSphere(quadricParams[0], dParams[0], iParams[0], iParams[1]);
+	return 0;
+}
+
+//----------------------------------------------------------------------------
+// Glut Functions
+//
+PUBLISHED(glutIgnoreKeyRepeat, DoIgnoreKeyRepeat) {
+	if (argc != 1) return ERR_PARAMCOUNT;
+	if (!ScanParams("i", argv)) return ERR_PARAMPARSE;
+	glutIgnoreKeyRepeat(iParams[0]);
+	return 0;
+}
+PUBLISHED(glutSwapBuffers, DoSwapBuffers) {
+	if (argc != 0) return ERR_PARAMCOUNT;
+	glutSwapBuffers();
 	return 0;
 }
 
