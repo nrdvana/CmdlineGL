@@ -10,9 +10,6 @@
 #define READ_BUFFER_SIZE 1024
 #define TOK_COUNT_MAX MAX_GL_PARAMS+1
 
-bool ReadCommand(int fd, int *ArgCountResult, char **ArgResult);
-char* Readline(int fd);
-
 int ServerConn;
 struct sockaddr_un ServerAddr;
 void *CmdData;
@@ -31,7 +28,7 @@ bool ParseLine(char *Line, int *ArgCountResult, char **ArgResult) {
 		LastArgPos= temp;
 		temp= strtok(NULL, " \t");
 	}
-	return ArgCountResult > 0;
+	return *ArgCountResult > 0;
 }
 
 int ProcessCommand(char **TokenPointers, int TokenCount) {
@@ -74,7 +71,7 @@ char ReadBuffer[READ_BUFFER_SIZE];
 char const *StopPos= ReadBuffer+READ_BUFFER_SIZE;
 char *Pos= ReadBuffer;
 char *DataPos= ReadBuffer;
-char *LineStart;
+char *LineStart= ReadBuffer;
 
 void ShiftBuffer() {
 	int shift= LineStart - ReadBuffer;
@@ -87,9 +84,9 @@ void ShiftBuffer() {
 
 char* ReadLine(int fd) {
 	int red;
+	char *Result;
 
-	LineStart= Pos;
-	if (Pos != ReadBuffer && DataPos - Pos < 16)
+	if (LineStart != ReadBuffer && DataPos - LineStart < 16)
 		ShiftBuffer();
 	do {
 //		DEBUGMSG(("LineStart = %d, Pos = %d, DataPos = %d, StopPos = %d\n", LineStart-ReadBuffer, Pos-ReadBuffer, DataPos-ReadBuffer, StopPos-ReadBuffer));
@@ -102,7 +99,7 @@ char* ReadLine(int fd) {
 					ShiftBuffer();
 				else {
 					// Full buffer.  Abort, and reset the buffer pointers.
-					DataPos= Pos= ReadBuffer;
+					LineStart= DataPos= Pos= ReadBuffer;
 					fprintf(stderr, "Input line too long\n");
 					return NULL;
 				}
@@ -124,7 +121,9 @@ char* ReadLine(int fd) {
 			Pos++;
 	} while (*Pos != '\n');
 	*Pos++= '\0';
-	return LineStart;
+	Result= LineStart;
+	LineStart= Pos;
+	return Result;
 }
 
 
