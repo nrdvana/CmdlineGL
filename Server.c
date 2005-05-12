@@ -24,6 +24,7 @@ typedef struct {
 void ReadParams(char **args, CmdlineOptions *Options);
 void PrintUsage();
 void CheckInput();
+void DelayedInit(int value);
 
 long microseconds(struct timeval *time);
 
@@ -82,7 +83,6 @@ int main(int Argc, char**Args) {
 
 	DEBUGMSG(("Assigning functions\n"));
 	glutReshapeFunc(handleResize);
-	glutIdleFunc(CheckInput);
 	glutMouseFunc(mouse);
 	glutMotionFunc(mouseMotion);
 	glutKeyboardFunc(asciiKeyDown);
@@ -97,9 +97,16 @@ int main(int Argc, char**Args) {
 	DEBUGMSG(("Recording time\n"));
 	gettimeofday(&curtime, NULL);
 	StartTime= microseconds(&curtime);
+
+	DEBUGMSG(("Scheduling delayed initialization (bug workaround)\n"));
+	glutTimerFunc(1, DelayedInit, 0);
 	
 	DEBUGMSG(("Entering glut loop\n"));
 	glutMainLoop();
+}
+
+void DelayedInit(int value) {
+	glutIdleFunc(CheckInput);
 }
 
 void ReadParams(char **Args, CmdlineOptions *Options) {
