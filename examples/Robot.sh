@@ -367,8 +367,6 @@ Repaint() {
 		glPopMatrix
 	glPopMatrix
 
-	glPopMatrix
-
 	# Flush any remaining drawing commands and flip the buffers.
 	glFlush
 	glutSwapBuffers
@@ -386,9 +384,10 @@ SetJoints() {
 	local Progress=$3;
 	local Angle;
 	for i in 0 1 2 3 4 5 6 7 8 9 10 11 12; do
-		eval "Angle=\$(( \${$FromAng[$i]}*10 + ( \${$ToAng[$i]} - \${$FromAng[$i]} ) * $Progress / 10))";
+		eval "Angle=\$(( \${$FromAng[$i]}*10 + ( \${$ToAng[$i]} - \${$FromAng[$i]} ) * $Progress/10))";
+		if [ "${#Angle}" -lt 2 ]; then Angle=0$Angle; fi
 		let dec_pos=${#Angle}-1;
-		Robot_Joints[$i]=$(($Angle / 10)).${Angle:$dec_pos:1};
+		Robot_Joints[$i]=${Angle:0:$dec_pos}.${Angle:$dec_pos:1};
 	done
 }
 
@@ -400,7 +399,7 @@ SetJoints() {
 #
 Animate() {
 	if [ -n "$Robot_Animate" ]; then
-		let Robot_MoveProgress+=1;
+		let Robot_MoveProgress+=3;
 		if [ $Robot_MoveProgress -gt 400 ]; then
  			let Robot_MoveProgress-=400;
 		fi

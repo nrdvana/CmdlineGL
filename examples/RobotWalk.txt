@@ -1,0 +1,7708 @@
+glEnable GL_NORMALIZE
+glEnable GL_DEPTH_TEST
+glEnable GL_LIGHTING
+glLight GL_LIGHT0 GL_AMBIENT 0.8 0.8 0.8 1.0
+glLight GL_LIGHT0 GL_DIFFUSE 0.8 0.8 0.8 1.0
+glLight GL_LIGHT0 GL_SPECULAR 0.8 0.8 0.8 1.0
+glLight GL_LIGHT0 GL_POSITION 10 10 10 1
+glEnable GL_LIGHT0
+gluNewQuadric quadric
+gluQuadricDrawStyle quadric GLU_FILL
+glNewList head GL_COMPILE
+glPushMatrix 
+glScale 1.00 1.00 1.00
+gluSphere quadric 1.0 10.0 10.0
+glPopMatrix 
+glEndList 
+glNewList torso GL_COMPILE
+glPushMatrix 
+glTranslate 0.0 4.80 0.0
+glRotate 90.0 1.0 0.0 0.0
+gluCylinder quadric 0.0 0.90 0.0 20.0 1.0
+gluCylinder quadric 0.90 0.90 00003.840 20.0 1.0
+glTranslate 0.0 0.0 00003.840
+gluCylinder quadric 0.90 0.0 0.0 20.0 1.0
+glTranslate 0.0 0.0 -00003.840
+glTranslate 0.0 0.0 00003.840
+gluCylinder quadric 0.0 0.90 0.0 20.0 1.0
+gluCylinder quadric 0.90 0000.35 0000.960 20.0 1.0
+glTranslate 0.0 0.0 0000.960
+gluCylinder quadric 0000.35 0.0 0.0 20.0 1.0
+glTranslate 0.0 0.0 -0000.960
+glPopMatrix 
+glPushMatrix 
+glTranslate -00002.50 00004.0320 0.0
+glRotate 90.0 0.0 1.0 0.0
+gluCylinder quadric 0.0 0.70 0.0 20.0 1.0
+gluCylinder quadric 0.70 0.70 5.00 20.0 1.0
+glTranslate 0.0 0.0 5.00
+gluCylinder quadric 0.70 0.0 0.0 20.0 1.0
+glTranslate 0.0 0.0 -5.00
+glPopMatrix 
+glEndList 
+glNewList lower_torso GL_COMPILE
+glPushMatrix 
+glTranslate 0.0 -0000.630 0.0
+glRotate 90.0 0.0 1.0 0.0
+glTranslate 0.0 0.0 -0000.35
+gluCylinder quadric 0.0 0.90 0.0 20.0 1.0
+gluCylinder quadric 0.90 0.90 0000.70 20.0 1.0
+glTranslate 0.0 0.0 0000.70
+gluCylinder quadric 0.90 0.0 0.0 20.0 1.0
+glTranslate 0.0 0.0 -0000.70
+glTranslate 0.0 0.0 -0000.75
+gluCylinder quadric 0.35 0.35 2.20 10.0 1.0
+glPopMatrix 
+glEndList 
+glNewList upper_arm GL_COMPILE
+glPushMatrix 
+glRotate 90.0 1.0 0.0 0.0
+gluCylinder quadric 0.40 0.30 3.00 20.0 1.0
+glPopMatrix 
+glEndList 
+glNewList lower_arm GL_COMPILE
+glPushMatrix 
+glRotate 90.0 0.0 1.0 0.0
+glTranslate 0.0 0.0 -0000.360
+gluCylinder quadric 0.0 0000.360 0.0 20.0 1.0
+gluCylinder quadric 0000.360 0000.360 0000.720 20.0 1.0
+glTranslate 0.0 0.0 0000.720
+gluCylinder quadric 0000.360 0.0 0.0 20.0 1.0
+glTranslate 0.0 0.0 -0000.720
+glPopMatrix 
+glPushMatrix 
+glRotate 90.0 1.0 0.0 0.0
+gluCylinder quadric 0.0 0.30 0.0 20.0 1.0
+gluCylinder quadric 0.30 0.30 2.80 20.0 1.0
+glTranslate 0.0 0.0 2.80
+gluCylinder quadric 0.30 0.0 0.0 20.0 1.0
+glTranslate 0.0 0.0 -2.80
+glPopMatrix 
+glEndList 
+glNewList upper_leg GL_COMPILE
+glPushMatrix 
+glTranslate 0.0 0.55 0.0
+glRotate 90.0 1.0 0.0 0.0
+gluCylinder quadric 0.0 0.55 0.0 20.0 1.0
+gluCylinder quadric 0.55 0.45 00003.95 20.0 1.0
+glTranslate 0.0 0.0 00003.95
+gluCylinder quadric 0.45 0.0 0.0 20.0 1.0
+glTranslate 0.0 0.0 -00003.95
+glPopMatrix 
+glEndList 
+glNewList lower_leg GL_COMPILE
+glPushMatrix 
+glRotate 90.0 0.0 1.0 0.0
+glTranslate 0.0 0.0 -0000.540
+gluCylinder quadric 0.0 0000.540 0.0 20.0 1.0
+gluCylinder quadric 0000.540 0000.540 00001.080 20.0 1.0
+glTranslate 0.0 0.0 00001.080
+gluCylinder quadric 0000.540 0.0 0.0 20.0 1.0
+glTranslate 0.0 0.0 -00001.080
+glPopMatrix 
+glPushMatrix 
+glRotate 90.0 1.0 0.0 0.0
+gluCylinder quadric 0.45 0.45 3.00 20.0 1.0
+glPopMatrix 
+glEndList 
+glNewList foot GL_COMPILE
+glPushMatrix 
+glRotate 90.0 0.0 1.0 0.0
+glTranslate 0.0 0.0 -0.45
+gluCylinder quadric 0.0 0.45 0.0 20.0 1.0
+gluCylinder quadric 0.45 0.45 0000.90 20.0 1.0
+glTranslate 0.0 0.0 0000.90
+gluCylinder quadric 0.45 0.0 0.0 20.0 1.0
+glTranslate 0.0 0.0 -0000.90
+glPopMatrix 
+glPushMatrix 
+glTranslate 0.0 -0000.135 0.0
+glScale 1.0 0.3 1.0
+gluCylinder quadric 0.0 0000.360 0.0 20.0 1.0
+gluCylinder quadric 0000.360 0000.540 1.60 20.0 1.0
+glTranslate 0.0 0.0 1.60
+gluCylinder quadric 0000.540 0.0 0.0 20.0 1.0
+glTranslate 0.0 0.0 -1.60
+glPopMatrix 
+glEndList 
+glClear GL_COLOR_BUFFER_BIT
+glClear GL_DEPTH_BUFFER_BIT
+glLoadIdentity 
+glTranslate 0.0 0.0 -11.0
+glRotate 0.0 1.0 0.0 0.0
+glRotate 0.0 0.0 1.0 0.0
+glPushMatrix 
+glTranslate 0.0 00005.80 0.0
+glRotate 0.0 1.0 0.0 0.0
+glRotate 0.0 0.0 1.0 0.0
+glCallList head
+glPopMatrix 
+glCallList torso
+glPushMatrix 
+glTranslate 00002.10 00004.0320 0.0
+glRotate 16.4 1.0 0.0 0.0
+glCallList upper_arm
+glTranslate 0.0 -3.00 0.0
+glRotate -44.7 1.0 0.0 0.0
+glCallList lower_arm
+glPopMatrix 
+glPushMatrix 
+glTranslate -00002.10 00004.0320 0.0
+glRotate 15.6 1.0 0.0 0.0
+glCallList upper_arm
+glTranslate 0.0 -3.00 0.0
+glRotate -45.3 1.0 0.0 0.0
+glCallList lower_arm
+glPopMatrix 
+glPushMatrix 
+glRotate -.2 0.0 1.0 0.0
+glCallList lower_torso
+glPushMatrix 
+glTranslate 00001.10 -0000.630 0.0
+glRotate -21.0 1.0 0.0 0.0
+glCallList upper_leg
+glTranslate 0.0 -3.40 0.0
+glRotate 54.8 1.0 0.0 0.0
+glCallList lower_leg
+glTranslate 0.0 -3.00 0.0
+glRotate -15.1 1.0 0.0 0.0
+glCallList foot
+glPopMatrix 
+glPushMatrix 
+glTranslate -00001.10 -0000.630 0.0
+glRotate 8.3 1.0 0.0 0.0
+glCallList upper_leg
+glTranslate 0.0 -3.40 0.0
+glRotate 8.4 1.0 0.0 0.0
+glCallList lower_leg
+glTranslate 0.0 -3.00 0.0
+glRotate -4.2 1.0 0.0 0.0
+glCallList foot
+glPopMatrix 
+glPopMatrix 
+glFlush 
+glutSwapBuffers 
+glClear GL_COLOR_BUFFER_BIT
+glClear GL_DEPTH_BUFFER_BIT
+glLoadIdentity 
+glTranslate 0.0 0.0 -11.0
+glRotate 0.0 1.0 0.0 0.0
+glRotate 0.0 0.0 1.0 0.0
+glPushMatrix 
+glTranslate 0.0 00005.80 0.0
+glRotate 0.0 1.0 0.0 0.0
+glRotate 0.0 0.0 1.0 0.0
+glCallList head
+glPopMatrix 
+glCallList torso
+glPushMatrix 
+glTranslate 00002.10 00004.0320 0.0
+glRotate 16.9 1.0 0.0 0.0
+glCallList upper_arm
+glTranslate 0.0 -3.00 0.0
+glRotate -44.3 1.0 0.0 0.0
+glCallList lower_arm
+glPopMatrix 
+glPushMatrix 
+glTranslate -00002.10 00004.0320 0.0
+glRotate 15.1 1.0 0.0 0.0
+glCallList upper_arm
+glTranslate 0.0 -3.00 0.0
+glRotate -45.6 1.0 0.0 0.0
+glCallList lower_arm
+glPopMatrix 
+glPushMatrix 
+glRotate -.4 0.0 1.0 0.0
+glCallList lower_torso
+glPushMatrix 
+glTranslate 00001.10 -0000.630 0.0
+glRotate -21.1 1.0 0.0 0.0
+glCallList upper_leg
+glTranslate 0.0 -3.40 0.0
+glRotate 53.6 1.0 0.0 0.0
+glCallList lower_leg
+glTranslate 0.0 -3.00 0.0
+glRotate -14.1 1.0 0.0 0.0
+glCallList foot
+glPopMatrix 
+glPushMatrix 
+glTranslate -00001.10 -0000.630 0.0
+glRotate 8.7 1.0 0.0 0.0
+glCallList upper_leg
+glTranslate 0.0 -3.40 0.0
+glRotate 8.9 1.0 0.0 0.0
+glCallList lower_leg
+glTranslate 0.0 -3.00 0.0
+glRotate -3.3 1.0 0.0 0.0
+glCallList foot
+glPopMatrix 
+glPopMatrix 
+glFlush 
+glutSwapBuffers 
+glClear GL_COLOR_BUFFER_BIT
+glClear GL_DEPTH_BUFFER_BIT
+glLoadIdentity 
+glTranslate 0.0 0.0 -11.0
+glRotate 0.0 1.0 0.0 0.0
+glRotate 0.0 0.0 1.0 0.0
+glPushMatrix 
+glTranslate 0.0 00005.80 0.0
+glRotate 0.0 1.0 0.0 0.0
+glRotate 0.0 0.0 1.0 0.0
+glCallList head
+glPopMatrix 
+glCallList torso
+glPushMatrix 
+glTranslate 00002.10 00004.0320 0.0
+glRotate 17.4 1.0 0.0 0.0
+glCallList upper_arm
+glTranslate 0.0 -3.00 0.0
+glRotate -43.9 1.0 0.0 0.0
+glCallList lower_arm
+glPopMatrix 
+glPushMatrix 
+glTranslate -00002.10 00004.0320 0.0
+glRotate 14.6 1.0 0.0 0.0
+glCallList upper_arm
+glTranslate 0.0 -3.00 0.0
+glRotate -45.9 1.0 0.0 0.0
+glCallList lower_arm
+glPopMatrix 
+glPushMatrix 
+glRotate -.6 0.0 1.0 0.0
+glCallList lower_torso
+glPushMatrix 
+glTranslate 00001.10 -0000.630 0.0
+glRotate -21.2 1.0 0.0 0.0
+glCallList upper_leg
+glTranslate 0.0 -3.40 0.0
+glRotate 52.4 1.0 0.0 0.0
+glCallList lower_leg
+glTranslate 0.0 -3.00 0.0
+glRotate -13.2 1.0 0.0 0.0
+glCallList foot
+glPopMatrix 
+glPushMatrix 
+glTranslate -00001.10 -0000.630 0.0
+glRotate 9.1 1.0 0.0 0.0
+glCallList upper_leg
+glTranslate 0.0 -3.40 0.0
+glRotate 9.4 1.0 0.0 0.0
+glCallList lower_leg
+glTranslate 0.0 -3.00 0.0
+glRotate -2.4 1.0 0.0 0.0
+glCallList foot
+glPopMatrix 
+glPopMatrix 
+glFlush 
+glutSwapBuffers 
+glClear GL_COLOR_BUFFER_BIT
+glClear GL_DEPTH_BUFFER_BIT
+glLoadIdentity 
+glTranslate 0.0 0.0 -11.0
+glRotate 0.0 1.0 0.0 0.0
+glRotate 0.0 0.0 1.0 0.0
+glPushMatrix 
+glTranslate 0.0 00005.80 0.0
+glRotate 0.0 1.0 0.0 0.0
+glRotate 0.0 0.0 1.0 0.0
+glCallList head
+glPopMatrix 
+glCallList torso
+glPushMatrix 
+glTranslate 00002.10 00004.0320 0.0
+glRotate 17.9 1.0 0.0 0.0
+glCallList upper_arm
+glTranslate 0.0 -3.00 0.0
+glRotate -43.5 1.0 0.0 0.0
+glCallList lower_arm
+glPopMatrix 
+glPushMatrix 
+glTranslate -00002.10 00004.0320 0.0
+glRotate 14.1 1.0 0.0 0.0
+glCallList upper_arm
+glTranslate 0.0 -3.00 0.0
+glRotate -46.3 1.0 0.0 0.0
+glCallList lower_arm
+glPopMatrix 
+glPushMatrix 
+glRotate -.8 0.0 1.0 0.0
+glCallList lower_torso
+glPushMatrix 
+glTranslate 00001.10 -0000.630 0.0
+glRotate -21.3 1.0 0.0 0.0
+glCallList upper_leg
+glTranslate 0.0 -3.40 0.0
+glRotate 51.2 1.0 0.0 0.0
+glCallList lower_leg
+glTranslate 0.0 -3.00 0.0
+glRotate -12.2 1.0 0.0 0.0
+glCallList foot
+glPopMatrix 
+glPushMatrix 
+glTranslate -00001.10 -0000.630 0.0
+glRotate 9.5 1.0 0.0 0.0
+glCallList upper_leg
+glTranslate 0.0 -3.40 0.0
+glRotate 9.9 1.0 0.0 0.0
+glCallList lower_leg
+glTranslate 0.0 -3.00 0.0
+glRotate -1.6 1.0 0.0 0.0
+glCallList foot
+glPopMatrix 
+glPopMatrix 
+glFlush 
+glutSwapBuffers 
+glClear GL_COLOR_BUFFER_BIT
+glClear GL_DEPTH_BUFFER_BIT
+glLoadIdentity 
+glTranslate 0.0 0.0 -11.0
+glRotate 0.0 1.0 0.0 0.0
+glRotate 0.0 0.0 1.0 0.0
+glPushMatrix 
+glTranslate 0.0 00005.80 0.0
+glRotate 0.0 1.0 0.0 0.0
+glRotate 0.0 0.0 1.0 0.0
+glCallList head
+glPopMatrix 
+glCallList torso
+glPushMatrix 
+glTranslate 00002.10 00004.0320 0.0
+glRotate 18.4 1.0 0.0 0.0
+glCallList upper_arm
+glTranslate 0.0 -3.00 0.0
+glRotate -43.1 1.0 0.0 0.0
+glCallList lower_arm
+glPopMatrix 
+glPushMatrix 
+glTranslate -00002.10 00004.0320 0.0
+glRotate 13.6 1.0 0.0 0.0
+glCallList upper_arm
+glTranslate 0.0 -3.00 0.0
+glRotate -46.6 1.0 0.0 0.0
+glCallList lower_arm
+glPopMatrix 
+glPushMatrix 
+glRotate -1.0 0.0 1.0 0.0
+glCallList lower_torso
+glPushMatrix 
+glTranslate 00001.10 -0000.630 0.0
+glRotate -21.4 1.0 0.0 0.0
+glCallList upper_leg
+glTranslate 0.0 -3.40 0.0
+glRotate 50.0 1.0 0.0 0.0
+glCallList lower_leg
+glTranslate 0.0 -3.00 0.0
+glRotate -11.2 1.0 0.0 0.0
+glCallList foot
+glPopMatrix 
+glPushMatrix 
+glTranslate -00001.10 -0000.630 0.0
+glRotate 9.9 1.0 0.0 0.0
+glCallList upper_leg
+glTranslate 0.0 -3.40 0.0
+glRotate 10.4 1.0 0.0 0.0
+glCallList lower_leg
+glTranslate 0.0 -3.00 0.0
+glRotate -.7 1.0 0.0 0.0
+glCallList foot
+glPopMatrix 
+glPopMatrix 
+glFlush 
+glutSwapBuffers 
+glClear GL_COLOR_BUFFER_BIT
+glClear GL_DEPTH_BUFFER_BIT
+glLoadIdentity 
+glTranslate 0.0 0.0 -11.0
+glRotate 0.0 1.0 0.0 0.0
+glRotate 0.0 0.0 1.0 0.0
+glPushMatrix 
+glTranslate 0.0 00005.80 0.0
+glRotate 0.0 1.0 0.0 0.0
+glRotate 0.0 0.0 1.0 0.0
+glCallList head
+glPopMatrix 
+glCallList torso
+glPushMatrix 
+glTranslate 00002.10 00004.0320 0.0
+glRotate 18.8 1.0 0.0 0.0
+glCallList upper_arm
+glTranslate 0.0 -3.00 0.0
+glRotate -42.7 1.0 0.0 0.0
+glCallList lower_arm
+glPopMatrix 
+glPushMatrix 
+glTranslate -00002.10 00004.0320 0.0
+glRotate 13.2 1.0 0.0 0.0
+glCallList upper_arm
+glTranslate 0.0 -3.00 0.0
+glRotate -46.9 1.0 0.0 0.0
+glCallList lower_arm
+glPopMatrix 
+glPushMatrix 
+glRotate -1.2 0.0 1.0 0.0
+glCallList lower_torso
+glPushMatrix 
+glTranslate 00001.10 -0000.630 0.0
+glRotate -21.5 1.0 0.0 0.0
+glCallList upper_leg
+glTranslate 0.0 -3.40 0.0
+glRotate 48.8 1.0 0.0 0.0
+glCallList lower_leg
+glTranslate 0.0 -3.00 0.0
+glRotate -10.3 1.0 0.0 0.0
+glCallList foot
+glPopMatrix 
+glPushMatrix 
+glTranslate -00001.10 -0000.630 0.0
+glRotate 10.3 1.0 0.0 0.0
+glCallList upper_leg
+glTranslate 0.0 -3.40 0.0
+glRotate 10.8 1.0 0.0 0.0
+glCallList lower_leg
+glTranslate 0.0 -3.00 0.0
+glRotate 0.2 1.0 0.0 0.0
+glCallList foot
+glPopMatrix 
+glPopMatrix 
+glFlush 
+glutSwapBuffers 
+glClear GL_COLOR_BUFFER_BIT
+glClear GL_DEPTH_BUFFER_BIT
+glLoadIdentity 
+glTranslate 0.0 0.0 -11.0
+glRotate 0.0 1.0 0.0 0.0
+glRotate 0.0 0.0 1.0 0.0
+glPushMatrix 
+glTranslate 0.0 00005.80 0.0
+glRotate 0.0 1.0 0.0 0.0
+glRotate 0.0 0.0 1.0 0.0
+glCallList head
+glPopMatrix 
+glCallList torso
+glPushMatrix 
+glTranslate 00002.10 00004.0320 0.0
+glRotate 19.3 1.0 0.0 0.0
+glCallList upper_arm
+glTranslate 0.0 -3.00 0.0
+glRotate -42.3 1.0 0.0 0.0
+glCallList lower_arm
+glPopMatrix 
+glPushMatrix 
+glTranslate -00002.10 00004.0320 0.0
+glRotate 12.7 1.0 0.0 0.0
+glCallList upper_arm
+glTranslate 0.0 -3.00 0.0
+glRotate -47.3 1.0 0.0 0.0
+glCallList lower_arm
+glPopMatrix 
+glPushMatrix 
+glRotate -1.4 0.0 1.0 0.0
+glCallList lower_torso
+glPushMatrix 
+glTranslate 00001.10 -0000.630 0.0
+glRotate -21.6 1.0 0.0 0.0
+glCallList upper_leg
+glTranslate 0.0 -3.40 0.0
+glRotate 47.6 1.0 0.0 0.0
+glCallList lower_leg
+glTranslate 0.0 -3.00 0.0
+glRotate -9.3 1.0 0.0 0.0
+glCallList foot
+glPopMatrix 
+glPushMatrix 
+glTranslate -00001.10 -0000.630 0.0
+glRotate 10.7 1.0 0.0 0.0
+glCallList upper_leg
+glTranslate 0.0 -3.40 0.0
+glRotate 11.3 1.0 0.0 0.0
+glCallList lower_leg
+glTranslate 0.0 -3.00 0.0
+glRotate 1.0 1.0 0.0 0.0
+glCallList foot
+glPopMatrix 
+glPopMatrix 
+glFlush 
+glutSwapBuffers 
+glClear GL_COLOR_BUFFER_BIT
+glClear GL_DEPTH_BUFFER_BIT
+glLoadIdentity 
+glTranslate 0.0 0.0 -11.0
+glRotate 0.0 1.0 0.0 0.0
+glRotate 0.0 0.0 1.0 0.0
+glPushMatrix 
+glTranslate 0.0 00005.80 0.0
+glRotate 0.0 1.0 0.0 0.0
+glRotate 0.0 0.0 1.0 0.0
+glCallList head
+glPopMatrix 
+glCallList torso
+glPushMatrix 
+glTranslate 00002.10 00004.0320 0.0
+glRotate 19.8 1.0 0.0 0.0
+glCallList upper_arm
+glTranslate 0.0 -3.00 0.0
+glRotate -41.9 1.0 0.0 0.0
+glCallList lower_arm
+glPopMatrix 
+glPushMatrix 
+glTranslate -00002.10 00004.0320 0.0
+glRotate 12.2 1.0 0.0 0.0
+glCallList upper_arm
+glTranslate 0.0 -3.00 0.0
+glRotate -47.6 1.0 0.0 0.0
+glCallList lower_arm
+glPopMatrix 
+glPushMatrix 
+glRotate -1.6 0.0 1.0 0.0
+glCallList lower_torso
+glPushMatrix 
+glTranslate 00001.10 -0000.630 0.0
+glRotate -21.7 1.0 0.0 0.0
+glCallList upper_leg
+glTranslate 0.0 -3.40 0.0
+glRotate 46.4 1.0 0.0 0.0
+glCallList lower_leg
+glTranslate 0.0 -3.00 0.0
+glRotate -8.4 1.0 0.0 0.0
+glCallList foot
+glPopMatrix 
+glPushMatrix 
+glTranslate -00001.10 -0000.630 0.0
+glRotate 11.1 1.0 0.0 0.0
+glCallList upper_leg
+glTranslate 0.0 -3.40 0.0
+glRotate 11.8 1.0 0.0 0.0
+glCallList lower_leg
+glTranslate 0.0 -3.00 0.0
+glRotate 1.9 1.0 0.0 0.0
+glCallList foot
+glPopMatrix 
+glPopMatrix 
+glFlush 
+glutSwapBuffers 
+glClear GL_COLOR_BUFFER_BIT
+glClear GL_DEPTH_BUFFER_BIT
+glLoadIdentity 
+glTranslate 0.0 0.0 -11.0
+glRotate 0.0 1.0 0.0 0.0
+glRotate 0.0 0.0 1.0 0.0
+glPushMatrix 
+glTranslate 0.0 00005.80 0.0
+glRotate 0.0 1.0 0.0 0.0
+glRotate 0.0 0.0 1.0 0.0
+glCallList head
+glPopMatrix 
+glCallList torso
+glPushMatrix 
+glTranslate 00002.10 00004.0320 0.0
+glRotate 20.3 1.0 0.0 0.0
+glCallList upper_arm
+glTranslate 0.0 -3.00 0.0
+glRotate -41.5 1.0 0.0 0.0
+glCallList lower_arm
+glPopMatrix 
+glPushMatrix 
+glTranslate -00002.10 00004.0320 0.0
+glRotate 11.7 1.0 0.0 0.0
+glCallList upper_arm
+glTranslate 0.0 -3.00 0.0
+glRotate -47.9 1.0 0.0 0.0
+glCallList lower_arm
+glPopMatrix 
+glPushMatrix 
+glRotate -1.8 0.0 1.0 0.0
+glCallList lower_torso
+glPushMatrix 
+glTranslate 00001.10 -0000.630 0.0
+glRotate -21.8 1.0 0.0 0.0
+glCallList upper_leg
+glTranslate 0.0 -3.40 0.0
+glRotate 45.2 1.0 0.0 0.0
+glCallList lower_leg
+glTranslate 0.0 -3.00 0.0
+glRotate -7.4 1.0 0.0 0.0
+glCallList foot
+glPopMatrix 
+glPushMatrix 
+glTranslate -00001.10 -0000.630 0.0
+glRotate 11.5 1.0 0.0 0.0
+glCallList upper_leg
+glTranslate 0.0 -3.40 0.0
+glRotate 12.3 1.0 0.0 0.0
+glCallList lower_leg
+glTranslate 0.0 -3.00 0.0
+glRotate 2.8 1.0 0.0 0.0
+glCallList foot
+glPopMatrix 
+glPopMatrix 
+glFlush 
+glutSwapBuffers 
+glClear GL_COLOR_BUFFER_BIT
+glClear GL_DEPTH_BUFFER_BIT
+glLoadIdentity 
+glTranslate 0.0 0.0 -11.0
+glRotate 0.0 1.0 0.0 0.0
+glRotate 0.0 0.0 1.0 0.0
+glPushMatrix 
+glTranslate 0.0 00005.80 0.0
+glRotate 0.0 1.0 0.0 0.0
+glRotate 0.0 0.0 1.0 0.0
+glCallList head
+glPopMatrix 
+glCallList torso
+glPushMatrix 
+glTranslate 00002.10 00004.0320 0.0
+glRotate 20.8 1.0 0.0 0.0
+glCallList upper_arm
+glTranslate 0.0 -3.00 0.0
+glRotate -41.1 1.0 0.0 0.0
+glCallList lower_arm
+glPopMatrix 
+glPushMatrix 
+glTranslate -00002.10 00004.0320 0.0
+glRotate 11.2 1.0 0.0 0.0
+glCallList upper_arm
+glTranslate 0.0 -3.00 0.0
+glRotate -48.3 1.0 0.0 0.0
+glCallList lower_arm
+glPopMatrix 
+glPushMatrix 
+glRotate -2.1 0.0 1.0 0.0
+glCallList lower_torso
+glPushMatrix 
+glTranslate 00001.10 -0000.630 0.0
+glRotate -21.9 1.0 0.0 0.0
+glCallList upper_leg
+glTranslate 0.0 -3.40 0.0
+glRotate 44.0 1.0 0.0 0.0
+glCallList lower_leg
+glTranslate 0.0 -3.00 0.0
+glRotate -6.4 1.0 0.0 0.0
+glCallList foot
+glPopMatrix 
+glPushMatrix 
+glTranslate -00001.10 -0000.630 0.0
+glRotate 11.9 1.0 0.0 0.0
+glCallList upper_leg
+glTranslate 0.0 -3.40 0.0
+glRotate 12.8 1.0 0.0 0.0
+glCallList lower_leg
+glTranslate 0.0 -3.00 0.0
+glRotate 3.7 1.0 0.0 0.0
+glCallList foot
+glPopMatrix 
+glPopMatrix 
+glFlush 
+glutSwapBuffers 
+glClear GL_COLOR_BUFFER_BIT
+glClear GL_DEPTH_BUFFER_BIT
+glLoadIdentity 
+glTranslate 0.0 0.0 -11.0
+glRotate 0.0 1.0 0.0 0.0
+glRotate 0.0 0.0 1.0 0.0
+glPushMatrix 
+glTranslate 0.0 00005.80 0.0
+glRotate 0.0 1.0 0.0 0.0
+glRotate 0.0 0.0 1.0 0.0
+glCallList head
+glPopMatrix 
+glCallList torso
+glPushMatrix 
+glTranslate 00002.10 00004.0320 0.0
+glRotate 21.2 1.0 0.0 0.0
+glCallList upper_arm
+glTranslate 0.0 -3.00 0.0
+glRotate -40.8 1.0 0.0 0.0
+glCallList lower_arm
+glPopMatrix 
+glPushMatrix 
+glTranslate -00002.10 00004.0320 0.0
+glRotate 10.8 1.0 0.0 0.0
+glCallList upper_arm
+glTranslate 0.0 -3.00 0.0
+glRotate -48.6 1.0 0.0 0.0
+glCallList lower_arm
+glPopMatrix 
+glPushMatrix 
+glRotate -2.3 0.0 1.0 0.0
+glCallList lower_torso
+glPushMatrix 
+glTranslate 00001.10 -0000.630 0.0
+glRotate -21.9 1.0 0.0 0.0
+glCallList upper_leg
+glTranslate 0.0 -3.40 0.0
+glRotate 42.8 1.0 0.0 0.0
+glCallList lower_leg
+glTranslate 0.0 -3.00 0.0
+glRotate -5.5 1.0 0.0 0.0
+glCallList foot
+glPopMatrix 
+glPushMatrix 
+glTranslate -00001.10 -0000.630 0.0
+glRotate 12.2 1.0 0.0 0.0
+glCallList upper_leg
+glTranslate 0.0 -3.40 0.0
+glRotate 13.2 1.0 0.0 0.0
+glCallList lower_leg
+glTranslate 0.0 -3.00 0.0
+glRotate 4.5 1.0 0.0 0.0
+glCallList foot
+glPopMatrix 
+glPopMatrix 
+glFlush 
+glutSwapBuffers 
+glClear GL_COLOR_BUFFER_BIT
+glClear GL_DEPTH_BUFFER_BIT
+glLoadIdentity 
+glTranslate 0.0 0.0 -11.0
+glRotate 0.0 1.0 0.0 0.0
+glRotate 0.0 0.0 1.0 0.0
+glPushMatrix 
+glTranslate 0.0 00005.80 0.0
+glRotate 0.0 1.0 0.0 0.0
+glRotate 0.0 0.0 1.0 0.0
+glCallList head
+glPopMatrix 
+glCallList torso
+glPushMatrix 
+glTranslate 00002.10 00004.0320 0.0
+glRotate 21.7 1.0 0.0 0.0
+glCallList upper_arm
+glTranslate 0.0 -3.00 0.0
+glRotate -40.4 1.0 0.0 0.0
+glCallList lower_arm
+glPopMatrix 
+glPushMatrix 
+glTranslate -00002.10 00004.0320 0.0
+glRotate 10.3 1.0 0.0 0.0
+glCallList upper_arm
+glTranslate 0.0 -3.00 0.0
+glRotate -48.9 1.0 0.0 0.0
+glCallList lower_arm
+glPopMatrix 
+glPushMatrix 
+glRotate -2.5 0.0 1.0 0.0
+glCallList lower_torso
+glPushMatrix 
+glTranslate 00001.10 -0000.630 0.0
+glRotate -22.0 1.0 0.0 0.0
+glCallList upper_leg
+glTranslate 0.0 -3.40 0.0
+glRotate 41.6 1.0 0.0 0.0
+glCallList lower_leg
+glTranslate 0.0 -3.00 0.0
+glRotate -4.5 1.0 0.0 0.0
+glCallList foot
+glPopMatrix 
+glPushMatrix 
+glTranslate -00001.10 -0000.630 0.0
+glRotate 12.6 1.0 0.0 0.0
+glCallList upper_leg
+glTranslate 0.0 -3.40 0.0
+glRotate 13.7 1.0 0.0 0.0
+glCallList lower_leg
+glTranslate 0.0 -3.00 0.0
+glRotate 5.4 1.0 0.0 0.0
+glCallList foot
+glPopMatrix 
+glPopMatrix 
+glFlush 
+glutSwapBuffers 
+glClear GL_COLOR_BUFFER_BIT
+glClear GL_DEPTH_BUFFER_BIT
+glLoadIdentity 
+glTranslate 0.0 0.0 -11.0
+glRotate 0.0 1.0 0.0 0.0
+glRotate 0.0 0.0 1.0 0.0
+glPushMatrix 
+glTranslate 0.0 00005.80 0.0
+glRotate 0.0 1.0 0.0 0.0
+glRotate 0.0 0.0 1.0 0.0
+glCallList head
+glPopMatrix 
+glCallList torso
+glPushMatrix 
+glTranslate 00002.10 00004.0320 0.0
+glRotate 22.2 1.0 0.0 0.0
+glCallList upper_arm
+glTranslate 0.0 -3.00 0.0
+glRotate -40.0 1.0 0.0 0.0
+glCallList lower_arm
+glPopMatrix 
+glPushMatrix 
+glTranslate -00002.10 00004.0320 0.0
+glRotate 9.8 1.0 0.0 0.0
+glCallList upper_arm
+glTranslate 0.0 -3.00 0.0
+glRotate -49.2 1.0 0.0 0.0
+glCallList lower_arm
+glPopMatrix 
+glPushMatrix 
+glRotate -2.7 0.0 1.0 0.0
+glCallList lower_torso
+glPushMatrix 
+glTranslate 00001.10 -0000.630 0.0
+glRotate -22.1 1.0 0.0 0.0
+glCallList upper_leg
+glTranslate 0.0 -3.40 0.0
+glRotate 40.4 1.0 0.0 0.0
+glCallList lower_leg
+glTranslate 0.0 -3.00 0.0
+glRotate -3.6 1.0 0.0 0.0
+glCallList foot
+glPopMatrix 
+glPushMatrix 
+glTranslate -00001.10 -0000.630 0.0
+glRotate 13.0 1.0 0.0 0.0
+glCallList upper_leg
+glTranslate 0.0 -3.40 0.0
+glRotate 14.2 1.0 0.0 0.0
+glCallList lower_leg
+glTranslate 0.0 -3.00 0.0
+glRotate 6.3 1.0 0.0 0.0
+glCallList foot
+glPopMatrix 
+glPopMatrix 
+glFlush 
+glutSwapBuffers 
+glClear GL_COLOR_BUFFER_BIT
+glClear GL_DEPTH_BUFFER_BIT
+glLoadIdentity 
+glTranslate 0.0 0.0 -11.0
+glRotate 0.0 1.0 0.0 0.0
+glRotate 0.0 0.0 1.0 0.0
+glPushMatrix 
+glTranslate 0.0 00005.80 0.0
+glRotate 0.0 1.0 0.0 0.0
+glRotate 0.0 0.0 1.0 0.0
+glCallList head
+glPopMatrix 
+glCallList torso
+glPushMatrix 
+glTranslate 00002.10 00004.0320 0.0
+glRotate 22.7 1.0 0.0 0.0
+glCallList upper_arm
+glTranslate 0.0 -3.00 0.0
+glRotate -39.6 1.0 0.0 0.0
+glCallList lower_arm
+glPopMatrix 
+glPushMatrix 
+glTranslate -00002.10 00004.0320 0.0
+glRotate 9.3 1.0 0.0 0.0
+glCallList upper_arm
+glTranslate 0.0 -3.00 0.0
+glRotate -49.6 1.0 0.0 0.0
+glCallList lower_arm
+glPopMatrix 
+glPushMatrix 
+glRotate -2.9 0.0 1.0 0.0
+glCallList lower_torso
+glPushMatrix 
+glTranslate 00001.10 -0000.630 0.0
+glRotate -22.2 1.0 0.0 0.0
+glCallList upper_leg
+glTranslate 0.0 -3.40 0.0
+glRotate 39.2 1.0 0.0 0.0
+glCallList lower_leg
+glTranslate 0.0 -3.00 0.0
+glRotate -2.6 1.0 0.0 0.0
+glCallList foot
+glPopMatrix 
+glPushMatrix 
+glTranslate -00001.10 -0000.630 0.0
+glRotate 13.4 1.0 0.0 0.0
+glCallList upper_leg
+glTranslate 0.0 -3.40 0.0
+glRotate 14.7 1.0 0.0 0.0
+glCallList lower_leg
+glTranslate 0.0 -3.00 0.0
+glRotate 7.1 1.0 0.0 0.0
+glCallList foot
+glPopMatrix 
+glPopMatrix 
+glFlush 
+glutSwapBuffers 
+glClear GL_COLOR_BUFFER_BIT
+glClear GL_DEPTH_BUFFER_BIT
+glLoadIdentity 
+glTranslate 0.0 0.0 -11.0
+glRotate 0.0 1.0 0.0 0.0
+glRotate 0.0 0.0 1.0 0.0
+glPushMatrix 
+glTranslate 0.0 00005.80 0.0
+glRotate 0.0 1.0 0.0 0.0
+glRotate 0.0 0.0 1.0 0.0
+glCallList head
+glPopMatrix 
+glCallList torso
+glPushMatrix 
+glTranslate 00002.10 00004.0320 0.0
+glRotate 23.2 1.0 0.0 0.0
+glCallList upper_arm
+glTranslate 0.0 -3.00 0.0
+glRotate -39.2 1.0 0.0 0.0
+glCallList lower_arm
+glPopMatrix 
+glPushMatrix 
+glTranslate -00002.10 00004.0320 0.0
+glRotate 8.8 1.0 0.0 0.0
+glCallList upper_arm
+glTranslate 0.0 -3.00 0.0
+glRotate -49.9 1.0 0.0 0.0
+glCallList lower_arm
+glPopMatrix 
+glPushMatrix 
+glRotate -3.1 0.0 1.0 0.0
+glCallList lower_torso
+glPushMatrix 
+glTranslate 00001.10 -0000.630 0.0
+glRotate -22.3 1.0 0.0 0.0
+glCallList upper_leg
+glTranslate 0.0 -3.40 0.0
+glRotate 38.0 1.0 0.0 0.0
+glCallList lower_leg
+glTranslate 0.0 -3.00 0.0
+glRotate -1.6 1.0 0.0 0.0
+glCallList foot
+glPopMatrix 
+glPushMatrix 
+glTranslate -00001.10 -0000.630 0.0
+glRotate 13.8 1.0 0.0 0.0
+glCallList upper_leg
+glTranslate 0.0 -3.40 0.0
+glRotate 15.2 1.0 0.0 0.0
+glCallList lower_leg
+glTranslate 0.0 -3.00 0.0
+glRotate 8.0 1.0 0.0 0.0
+glCallList foot
+glPopMatrix 
+glPopMatrix 
+glFlush 
+glutSwapBuffers 
+glClear GL_COLOR_BUFFER_BIT
+glClear GL_DEPTH_BUFFER_BIT
+glLoadIdentity 
+glTranslate 0.0 0.0 -11.0
+glRotate 0.0 1.0 0.0 0.0
+glRotate 0.0 0.0 1.0 0.0
+glPushMatrix 
+glTranslate 0.0 00005.80 0.0
+glRotate 0.0 1.0 0.0 0.0
+glRotate 0.0 0.0 1.0 0.0
+glCallList head
+glPopMatrix 
+glCallList torso
+glPushMatrix 
+glTranslate 00002.10 00004.0320 0.0
+glRotate 23.6 1.0 0.0 0.0
+glCallList upper_arm
+glTranslate 0.0 -3.00 0.0
+glRotate -38.8 1.0 0.0 0.0
+glCallList lower_arm
+glPopMatrix 
+glPushMatrix 
+glTranslate -00002.10 00004.0320 0.0
+glRotate 8.4 1.0 0.0 0.0
+glCallList upper_arm
+glTranslate 0.0 -3.00 0.0
+glRotate -50.2 1.0 0.0 0.0
+glCallList lower_arm
+glPopMatrix 
+glPushMatrix 
+glRotate -3.3 0.0 1.0 0.0
+glCallList lower_torso
+glPushMatrix 
+glTranslate 00001.10 -0000.630 0.0
+glRotate -22.4 1.0 0.0 0.0
+glCallList upper_leg
+glTranslate 0.0 -3.40 0.0
+glRotate 36.8 1.0 0.0 0.0
+glCallList lower_leg
+glTranslate 0.0 -3.00 0.0
+glRotate -.7 1.0 0.0 0.0
+glCallList foot
+glPopMatrix 
+glPushMatrix 
+glTranslate -00001.10 -0000.630 0.0
+glRotate 14.2 1.0 0.0 0.0
+glCallList upper_leg
+glTranslate 0.0 -3.40 0.0
+glRotate 15.6 1.0 0.0 0.0
+glCallList lower_leg
+glTranslate 0.0 -3.00 0.0
+glRotate 8.9 1.0 0.0 0.0
+glCallList foot
+glPopMatrix 
+glPopMatrix 
+glFlush 
+glutSwapBuffers 
+glClear GL_COLOR_BUFFER_BIT
+glClear GL_DEPTH_BUFFER_BIT
+glLoadIdentity 
+glTranslate 0.0 0.0 -11.0
+glRotate 0.0 1.0 0.0 0.0
+glRotate 0.0 0.0 1.0 0.0
+glPushMatrix 
+glTranslate 0.0 00005.80 0.0
+glRotate 0.0 1.0 0.0 0.0
+glRotate 0.0 0.0 1.0 0.0
+glCallList head
+glPopMatrix 
+glCallList torso
+glPushMatrix 
+glTranslate 00002.10 00004.0320 0.0
+glRotate 24.1 1.0 0.0 0.0
+glCallList upper_arm
+glTranslate 0.0 -3.00 0.0
+glRotate -38.4 1.0 0.0 0.0
+glCallList lower_arm
+glPopMatrix 
+glPushMatrix 
+glTranslate -00002.10 00004.0320 0.0
+glRotate 7.9 1.0 0.0 0.0
+glCallList upper_arm
+glTranslate 0.0 -3.00 0.0
+glRotate -50.6 1.0 0.0 0.0
+glCallList lower_arm
+glPopMatrix 
+glPushMatrix 
+glRotate -3.5 0.0 1.0 0.0
+glCallList lower_torso
+glPushMatrix 
+glTranslate 00001.10 -0000.630 0.0
+glRotate -22.5 1.0 0.0 0.0
+glCallList upper_leg
+glTranslate 0.0 -3.40 0.0
+glRotate 35.6 1.0 0.0 0.0
+glCallList lower_leg
+glTranslate 0.0 -3.00 0.0
+glRotate 0.3 1.0 0.0 0.0
+glCallList foot
+glPopMatrix 
+glPushMatrix 
+glTranslate -00001.10 -0000.630 0.0
+glRotate 14.6 1.0 0.0 0.0
+glCallList upper_leg
+glTranslate 0.0 -3.40 0.0
+glRotate 16.1 1.0 0.0 0.0
+glCallList lower_leg
+glTranslate 0.0 -3.00 0.0
+glRotate 9.7 1.0 0.0 0.0
+glCallList foot
+glPopMatrix 
+glPopMatrix 
+glFlush 
+glutSwapBuffers 
+glClear GL_COLOR_BUFFER_BIT
+glClear GL_DEPTH_BUFFER_BIT
+glLoadIdentity 
+glTranslate 0.0 0.0 -11.0
+glRotate 0.0 1.0 0.0 0.0
+glRotate 0.0 0.0 1.0 0.0
+glPushMatrix 
+glTranslate 0.0 00005.80 0.0
+glRotate 0.0 1.0 0.0 0.0
+glRotate 0.0 0.0 1.0 0.0
+glCallList head
+glPopMatrix 
+glCallList torso
+glPushMatrix 
+glTranslate 00002.10 00004.0320 0.0
+glRotate 24.6 1.0 0.0 0.0
+glCallList upper_arm
+glTranslate 0.0 -3.00 0.0
+glRotate -38.0 1.0 0.0 0.0
+glCallList lower_arm
+glPopMatrix 
+glPushMatrix 
+glTranslate -00002.10 00004.0320 0.0
+glRotate 7.4 1.0 0.0 0.0
+glCallList upper_arm
+glTranslate 0.0 -3.00 0.0
+glRotate -50.9 1.0 0.0 0.0
+glCallList lower_arm
+glPopMatrix 
+glPushMatrix 
+glRotate -3.7 0.0 1.0 0.0
+glCallList lower_torso
+glPushMatrix 
+glTranslate 00001.10 -0000.630 0.0
+glRotate -22.6 1.0 0.0 0.0
+glCallList upper_leg
+glTranslate 0.0 -3.40 0.0
+glRotate 34.4 1.0 0.0 0.0
+glCallList lower_leg
+glTranslate 0.0 -3.00 0.0
+glRotate 1.2 1.0 0.0 0.0
+glCallList foot
+glPopMatrix 
+glPushMatrix 
+glTranslate -00001.10 -0000.630 0.0
+glRotate 15.0 1.0 0.0 0.0
+glCallList upper_leg
+glTranslate 0.0 -3.40 0.0
+glRotate 16.6 1.0 0.0 0.0
+glCallList lower_leg
+glTranslate 0.0 -3.00 0.0
+glRotate 10.6 1.0 0.0 0.0
+glCallList foot
+glPopMatrix 
+glPopMatrix 
+glFlush 
+glutSwapBuffers 
+glClear GL_COLOR_BUFFER_BIT
+glClear GL_DEPTH_BUFFER_BIT
+glLoadIdentity 
+glTranslate 0.0 0.0 -11.0
+glRotate 0.0 1.0 0.0 0.0
+glRotate 0.0 0.0 1.0 0.0
+glPushMatrix 
+glTranslate 0.0 00005.80 0.0
+glRotate 0.0 1.0 0.0 0.0
+glRotate 0.0 0.0 1.0 0.0
+glCallList head
+glPopMatrix 
+glCallList torso
+glPushMatrix 
+glTranslate 00002.10 00004.0320 0.0
+glRotate 25.1 1.0 0.0 0.0
+glCallList upper_arm
+glTranslate 0.0 -3.00 0.0
+glRotate -37.6 1.0 0.0 0.0
+glCallList lower_arm
+glPopMatrix 
+glPushMatrix 
+glTranslate -00002.10 00004.0320 0.0
+glRotate 6.9 1.0 0.0 0.0
+glCallList upper_arm
+glTranslate 0.0 -3.00 0.0
+glRotate -51.2 1.0 0.0 0.0
+glCallList lower_arm
+glPopMatrix 
+glPushMatrix 
+glRotate -3.9 0.0 1.0 0.0
+glCallList lower_torso
+glPushMatrix 
+glTranslate 00001.10 -0000.630 0.0
+glRotate -22.7 1.0 0.0 0.0
+glCallList upper_leg
+glTranslate 0.0 -3.40 0.0
+glRotate 33.2 1.0 0.0 0.0
+glCallList lower_leg
+glTranslate 0.0 -3.00 0.0
+glRotate 2.2 1.0 0.0 0.0
+glCallList foot
+glPopMatrix 
+glPushMatrix 
+glTranslate -00001.10 -0000.630 0.0
+glRotate 15.4 1.0 0.0 0.0
+glCallList upper_leg
+glTranslate 0.0 -3.40 0.0
+glRotate 17.1 1.0 0.0 0.0
+glCallList lower_leg
+glTranslate 0.0 -3.00 0.0
+glRotate 11.5 1.0 0.0 0.0
+glCallList foot
+glPopMatrix 
+glPopMatrix 
+glFlush 
+glutSwapBuffers 
+glClear GL_COLOR_BUFFER_BIT
+glClear GL_DEPTH_BUFFER_BIT
+glLoadIdentity 
+glTranslate 0.0 0.0 -11.0
+glRotate 0.0 1.0 0.0 0.0
+glRotate 0.0 0.0 1.0 0.0
+glPushMatrix 
+glTranslate 0.0 00005.80 0.0
+glRotate 0.0 1.0 0.0 0.0
+glRotate 0.0 0.0 1.0 0.0
+glCallList head
+glPopMatrix 
+glCallList torso
+glPushMatrix 
+glTranslate 00002.10 00004.0320 0.0
+glRotate 25.6 1.0 0.0 0.0
+glCallList upper_arm
+glTranslate 0.0 -3.00 0.0
+glRotate -37.2 1.0 0.0 0.0
+glCallList lower_arm
+glPopMatrix 
+glPushMatrix 
+glTranslate -00002.10 00004.0320 0.0
+glRotate 6.4 1.0 0.0 0.0
+glCallList upper_arm
+glTranslate 0.0 -3.00 0.0
+glRotate -51.6 1.0 0.0 0.0
+glCallList lower_arm
+glPopMatrix 
+glPushMatrix 
+glRotate -4.2 0.0 1.0 0.0
+glCallList lower_torso
+glPushMatrix 
+glTranslate 00001.10 -0000.630 0.0
+glRotate -22.8 1.0 0.0 0.0
+glCallList upper_leg
+glTranslate 0.0 -3.40 0.0
+glRotate 32.0 1.0 0.0 0.0
+glCallList lower_leg
+glTranslate 0.0 -3.00 0.0
+glRotate 3.2 1.0 0.0 0.0
+glCallList foot
+glPopMatrix 
+glPushMatrix 
+glTranslate -00001.10 -0000.630 0.0
+glRotate 15.8 1.0 0.0 0.0
+glCallList upper_leg
+glTranslate 0.0 -3.40 0.0
+glRotate 17.6 1.0 0.0 0.0
+glCallList lower_leg
+glTranslate 0.0 -3.00 0.0
+glRotate 12.4 1.0 0.0 0.0
+glCallList foot
+glPopMatrix 
+glPopMatrix 
+glFlush 
+glutSwapBuffers 
+glClear GL_COLOR_BUFFER_BIT
+glClear GL_DEPTH_BUFFER_BIT
+glLoadIdentity 
+glTranslate 0.0 0.0 -11.0
+glRotate 0.0 1.0 0.0 0.0
+glRotate 0.0 0.0 1.0 0.0
+glPushMatrix 
+glTranslate 0.0 00005.80 0.0
+glRotate 0.0 1.0 0.0 0.0
+glRotate 0.0 0.0 1.0 0.0
+glCallList head
+glPopMatrix 
+glCallList torso
+glPushMatrix 
+glTranslate 00002.10 00004.0320 0.0
+glRotate 26.0 1.0 0.0 0.0
+glCallList upper_arm
+glTranslate 0.0 -3.00 0.0
+glRotate -36.9 1.0 0.0 0.0
+glCallList lower_arm
+glPopMatrix 
+glPushMatrix 
+glTranslate -00002.10 00004.0320 0.0
+glRotate 6.0 1.0 0.0 0.0
+glCallList upper_arm
+glTranslate 0.0 -3.00 0.0
+glRotate -51.9 1.0 0.0 0.0
+glCallList lower_arm
+glPopMatrix 
+glPushMatrix 
+glRotate -4.4 0.0 1.0 0.0
+glCallList lower_torso
+glPushMatrix 
+glTranslate 00001.10 -0000.630 0.0
+glRotate -22.8 1.0 0.0 0.0
+glCallList upper_leg
+glTranslate 0.0 -3.40 0.0
+glRotate 30.8 1.0 0.0 0.0
+glCallList lower_leg
+glTranslate 0.0 -3.00 0.0
+glRotate 4.1 1.0 0.0 0.0
+glCallList foot
+glPopMatrix 
+glPushMatrix 
+glTranslate -00001.10 -0000.630 0.0
+glRotate 16.1 1.0 0.0 0.0
+glCallList upper_leg
+glTranslate 0.0 -3.40 0.0
+glRotate 18.0 1.0 0.0 0.0
+glCallList lower_leg
+glTranslate 0.0 -3.00 0.0
+glRotate 13.2 1.0 0.0 0.0
+glCallList foot
+glPopMatrix 
+glPopMatrix 
+glFlush 
+glutSwapBuffers 
+glClear GL_COLOR_BUFFER_BIT
+glClear GL_DEPTH_BUFFER_BIT
+glLoadIdentity 
+glTranslate 0.0 0.0 -11.0
+glRotate 0.0 1.0 0.0 0.0
+glRotate 0.0 0.0 1.0 0.0
+glPushMatrix 
+glTranslate 0.0 00005.80 0.0
+glRotate 0.0 1.0 0.0 0.0
+glRotate 0.0 0.0 1.0 0.0
+glCallList head
+glPopMatrix 
+glCallList torso
+glPushMatrix 
+glTranslate 00002.10 00004.0320 0.0
+glRotate 26.5 1.0 0.0 0.0
+glCallList upper_arm
+glTranslate 0.0 -3.00 0.0
+glRotate -36.5 1.0 0.0 0.0
+glCallList lower_arm
+glPopMatrix 
+glPushMatrix 
+glTranslate -00002.10 00004.0320 0.0
+glRotate 5.5 1.0 0.0 0.0
+glCallList upper_arm
+glTranslate 0.0 -3.00 0.0
+glRotate -52.2 1.0 0.0 0.0
+glCallList lower_arm
+glPopMatrix 
+glPushMatrix 
+glRotate -4.6 0.0 1.0 0.0
+glCallList lower_torso
+glPushMatrix 
+glTranslate 00001.10 -0000.630 0.0
+glRotate -22.9 1.0 0.0 0.0
+glCallList upper_leg
+glTranslate 0.0 -3.40 0.0
+glRotate 29.6 1.0 0.0 0.0
+glCallList lower_leg
+glTranslate 0.0 -3.00 0.0
+glRotate 5.1 1.0 0.0 0.0
+glCallList foot
+glPopMatrix 
+glPushMatrix 
+glTranslate -00001.10 -0000.630 0.0
+glRotate 16.5 1.0 0.0 0.0
+glCallList upper_leg
+glTranslate 0.0 -3.40 0.0
+glRotate 18.5 1.0 0.0 0.0
+glCallList lower_leg
+glTranslate 0.0 -3.00 0.0
+glRotate 14.1 1.0 0.0 0.0
+glCallList foot
+glPopMatrix 
+glPopMatrix 
+glFlush 
+glutSwapBuffers 
+glClear GL_COLOR_BUFFER_BIT
+glClear GL_DEPTH_BUFFER_BIT
+glLoadIdentity 
+glTranslate 0.0 0.0 -11.0
+glRotate 0.0 1.0 0.0 0.0
+glRotate 0.0 0.0 1.0 0.0
+glPushMatrix 
+glTranslate 0.0 00005.80 0.0
+glRotate 0.0 1.0 0.0 0.0
+glRotate 0.0 0.0 1.0 0.0
+glCallList head
+glPopMatrix 
+glCallList torso
+glPushMatrix 
+glTranslate 00002.10 00004.0320 0.0
+glRotate 27.0 1.0 0.0 0.0
+glCallList upper_arm
+glTranslate 0.0 -3.00 0.0
+glRotate -36.1 1.0 0.0 0.0
+glCallList lower_arm
+glPopMatrix 
+glPushMatrix 
+glTranslate -00002.10 00004.0320 0.0
+glRotate 5.0 1.0 0.0 0.0
+glCallList upper_arm
+glTranslate 0.0 -3.00 0.0
+glRotate -52.5 1.0 0.0 0.0
+glCallList lower_arm
+glPopMatrix 
+glPushMatrix 
+glRotate -4.8 0.0 1.0 0.0
+glCallList lower_torso
+glPushMatrix 
+glTranslate 00001.10 -0000.630 0.0
+glRotate -23.0 1.0 0.0 0.0
+glCallList upper_leg
+glTranslate 0.0 -3.40 0.0
+glRotate 28.4 1.0 0.0 0.0
+glCallList lower_leg
+glTranslate 0.0 -3.00 0.0
+glRotate 6.0 1.0 0.0 0.0
+glCallList foot
+glPopMatrix 
+glPushMatrix 
+glTranslate -00001.10 -0000.630 0.0
+glRotate 16.9 1.0 0.0 0.0
+glCallList upper_leg
+glTranslate 0.0 -3.40 0.0
+glRotate 19.0 1.0 0.0 0.0
+glCallList lower_leg
+glTranslate 0.0 -3.00 0.0
+glRotate 15.0 1.0 0.0 0.0
+glCallList foot
+glPopMatrix 
+glPopMatrix 
+glFlush 
+glutSwapBuffers 
+glClear GL_COLOR_BUFFER_BIT
+glClear GL_DEPTH_BUFFER_BIT
+glLoadIdentity 
+glTranslate 0.0 0.0 -11.0
+glRotate 0.0 1.0 0.0 0.0
+glRotate 0.0 0.0 1.0 0.0
+glPushMatrix 
+glTranslate 0.0 00005.80 0.0
+glRotate 0.0 1.0 0.0 0.0
+glRotate 0.0 0.0 1.0 0.0
+glCallList head
+glPopMatrix 
+glCallList torso
+glPushMatrix 
+glTranslate 00002.10 00004.0320 0.0
+glRotate 27.5 1.0 0.0 0.0
+glCallList upper_arm
+glTranslate 0.0 -3.00 0.0
+glRotate -35.7 1.0 0.0 0.0
+glCallList lower_arm
+glPopMatrix 
+glPushMatrix 
+glTranslate -00002.10 00004.0320 0.0
+glRotate 4.5 1.0 0.0 0.0
+glCallList upper_arm
+glTranslate 0.0 -3.00 0.0
+glRotate -52.9 1.0 0.0 0.0
+glCallList lower_arm
+glPopMatrix 
+glPushMatrix 
+glRotate -5.0 0.0 1.0 0.0
+glCallList lower_torso
+glPushMatrix 
+glTranslate 00001.10 -0000.630 0.0
+glRotate -23.1 1.0 0.0 0.0
+glCallList upper_leg
+glTranslate 0.0 -3.40 0.0
+glRotate 27.2 1.0 0.0 0.0
+glCallList lower_leg
+glTranslate 0.0 -3.00 0.0
+glRotate 7.0 1.0 0.0 0.0
+glCallList foot
+glPopMatrix 
+glPushMatrix 
+glTranslate -00001.10 -0000.630 0.0
+glRotate 17.3 1.0 0.0 0.0
+glCallList upper_leg
+glTranslate 0.0 -3.40 0.0
+glRotate 19.5 1.0 0.0 0.0
+glCallList lower_leg
+glTranslate 0.0 -3.00 0.0
+glRotate 15.8 1.0 0.0 0.0
+glCallList foot
+glPopMatrix 
+glPopMatrix 
+glFlush 
+glutSwapBuffers 
+glClear GL_COLOR_BUFFER_BIT
+glClear GL_DEPTH_BUFFER_BIT
+glLoadIdentity 
+glTranslate 0.0 0.0 -11.0
+glRotate 0.0 1.0 0.0 0.0
+glRotate 0.0 0.0 1.0 0.0
+glPushMatrix 
+glTranslate 0.0 00005.80 0.0
+glRotate 0.0 1.0 0.0 0.0
+glRotate 0.0 0.0 1.0 0.0
+glCallList head
+glPopMatrix 
+glCallList torso
+glPushMatrix 
+glTranslate 00002.10 00004.0320 0.0
+glRotate 28.0 1.0 0.0 0.0
+glCallList upper_arm
+glTranslate 0.0 -3.00 0.0
+glRotate -35.3 1.0 0.0 0.0
+glCallList lower_arm
+glPopMatrix 
+glPushMatrix 
+glTranslate -00002.10 00004.0320 0.0
+glRotate 4.0 1.0 0.0 0.0
+glCallList upper_arm
+glTranslate 0.0 -3.00 0.0
+glRotate -53.2 1.0 0.0 0.0
+glCallList lower_arm
+glPopMatrix 
+glPushMatrix 
+glRotate -5.2 0.0 1.0 0.0
+glCallList lower_torso
+glPushMatrix 
+glTranslate 00001.10 -0000.630 0.0
+glRotate -23.2 1.0 0.0 0.0
+glCallList upper_leg
+glTranslate 0.0 -3.40 0.0
+glRotate 26.0 1.0 0.0 0.0
+glCallList lower_leg
+glTranslate 0.0 -3.00 0.0
+glRotate 8.0 1.0 0.0 0.0
+glCallList foot
+glPopMatrix 
+glPushMatrix 
+glTranslate -00001.10 -0000.630 0.0
+glRotate 17.7 1.0 0.0 0.0
+glCallList upper_leg
+glTranslate 0.0 -3.40 0.0
+glRotate 20.0 1.0 0.0 0.0
+glCallList lower_leg
+glTranslate 0.0 -3.00 0.0
+glRotate 16.7 1.0 0.0 0.0
+glCallList foot
+glPopMatrix 
+glPopMatrix 
+glFlush 
+glutSwapBuffers 
+glClear GL_COLOR_BUFFER_BIT
+glClear GL_DEPTH_BUFFER_BIT
+glLoadIdentity 
+glTranslate 0.0 0.0 -11.0
+glRotate 0.0 1.0 0.0 0.0
+glRotate 0.0 0.0 1.0 0.0
+glPushMatrix 
+glTranslate 0.0 00005.80 0.0
+glRotate 0.0 1.0 0.0 0.0
+glRotate 0.0 0.0 1.0 0.0
+glCallList head
+glPopMatrix 
+glCallList torso
+glPushMatrix 
+glTranslate 00002.10 00004.0320 0.0
+glRotate 28.4 1.0 0.0 0.0
+glCallList upper_arm
+glTranslate 0.0 -3.00 0.0
+glRotate -34.9 1.0 0.0 0.0
+glCallList lower_arm
+glPopMatrix 
+glPushMatrix 
+glTranslate -00002.10 00004.0320 0.0
+glRotate 3.6 1.0 0.0 0.0
+glCallList upper_arm
+glTranslate 0.0 -3.00 0.0
+glRotate -53.5 1.0 0.0 0.0
+glCallList lower_arm
+glPopMatrix 
+glPushMatrix 
+glRotate -5.4 0.0 1.0 0.0
+glCallList lower_torso
+glPushMatrix 
+glTranslate 00001.10 -0000.630 0.0
+glRotate -23.3 1.0 0.0 0.0
+glCallList upper_leg
+glTranslate 0.0 -3.40 0.0
+glRotate 24.8 1.0 0.0 0.0
+glCallList lower_leg
+glTranslate 0.0 -3.00 0.0
+glRotate 8.9 1.0 0.0 0.0
+glCallList foot
+glPopMatrix 
+glPushMatrix 
+glTranslate -00001.10 -0000.630 0.0
+glRotate 18.1 1.0 0.0 0.0
+glCallList upper_leg
+glTranslate 0.0 -3.40 0.0
+glRotate 20.4 1.0 0.0 0.0
+glCallList lower_leg
+glTranslate 0.0 -3.00 0.0
+glRotate 17.6 1.0 0.0 0.0
+glCallList foot
+glPopMatrix 
+glPopMatrix 
+glFlush 
+glutSwapBuffers 
+glClear GL_COLOR_BUFFER_BIT
+glClear GL_DEPTH_BUFFER_BIT
+glLoadIdentity 
+glTranslate 0.0 0.0 -11.0
+glRotate 0.0 1.0 0.0 0.0
+glRotate 0.0 0.0 1.0 0.0
+glPushMatrix 
+glTranslate 0.0 00005.80 0.0
+glRotate 0.0 1.0 0.0 0.0
+glRotate 0.0 0.0 1.0 0.0
+glCallList head
+glPopMatrix 
+glCallList torso
+glPushMatrix 
+glTranslate 00002.10 00004.0320 0.0
+glRotate 28.9 1.0 0.0 0.0
+glCallList upper_arm
+glTranslate 0.0 -3.00 0.0
+glRotate -34.5 1.0 0.0 0.0
+glCallList lower_arm
+glPopMatrix 
+glPushMatrix 
+glTranslate -00002.10 00004.0320 0.0
+glRotate 3.1 1.0 0.0 0.0
+glCallList upper_arm
+glTranslate 0.0 -3.00 0.0
+glRotate -53.9 1.0 0.0 0.0
+glCallList lower_arm
+glPopMatrix 
+glPushMatrix 
+glRotate -5.6 0.0 1.0 0.0
+glCallList lower_torso
+glPushMatrix 
+glTranslate 00001.10 -0000.630 0.0
+glRotate -23.4 1.0 0.0 0.0
+glCallList upper_leg
+glTranslate 0.0 -3.40 0.0
+glRotate 23.6 1.0 0.0 0.0
+glCallList lower_leg
+glTranslate 0.0 -3.00 0.0
+glRotate 9.9 1.0 0.0 0.0
+glCallList foot
+glPopMatrix 
+glPushMatrix 
+glTranslate -00001.10 -0000.630 0.0
+glRotate 18.5 1.0 0.0 0.0
+glCallList upper_leg
+glTranslate 0.0 -3.40 0.0
+glRotate 20.9 1.0 0.0 0.0
+glCallList lower_leg
+glTranslate 0.0 -3.00 0.0
+glRotate 18.4 1.0 0.0 0.0
+glCallList foot
+glPopMatrix 
+glPopMatrix 
+glFlush 
+glutSwapBuffers 
+glClear GL_COLOR_BUFFER_BIT
+glClear GL_DEPTH_BUFFER_BIT
+glLoadIdentity 
+glTranslate 0.0 0.0 -11.0
+glRotate 0.0 1.0 0.0 0.0
+glRotate 0.0 0.0 1.0 0.0
+glPushMatrix 
+glTranslate 0.0 00005.80 0.0
+glRotate 0.0 1.0 0.0 0.0
+glRotate 0.0 0.0 1.0 0.0
+glCallList head
+glPopMatrix 
+glCallList torso
+glPushMatrix 
+glTranslate 00002.10 00004.0320 0.0
+glRotate 29.4 1.0 0.0 0.0
+glCallList upper_arm
+glTranslate 0.0 -3.00 0.0
+glRotate -34.1 1.0 0.0 0.0
+glCallList lower_arm
+glPopMatrix 
+glPushMatrix 
+glTranslate -00002.10 00004.0320 0.0
+glRotate 2.6 1.0 0.0 0.0
+glCallList upper_arm
+glTranslate 0.0 -3.00 0.0
+glRotate -54.2 1.0 0.0 0.0
+glCallList lower_arm
+glPopMatrix 
+glPushMatrix 
+glRotate -5.8 0.0 1.0 0.0
+glCallList lower_torso
+glPushMatrix 
+glTranslate 00001.10 -0000.630 0.0
+glRotate -23.5 1.0 0.0 0.0
+glCallList upper_leg
+glTranslate 0.0 -3.40 0.0
+glRotate 22.4 1.0 0.0 0.0
+glCallList lower_leg
+glTranslate 0.0 -3.00 0.0
+glRotate 10.8 1.0 0.0 0.0
+glCallList foot
+glPopMatrix 
+glPushMatrix 
+glTranslate -00001.10 -0000.630 0.0
+glRotate 18.9 1.0 0.0 0.0
+glCallList upper_leg
+glTranslate 0.0 -3.40 0.0
+glRotate 21.4 1.0 0.0 0.0
+glCallList lower_leg
+glTranslate 0.0 -3.00 0.0
+glRotate 19.3 1.0 0.0 0.0
+glCallList foot
+glPopMatrix 
+glPopMatrix 
+glFlush 
+glutSwapBuffers 
+glClear GL_COLOR_BUFFER_BIT
+glClear GL_DEPTH_BUFFER_BIT
+glLoadIdentity 
+glTranslate 0.0 0.0 -11.0
+glRotate 0.0 1.0 0.0 0.0
+glRotate 0.0 0.0 1.0 0.0
+glPushMatrix 
+glTranslate 0.0 00005.80 0.0
+glRotate 0.0 1.0 0.0 0.0
+glRotate 0.0 0.0 1.0 0.0
+glCallList head
+glPopMatrix 
+glCallList torso
+glPushMatrix 
+glTranslate 00002.10 00004.0320 0.0
+glRotate 29.9 1.0 0.0 0.0
+glCallList upper_arm
+glTranslate 0.0 -3.00 0.0
+glRotate -33.7 1.0 0.0 0.0
+glCallList lower_arm
+glPopMatrix 
+glPushMatrix 
+glTranslate -00002.10 00004.0320 0.0
+glRotate 2.1 1.0 0.0 0.0
+glCallList upper_arm
+glTranslate 0.0 -3.00 0.0
+glRotate -54.5 1.0 0.0 0.0
+glCallList lower_arm
+glPopMatrix 
+glPushMatrix 
+glRotate -6.0 0.0 1.0 0.0
+glCallList lower_torso
+glPushMatrix 
+glTranslate 00001.10 -0000.630 0.0
+glRotate -23.6 1.0 0.0 0.0
+glCallList upper_leg
+glTranslate 0.0 -3.40 0.0
+glRotate 21.2 1.0 0.0 0.0
+glCallList lower_leg
+glTranslate 0.0 -3.00 0.0
+glRotate 11.8 1.0 0.0 0.0
+glCallList foot
+glPopMatrix 
+glPushMatrix 
+glTranslate -00001.10 -0000.630 0.0
+glRotate 19.3 1.0 0.0 0.0
+glCallList upper_leg
+glTranslate 0.0 -3.40 0.0
+glRotate 21.9 1.0 0.0 0.0
+glCallList lower_leg
+glTranslate 0.0 -3.00 0.0
+glRotate 20.2 1.0 0.0 0.0
+glCallList foot
+glPopMatrix 
+glPopMatrix 
+glFlush 
+glutSwapBuffers 
+glClear GL_COLOR_BUFFER_BIT
+glClear GL_DEPTH_BUFFER_BIT
+glLoadIdentity 
+glTranslate 0.0 0.0 -11.0
+glRotate 0.0 1.0 0.0 0.0
+glRotate 0.0 0.0 1.0 0.0
+glPushMatrix 
+glTranslate 0.0 00005.80 0.0
+glRotate 0.0 1.0 0.0 0.0
+glRotate 0.0 0.0 1.0 0.0
+glCallList head
+glPopMatrix 
+glCallList torso
+glPushMatrix 
+glTranslate 00002.10 00004.0320 0.0
+glRotate 30.4 1.0 0.0 0.0
+glCallList upper_arm
+glTranslate 0.0 -3.00 0.0
+glRotate -33.3 1.0 0.0 0.0
+glCallList lower_arm
+glPopMatrix 
+glPushMatrix 
+glTranslate -00002.10 00004.0320 0.0
+glRotate 1.6 1.0 0.0 0.0
+glCallList upper_arm
+glTranslate 0.0 -3.00 0.0
+glRotate -54.9 1.0 0.0 0.0
+glCallList lower_arm
+glPopMatrix 
+glPushMatrix 
+glRotate -6.3 0.0 1.0 0.0
+glCallList lower_torso
+glPushMatrix 
+glTranslate 00001.10 -0000.630 0.0
+glRotate -23.7 1.0 0.0 0.0
+glCallList upper_leg
+glTranslate 0.0 -3.40 0.0
+glRotate 20.0 1.0 0.0 0.0
+glCallList lower_leg
+glTranslate 0.0 -3.00 0.0
+glRotate 12.8 1.0 0.0 0.0
+glCallList foot
+glPopMatrix 
+glPushMatrix 
+glTranslate -00001.10 -0000.630 0.0
+glRotate 19.7 1.0 0.0 0.0
+glCallList upper_leg
+glTranslate 0.0 -3.40 0.0
+glRotate 22.4 1.0 0.0 0.0
+glCallList lower_leg
+glTranslate 0.0 -3.00 0.0
+glRotate 21.1 1.0 0.0 0.0
+glCallList foot
+glPopMatrix 
+glPopMatrix 
+glFlush 
+glutSwapBuffers 
+glClear GL_COLOR_BUFFER_BIT
+glClear GL_DEPTH_BUFFER_BIT
+glLoadIdentity 
+glTranslate 0.0 0.0 -11.0
+glRotate 0.0 1.0 0.0 0.0
+glRotate 0.0 0.0 1.0 0.0
+glPushMatrix 
+glTranslate 0.0 00005.80 0.0
+glRotate 0.0 1.0 0.0 0.0
+glRotate 0.0 0.0 1.0 0.0
+glCallList head
+glPopMatrix 
+glCallList torso
+glPushMatrix 
+glTranslate 00002.10 00004.0320 0.0
+glRotate 30.8 1.0 0.0 0.0
+glCallList upper_arm
+glTranslate 0.0 -3.00 0.0
+glRotate -33.0 1.0 0.0 0.0
+glCallList lower_arm
+glPopMatrix 
+glPushMatrix 
+glTranslate -00002.10 00004.0320 0.0
+glRotate 1.2 1.0 0.0 0.0
+glCallList upper_arm
+glTranslate 0.0 -3.00 0.0
+glRotate -55.2 1.0 0.0 0.0
+glCallList lower_arm
+glPopMatrix 
+glPushMatrix 
+glRotate -6.5 0.0 1.0 0.0
+glCallList lower_torso
+glPushMatrix 
+glTranslate 00001.10 -0000.630 0.0
+glRotate -23.7 1.0 0.0 0.0
+glCallList upper_leg
+glTranslate 0.0 -3.40 0.0
+glRotate 18.8 1.0 0.0 0.0
+glCallList lower_leg
+glTranslate 0.0 -3.00 0.0
+glRotate 13.7 1.0 0.0 0.0
+glCallList foot
+glPopMatrix 
+glPushMatrix 
+glTranslate -00001.10 -0000.630 0.0
+glRotate 20.0 1.0 0.0 0.0
+glCallList upper_leg
+glTranslate 0.0 -3.40 0.0
+glRotate 22.8 1.0 0.0 0.0
+glCallList lower_leg
+glTranslate 0.0 -3.00 0.0
+glRotate 21.9 1.0 0.0 0.0
+glCallList foot
+glPopMatrix 
+glPopMatrix 
+glFlush 
+glutSwapBuffers 
+glClear GL_COLOR_BUFFER_BIT
+glClear GL_DEPTH_BUFFER_BIT
+glLoadIdentity 
+glTranslate 0.0 0.0 -11.0
+glRotate 0.0 1.0 0.0 0.0
+glRotate 0.0 0.0 1.0 0.0
+glPushMatrix 
+glTranslate 0.0 00005.80 0.0
+glRotate 0.0 1.0 0.0 0.0
+glRotate 0.0 0.0 1.0 0.0
+glCallList head
+glPopMatrix 
+glCallList torso
+glPushMatrix 
+glTranslate 00002.10 00004.0320 0.0
+glRotate 31.3 1.0 0.0 0.0
+glCallList upper_arm
+glTranslate 0.0 -3.00 0.0
+glRotate -32.6 1.0 0.0 0.0
+glCallList lower_arm
+glPopMatrix 
+glPushMatrix 
+glTranslate -00002.10 00004.0320 0.0
+glRotate 0.7 1.0 0.0 0.0
+glCallList upper_arm
+glTranslate 0.0 -3.00 0.0
+glRotate -55.5 1.0 0.0 0.0
+glCallList lower_arm
+glPopMatrix 
+glPushMatrix 
+glRotate -6.7 0.0 1.0 0.0
+glCallList lower_torso
+glPushMatrix 
+glTranslate 00001.10 -0000.630 0.0
+glRotate -23.8 1.0 0.0 0.0
+glCallList upper_leg
+glTranslate 0.0 -3.40 0.0
+glRotate 17.6 1.0 0.0 0.0
+glCallList lower_leg
+glTranslate 0.0 -3.00 0.0
+glRotate 14.7 1.0 0.0 0.0
+glCallList foot
+glPopMatrix 
+glPushMatrix 
+glTranslate -00001.10 -0000.630 0.0
+glRotate 20.4 1.0 0.0 0.0
+glCallList upper_leg
+glTranslate 0.0 -3.40 0.0
+glRotate 23.3 1.0 0.0 0.0
+glCallList lower_leg
+glTranslate 0.0 -3.00 0.0
+glRotate 22.8 1.0 0.0 0.0
+glCallList foot
+glPopMatrix 
+glPopMatrix 
+glFlush 
+glutSwapBuffers 
+glClear GL_COLOR_BUFFER_BIT
+glClear GL_DEPTH_BUFFER_BIT
+glLoadIdentity 
+glTranslate 0.0 0.0 -11.0
+glRotate 0.0 1.0 0.0 0.0
+glRotate 0.0 0.0 1.0 0.0
+glPushMatrix 
+glTranslate 0.0 00005.80 0.0
+glRotate 0.0 1.0 0.0 0.0
+glRotate 0.0 0.0 1.0 0.0
+glCallList head
+glPopMatrix 
+glCallList torso
+glPushMatrix 
+glTranslate 00002.10 00004.0320 0.0
+glRotate 31.8 1.0 0.0 0.0
+glCallList upper_arm
+glTranslate 0.0 -3.00 0.0
+glRotate -32.2 1.0 0.0 0.0
+glCallList lower_arm
+glPopMatrix 
+glPushMatrix 
+glTranslate -00002.10 00004.0320 0.0
+glRotate 0.2 1.0 0.0 0.0
+glCallList upper_arm
+glTranslate 0.0 -3.00 0.0
+glRotate -55.8 1.0 0.0 0.0
+glCallList lower_arm
+glPopMatrix 
+glPushMatrix 
+glRotate -6.9 0.0 1.0 0.0
+glCallList lower_torso
+glPushMatrix 
+glTranslate 00001.10 -0000.630 0.0
+glRotate -23.9 1.0 0.0 0.0
+glCallList upper_leg
+glTranslate 0.0 -3.40 0.0
+glRotate 16.4 1.0 0.0 0.0
+glCallList lower_leg
+glTranslate 0.0 -3.00 0.0
+glRotate 15.6 1.0 0.0 0.0
+glCallList foot
+glPopMatrix 
+glPushMatrix 
+glTranslate -00001.10 -0000.630 0.0
+glRotate 20.8 1.0 0.0 0.0
+glCallList upper_leg
+glTranslate 0.0 -3.40 0.0
+glRotate 23.8 1.0 0.0 0.0
+glCallList lower_leg
+glTranslate 0.0 -3.00 0.0
+glRotate 23.7 1.0 0.0 0.0
+glCallList foot
+glPopMatrix 
+glPopMatrix 
+glFlush 
+glutSwapBuffers 
+glClear GL_COLOR_BUFFER_BIT
+glClear GL_DEPTH_BUFFER_BIT
+glLoadIdentity 
+glTranslate 0.0 0.0 -11.0
+glRotate 0.0 1.0 0.0 0.0
+glRotate 0.0 0.0 1.0 0.0
+glPushMatrix 
+glTranslate 0.0 00005.80 0.0
+glRotate 0.0 1.0 0.0 0.0
+glRotate 0.0 0.0 1.0 0.0
+glCallList head
+glPopMatrix 
+glCallList torso
+glPushMatrix 
+glTranslate 00002.10 00004.0320 0.0
+glRotate 31.7 1.0 0.0 0.0
+glCallList upper_arm
+glTranslate 0.0 -3.00 0.0
+glRotate -32.2 1.0 0.0 0.0
+glCallList lower_arm
+glPopMatrix 
+glPushMatrix 
+glTranslate -00002.10 00004.0320 0.0
+glRotate 0.3 1.0 0.0 0.0
+glCallList upper_arm
+glTranslate 0.0 -3.00 0.0
+glRotate -55.8 1.0 0.0 0.0
+glCallList lower_arm
+glPopMatrix 
+glPushMatrix 
+glRotate -6.9 0.0 1.0 0.0
+glCallList lower_torso
+glPushMatrix 
+glTranslate 00001.10 -0000.630 0.0
+glRotate -23.4 1.0 0.0 0.0
+glCallList upper_leg
+glTranslate 0.0 -3.40 0.0
+glRotate 15.9 1.0 0.0 0.0
+glCallList lower_leg
+glTranslate 0.0 -3.00 0.0
+glRotate 15.6 1.0 0.0 0.0
+glCallList foot
+glPopMatrix 
+glPushMatrix 
+glTranslate -00001.10 -0000.630 0.0
+glRotate 20.2 1.0 0.0 0.0
+glCallList upper_leg
+glTranslate 0.0 -3.40 0.0
+glRotate 24.6 1.0 0.0 0.0
+glCallList lower_leg
+glTranslate 0.0 -3.00 0.0
+glRotate 23.2 1.0 0.0 0.0
+glCallList foot
+glPopMatrix 
+glPopMatrix 
+glFlush 
+glutSwapBuffers 
+glClear GL_COLOR_BUFFER_BIT
+glClear GL_DEPTH_BUFFER_BIT
+glLoadIdentity 
+glTranslate 0.0 0.0 -11.0
+glRotate 0.0 1.0 0.0 0.0
+glRotate 0.0 0.0 1.0 0.0
+glPushMatrix 
+glTranslate 0.0 00005.80 0.0
+glRotate 0.0 1.0 0.0 0.0
+glRotate 0.0 0.0 1.0 0.0
+glCallList head
+glPopMatrix 
+glCallList torso
+glPushMatrix 
+glTranslate 00002.10 00004.0320 0.0
+glRotate 31.2 1.0 0.0 0.0
+glCallList upper_arm
+glTranslate 0.0 -3.00 0.0
+glRotate -32.6 1.0 0.0 0.0
+glCallList lower_arm
+glPopMatrix 
+glPushMatrix 
+glTranslate -00002.10 00004.0320 0.0
+glRotate 0.8 1.0 0.0 0.0
+glCallList upper_arm
+glTranslate 0.0 -3.00 0.0
+glRotate -55.5 1.0 0.0 0.0
+glCallList lower_arm
+glPopMatrix 
+glPushMatrix 
+glRotate -6.7 0.0 1.0 0.0
+glCallList lower_torso
+glPushMatrix 
+glTranslate 00001.10 -0000.630 0.0
+glRotate -22.4 1.0 0.0 0.0
+glCallList upper_leg
+glTranslate 0.0 -3.40 0.0
+glRotate 15.6 1.0 0.0 0.0
+glCallList lower_leg
+glTranslate 0.0 -3.00 0.0
+glRotate 15.0 1.0 0.0 0.0
+glCallList foot
+glPopMatrix 
+glPushMatrix 
+glTranslate -00001.10 -0000.630 0.0
+glRotate 18.9 1.0 0.0 0.0
+glCallList upper_leg
+glTranslate 0.0 -3.40 0.0
+glRotate 25.6 1.0 0.0 0.0
+glCallList lower_leg
+glTranslate 0.0 -3.00 0.0
+glRotate 22.0 1.0 0.0 0.0
+glCallList foot
+glPopMatrix 
+glPopMatrix 
+glFlush 
+glutSwapBuffers 
+glClear GL_COLOR_BUFFER_BIT
+glClear GL_DEPTH_BUFFER_BIT
+glLoadIdentity 
+glTranslate 0.0 0.0 -11.0
+glRotate 0.0 1.0 0.0 0.0
+glRotate 0.0 0.0 1.0 0.0
+glPushMatrix 
+glTranslate 0.0 00005.80 0.0
+glRotate 0.0 1.0 0.0 0.0
+glRotate 0.0 0.0 1.0 0.0
+glCallList head
+glPopMatrix 
+glCallList torso
+glPushMatrix 
+glTranslate 00002.10 00004.0320 0.0
+glRotate 30.8 1.0 0.0 0.0
+glCallList upper_arm
+glTranslate 0.0 -3.00 0.0
+glRotate -33.0 1.0 0.0 0.0
+glCallList lower_arm
+glPopMatrix 
+glPushMatrix 
+glTranslate -00002.10 00004.0320 0.0
+glRotate 1.2 1.0 0.0 0.0
+glCallList upper_arm
+glTranslate 0.0 -3.00 0.0
+glRotate -55.2 1.0 0.0 0.0
+glCallList lower_arm
+glPopMatrix 
+glPushMatrix 
+glRotate -6.5 0.0 1.0 0.0
+glCallList lower_torso
+glPushMatrix 
+glTranslate 00001.10 -0000.630 0.0
+glRotate -21.5 1.0 0.0 0.0
+glCallList upper_leg
+glTranslate 0.0 -3.40 0.0
+glRotate 15.4 1.0 0.0 0.0
+glCallList lower_leg
+glTranslate 0.0 -3.00 0.0
+glRotate 14.4 1.0 0.0 0.0
+glCallList foot
+glPopMatrix 
+glPushMatrix 
+glTranslate -00001.10 -0000.630 0.0
+glRotate 17.7 1.0 0.0 0.0
+glCallList upper_leg
+glTranslate 0.0 -3.40 0.0
+glRotate 26.5 1.0 0.0 0.0
+glCallList lower_leg
+glTranslate 0.0 -3.00 0.0
+glRotate 20.8 1.0 0.0 0.0
+glCallList foot
+glPopMatrix 
+glPopMatrix 
+glFlush 
+glutSwapBuffers 
+glClear GL_COLOR_BUFFER_BIT
+glClear GL_DEPTH_BUFFER_BIT
+glLoadIdentity 
+glTranslate 0.0 0.0 -11.0
+glRotate 0.0 1.0 0.0 0.0
+glRotate 0.0 0.0 1.0 0.0
+glPushMatrix 
+glTranslate 0.0 00005.80 0.0
+glRotate 0.0 1.0 0.0 0.0
+glRotate 0.0 0.0 1.0 0.0
+glCallList head
+glPopMatrix 
+glCallList torso
+glPushMatrix 
+glTranslate 00002.10 00004.0320 0.0
+glRotate 30.3 1.0 0.0 0.0
+glCallList upper_arm
+glTranslate 0.0 -3.00 0.0
+glRotate -33.4 1.0 0.0 0.0
+glCallList lower_arm
+glPopMatrix 
+glPushMatrix 
+glTranslate -00002.10 00004.0320 0.0
+glRotate 1.7 1.0 0.0 0.0
+glCallList upper_arm
+glTranslate 0.0 -3.00 0.0
+glRotate -54.8 1.0 0.0 0.0
+glCallList lower_arm
+glPopMatrix 
+glPushMatrix 
+glRotate -6.3 0.0 1.0 0.0
+glCallList lower_torso
+glPushMatrix 
+glTranslate 00001.10 -0000.630 0.0
+glRotate -20.5 1.0 0.0 0.0
+glCallList upper_leg
+glTranslate 0.0 -3.40 0.0
+glRotate 15.2 1.0 0.0 0.0
+glCallList lower_leg
+glTranslate 0.0 -3.00 0.0
+glRotate 13.7 1.0 0.0 0.0
+glCallList foot
+glPopMatrix 
+glPushMatrix 
+glTranslate -00001.10 -0000.630 0.0
+glRotate 16.4 1.0 0.0 0.0
+glCallList upper_leg
+glTranslate 0.0 -3.40 0.0
+glRotate 27.5 1.0 0.0 0.0
+glCallList lower_leg
+glTranslate 0.0 -3.00 0.0
+glRotate 19.6 1.0 0.0 0.0
+glCallList foot
+glPopMatrix 
+glPopMatrix 
+glFlush 
+glutSwapBuffers 
+glClear GL_COLOR_BUFFER_BIT
+glClear GL_DEPTH_BUFFER_BIT
+glLoadIdentity 
+glTranslate 0.0 0.0 -11.0
+glRotate 0.0 1.0 0.0 0.0
+glRotate 0.0 0.0 1.0 0.0
+glPushMatrix 
+glTranslate 0.0 00005.80 0.0
+glRotate 0.0 1.0 0.0 0.0
+glRotate 0.0 0.0 1.0 0.0
+glCallList head
+glPopMatrix 
+glCallList torso
+glPushMatrix 
+glTranslate 00002.10 00004.0320 0.0
+glRotate 29.8 1.0 0.0 0.0
+glCallList upper_arm
+glTranslate 0.0 -3.00 0.0
+glRotate -33.8 1.0 0.0 0.0
+glCallList lower_arm
+glPopMatrix 
+glPushMatrix 
+glTranslate -00002.10 00004.0320 0.0
+glRotate 2.2 1.0 0.0 0.0
+glCallList upper_arm
+glTranslate 0.0 -3.00 0.0
+glRotate -54.5 1.0 0.0 0.0
+glCallList lower_arm
+glPopMatrix 
+glPushMatrix 
+glRotate -6.1 0.0 1.0 0.0
+glCallList lower_torso
+glPushMatrix 
+glTranslate 00001.10 -0000.630 0.0
+glRotate -19.6 1.0 0.0 0.0
+glCallList upper_leg
+glTranslate 0.0 -3.40 0.0
+glRotate 14.9 1.0 0.0 0.0
+glCallList lower_leg
+glTranslate 0.0 -3.00 0.0
+glRotate 13.1 1.0 0.0 0.0
+glCallList foot
+glPopMatrix 
+glPushMatrix 
+glTranslate -00001.10 -0000.630 0.0
+glRotate 15.2 1.0 0.0 0.0
+glCallList upper_leg
+glTranslate 0.0 -3.40 0.0
+glRotate 28.4 1.0 0.0 0.0
+glCallList lower_leg
+glTranslate 0.0 -3.00 0.0
+glRotate 18.4 1.0 0.0 0.0
+glCallList foot
+glPopMatrix 
+glPopMatrix 
+glFlush 
+glutSwapBuffers 
+glClear GL_COLOR_BUFFER_BIT
+glClear GL_DEPTH_BUFFER_BIT
+glLoadIdentity 
+glTranslate 0.0 0.0 -11.0
+glRotate 0.0 1.0 0.0 0.0
+glRotate 0.0 0.0 1.0 0.0
+glPushMatrix 
+glTranslate 0.0 00005.80 0.0
+glRotate 0.0 1.0 0.0 0.0
+glRotate 0.0 0.0 1.0 0.0
+glCallList head
+glPopMatrix 
+glCallList torso
+glPushMatrix 
+glTranslate 00002.10 00004.0320 0.0
+glRotate 29.3 1.0 0.0 0.0
+glCallList upper_arm
+glTranslate 0.0 -3.00 0.0
+glRotate -34.2 1.0 0.0 0.0
+glCallList lower_arm
+glPopMatrix 
+glPushMatrix 
+glTranslate -00002.10 00004.0320 0.0
+glRotate 2.7 1.0 0.0 0.0
+glCallList upper_arm
+glTranslate 0.0 -3.00 0.0
+glRotate -54.2 1.0 0.0 0.0
+glCallList lower_arm
+glPopMatrix 
+glPushMatrix 
+glRotate -5.9 0.0 1.0 0.0
+glCallList lower_torso
+glPushMatrix 
+glTranslate 00001.10 -0000.630 0.0
+glRotate -18.6 1.0 0.0 0.0
+glCallList upper_leg
+glTranslate 0.0 -3.40 0.0
+glRotate 14.7 1.0 0.0 0.0
+glCallList lower_leg
+glTranslate 0.0 -3.00 0.0
+glRotate 12.5 1.0 0.0 0.0
+glCallList foot
+glPopMatrix 
+glPushMatrix 
+glTranslate -00001.10 -0000.630 0.0
+glRotate 13.9 1.0 0.0 0.0
+glCallList upper_leg
+glTranslate 0.0 -3.40 0.0
+glRotate 29.4 1.0 0.0 0.0
+glCallList lower_leg
+glTranslate 0.0 -3.00 0.0
+glRotate 17.2 1.0 0.0 0.0
+glCallList foot
+glPopMatrix 
+glPopMatrix 
+glFlush 
+glutSwapBuffers 
+glClear GL_COLOR_BUFFER_BIT
+glClear GL_DEPTH_BUFFER_BIT
+glLoadIdentity 
+glTranslate 0.0 0.0 -11.0
+glRotate 0.0 1.0 0.0 0.0
+glRotate 0.0 0.0 1.0 0.0
+glPushMatrix 
+glTranslate 0.0 00005.80 0.0
+glRotate 0.0 1.0 0.0 0.0
+glRotate 0.0 0.0 1.0 0.0
+glCallList head
+glPopMatrix 
+glCallList torso
+glPushMatrix 
+glTranslate 00002.10 00004.0320 0.0
+glRotate 28.8 1.0 0.0 0.0
+glCallList upper_arm
+glTranslate 0.0 -3.00 0.0
+glRotate -34.6 1.0 0.0 0.0
+glCallList lower_arm
+glPopMatrix 
+glPushMatrix 
+glTranslate -00002.10 00004.0320 0.0
+glRotate 3.2 1.0 0.0 0.0
+glCallList upper_arm
+glTranslate 0.0 -3.00 0.0
+glRotate -53.8 1.0 0.0 0.0
+glCallList lower_arm
+glPopMatrix 
+glPushMatrix 
+glRotate -5.6 0.0 1.0 0.0
+glCallList lower_torso
+glPushMatrix 
+glTranslate 00001.10 -0000.630 0.0
+glRotate -17.6 1.0 0.0 0.0
+glCallList upper_leg
+glTranslate 0.0 -3.40 0.0
+glRotate 14.4 1.0 0.0 0.0
+glCallList lower_leg
+glTranslate 0.0 -3.00 0.0
+glRotate 11.8 1.0 0.0 0.0
+glCallList foot
+glPopMatrix 
+glPushMatrix 
+glTranslate -00001.10 -0000.630 0.0
+glRotate 12.6 1.0 0.0 0.0
+glCallList upper_leg
+glTranslate 0.0 -3.40 0.0
+glRotate 30.4 1.0 0.0 0.0
+glCallList lower_leg
+glTranslate 0.0 -3.00 0.0
+glRotate 16.0 1.0 0.0 0.0
+glCallList foot
+glPopMatrix 
+glPopMatrix 
+glFlush 
+glutSwapBuffers 
+glClear GL_COLOR_BUFFER_BIT
+glClear GL_DEPTH_BUFFER_BIT
+glLoadIdentity 
+glTranslate 0.0 0.0 -11.0
+glRotate 0.0 1.0 0.0 0.0
+glRotate 0.0 0.0 1.0 0.0
+glPushMatrix 
+glTranslate 0.0 00005.80 0.0
+glRotate 0.0 1.0 0.0 0.0
+glRotate 0.0 0.0 1.0 0.0
+glCallList head
+glPopMatrix 
+glCallList torso
+glPushMatrix 
+glTranslate 00002.10 00004.0320 0.0
+glRotate 28.4 1.0 0.0 0.0
+glCallList upper_arm
+glTranslate 0.0 -3.00 0.0
+glRotate -34.9 1.0 0.0 0.0
+glCallList lower_arm
+glPopMatrix 
+glPushMatrix 
+glTranslate -00002.10 00004.0320 0.0
+glRotate 3.6 1.0 0.0 0.0
+glCallList upper_arm
+glTranslate 0.0 -3.00 0.0
+glRotate -53.5 1.0 0.0 0.0
+glCallList lower_arm
+glPopMatrix 
+glPushMatrix 
+glRotate -5.4 0.0 1.0 0.0
+glCallList lower_torso
+glPushMatrix 
+glTranslate 00001.10 -0000.630 0.0
+glRotate -16.7 1.0 0.0 0.0
+glCallList upper_leg
+glTranslate 0.0 -3.40 0.0
+glRotate 14.2 1.0 0.0 0.0
+glCallList lower_leg
+glTranslate 0.0 -3.00 0.0
+glRotate 11.2 1.0 0.0 0.0
+glCallList foot
+glPopMatrix 
+glPushMatrix 
+glTranslate -00001.10 -0000.630 0.0
+glRotate 11.4 1.0 0.0 0.0
+glCallList upper_leg
+glTranslate 0.0 -3.40 0.0
+glRotate 31.3 1.0 0.0 0.0
+glCallList lower_leg
+glTranslate 0.0 -3.00 0.0
+glRotate 14.8 1.0 0.0 0.0
+glCallList foot
+glPopMatrix 
+glPopMatrix 
+glFlush 
+glutSwapBuffers 
+glClear GL_COLOR_BUFFER_BIT
+glClear GL_DEPTH_BUFFER_BIT
+glLoadIdentity 
+glTranslate 0.0 0.0 -11.0
+glRotate 0.0 1.0 0.0 0.0
+glRotate 0.0 0.0 1.0 0.0
+glPushMatrix 
+glTranslate 0.0 00005.80 0.0
+glRotate 0.0 1.0 0.0 0.0
+glRotate 0.0 0.0 1.0 0.0
+glCallList head
+glPopMatrix 
+glCallList torso
+glPushMatrix 
+glTranslate 00002.10 00004.0320 0.0
+glRotate 27.9 1.0 0.0 0.0
+glCallList upper_arm
+glTranslate 0.0 -3.00 0.0
+glRotate -35.3 1.0 0.0 0.0
+glCallList lower_arm
+glPopMatrix 
+glPushMatrix 
+glTranslate -00002.10 00004.0320 0.0
+glRotate 4.1 1.0 0.0 0.0
+glCallList upper_arm
+glTranslate 0.0 -3.00 0.0
+glRotate -53.2 1.0 0.0 0.0
+glCallList lower_arm
+glPopMatrix 
+glPushMatrix 
+glRotate -5.2 0.0 1.0 0.0
+glCallList lower_torso
+glPushMatrix 
+glTranslate 00001.10 -0000.630 0.0
+glRotate -15.7 1.0 0.0 0.0
+glCallList upper_leg
+glTranslate 0.0 -3.40 0.0
+glRotate 14.0 1.0 0.0 0.0
+glCallList lower_leg
+glTranslate 0.0 -3.00 0.0
+glRotate 10.6 1.0 0.0 0.0
+glCallList foot
+glPopMatrix 
+glPushMatrix 
+glTranslate -00001.10 -0000.630 0.0
+glRotate 10.1 1.0 0.0 0.0
+glCallList upper_leg
+glTranslate 0.0 -3.40 0.0
+glRotate 32.3 1.0 0.0 0.0
+glCallList lower_leg
+glTranslate 0.0 -3.00 0.0
+glRotate 13.6 1.0 0.0 0.0
+glCallList foot
+glPopMatrix 
+glPopMatrix 
+glFlush 
+glutSwapBuffers 
+glClear GL_COLOR_BUFFER_BIT
+glClear GL_DEPTH_BUFFER_BIT
+glLoadIdentity 
+glTranslate 0.0 0.0 -11.0
+glRotate 0.0 1.0 0.0 0.0
+glRotate 0.0 0.0 1.0 0.0
+glPushMatrix 
+glTranslate 0.0 00005.80 0.0
+glRotate 0.0 1.0 0.0 0.0
+glRotate 0.0 0.0 1.0 0.0
+glCallList head
+glPopMatrix 
+glCallList torso
+glPushMatrix 
+glTranslate 00002.10 00004.0320 0.0
+glRotate 27.4 1.0 0.0 0.0
+glCallList upper_arm
+glTranslate 0.0 -3.00 0.0
+glRotate -35.7 1.0 0.0 0.0
+glCallList lower_arm
+glPopMatrix 
+glPushMatrix 
+glTranslate -00002.10 00004.0320 0.0
+glRotate 4.6 1.0 0.0 0.0
+glCallList upper_arm
+glTranslate 0.0 -3.00 0.0
+glRotate -52.9 1.0 0.0 0.0
+glCallList lower_arm
+glPopMatrix 
+glPushMatrix 
+glRotate -5.0 0.0 1.0 0.0
+glCallList lower_torso
+glPushMatrix 
+glTranslate 00001.10 -0000.630 0.0
+glRotate -14.8 1.0 0.0 0.0
+glCallList upper_leg
+glTranslate 0.0 -3.40 0.0
+glRotate 13.7 1.0 0.0 0.0
+glCallList lower_leg
+glTranslate 0.0 -3.00 0.0
+glRotate 10.0 1.0 0.0 0.0
+glCallList foot
+glPopMatrix 
+glPushMatrix 
+glTranslate -00001.10 -0000.630 0.0
+glRotate 8.9 1.0 0.0 0.0
+glCallList upper_leg
+glTranslate 0.0 -3.40 0.0
+glRotate 33.2 1.0 0.0 0.0
+glCallList lower_leg
+glTranslate 0.0 -3.00 0.0
+glRotate 12.4 1.0 0.0 0.0
+glCallList foot
+glPopMatrix 
+glPopMatrix 
+glFlush 
+glutSwapBuffers 
+glClear GL_COLOR_BUFFER_BIT
+glClear GL_DEPTH_BUFFER_BIT
+glLoadIdentity 
+glTranslate 0.0 0.0 -11.0
+glRotate 0.0 1.0 0.0 0.0
+glRotate 0.0 0.0 1.0 0.0
+glPushMatrix 
+glTranslate 0.0 00005.80 0.0
+glRotate 0.0 1.0 0.0 0.0
+glRotate 0.0 0.0 1.0 0.0
+glCallList head
+glPopMatrix 
+glCallList torso
+glPushMatrix 
+glTranslate 00002.10 00004.0320 0.0
+glRotate 26.9 1.0 0.0 0.0
+glCallList upper_arm
+glTranslate 0.0 -3.00 0.0
+glRotate -36.1 1.0 0.0 0.0
+glCallList lower_arm
+glPopMatrix 
+glPushMatrix 
+glTranslate -00002.10 00004.0320 0.0
+glRotate 5.1 1.0 0.0 0.0
+glCallList upper_arm
+glTranslate 0.0 -3.00 0.0
+glRotate -52.5 1.0 0.0 0.0
+glCallList lower_arm
+glPopMatrix 
+glPushMatrix 
+glRotate -4.8 0.0 1.0 0.0
+glCallList lower_torso
+glPushMatrix 
+glTranslate 00001.10 -0000.630 0.0
+glRotate -13.8 1.0 0.0 0.0
+glCallList upper_leg
+glTranslate 0.0 -3.40 0.0
+glRotate 13.5 1.0 0.0 0.0
+glCallList lower_leg
+glTranslate 0.0 -3.00 0.0
+glRotate 9.3 1.0 0.0 0.0
+glCallList foot
+glPopMatrix 
+glPushMatrix 
+glTranslate -00001.10 -0000.630 0.0
+glRotate 7.6 1.0 0.0 0.0
+glCallList upper_leg
+glTranslate 0.0 -3.40 0.0
+glRotate 34.2 1.0 0.0 0.0
+glCallList lower_leg
+glTranslate 0.0 -3.00 0.0
+glRotate 11.2 1.0 0.0 0.0
+glCallList foot
+glPopMatrix 
+glPopMatrix 
+glFlush 
+glutSwapBuffers 
+glClear GL_COLOR_BUFFER_BIT
+glClear GL_DEPTH_BUFFER_BIT
+glLoadIdentity 
+glTranslate 0.0 0.0 -11.0
+glRotate 0.0 1.0 0.0 0.0
+glRotate 0.0 0.0 1.0 0.0
+glPushMatrix 
+glTranslate 0.0 00005.80 0.0
+glRotate 0.0 1.0 0.0 0.0
+glRotate 0.0 0.0 1.0 0.0
+glCallList head
+glPopMatrix 
+glCallList torso
+glPushMatrix 
+glTranslate 00002.10 00004.0320 0.0
+glRotate 26.4 1.0 0.0 0.0
+glCallList upper_arm
+glTranslate 0.0 -3.00 0.0
+glRotate -36.5 1.0 0.0 0.0
+glCallList lower_arm
+glPopMatrix 
+glPushMatrix 
+glTranslate -00002.10 00004.0320 0.0
+glRotate 5.6 1.0 0.0 0.0
+glCallList upper_arm
+glTranslate 0.0 -3.00 0.0
+glRotate -52.2 1.0 0.0 0.0
+glCallList lower_arm
+glPopMatrix 
+glPushMatrix 
+glRotate -4.6 0.0 1.0 0.0
+glCallList lower_torso
+glPushMatrix 
+glTranslate 00001.10 -0000.630 0.0
+glRotate -12.8 1.0 0.0 0.0
+glCallList upper_leg
+glTranslate 0.0 -3.40 0.0
+glRotate 13.2 1.0 0.0 0.0
+glCallList lower_leg
+glTranslate 0.0 -3.00 0.0
+glRotate 8.7 1.0 0.0 0.0
+glCallList foot
+glPopMatrix 
+glPushMatrix 
+glTranslate -00001.10 -0000.630 0.0
+glRotate 6.3 1.0 0.0 0.0
+glCallList upper_leg
+glTranslate 0.0 -3.40 0.0
+glRotate 35.2 1.0 0.0 0.0
+glCallList lower_leg
+glTranslate 0.0 -3.00 0.0
+glRotate 10.0 1.0 0.0 0.0
+glCallList foot
+glPopMatrix 
+glPopMatrix 
+glFlush 
+glutSwapBuffers 
+glClear GL_COLOR_BUFFER_BIT
+glClear GL_DEPTH_BUFFER_BIT
+glLoadIdentity 
+glTranslate 0.0 0.0 -11.0
+glRotate 0.0 1.0 0.0 0.0
+glRotate 0.0 0.0 1.0 0.0
+glPushMatrix 
+glTranslate 0.0 00005.80 0.0
+glRotate 0.0 1.0 0.0 0.0
+glRotate 0.0 0.0 1.0 0.0
+glCallList head
+glPopMatrix 
+glCallList torso
+glPushMatrix 
+glTranslate 00002.10 00004.0320 0.0
+glRotate 26.0 1.0 0.0 0.0
+glCallList upper_arm
+glTranslate 0.0 -3.00 0.0
+glRotate -36.9 1.0 0.0 0.0
+glCallList lower_arm
+glPopMatrix 
+glPushMatrix 
+glTranslate -00002.10 00004.0320 0.0
+glRotate 6.0 1.0 0.0 0.0
+glCallList upper_arm
+glTranslate 0.0 -3.00 0.0
+glRotate -51.9 1.0 0.0 0.0
+glCallList lower_arm
+glPopMatrix 
+glPushMatrix 
+glRotate -4.4 0.0 1.0 0.0
+glCallList lower_torso
+glPushMatrix 
+glTranslate 00001.10 -0000.630 0.0
+glRotate -11.9 1.0 0.0 0.0
+glCallList upper_leg
+glTranslate 0.0 -3.40 0.0
+glRotate 13.0 1.0 0.0 0.0
+glCallList lower_leg
+glTranslate 0.0 -3.00 0.0
+glRotate 8.1 1.0 0.0 0.0
+glCallList foot
+glPopMatrix 
+glPushMatrix 
+glTranslate -00001.10 -0000.630 0.0
+glRotate 5.1 1.0 0.0 0.0
+glCallList upper_leg
+glTranslate 0.0 -3.40 0.0
+glRotate 36.1 1.0 0.0 0.0
+glCallList lower_leg
+glTranslate 0.0 -3.00 0.0
+glRotate 8.8 1.0 0.0 0.0
+glCallList foot
+glPopMatrix 
+glPopMatrix 
+glFlush 
+glutSwapBuffers 
+glClear GL_COLOR_BUFFER_BIT
+glClear GL_DEPTH_BUFFER_BIT
+glLoadIdentity 
+glTranslate 0.0 0.0 -11.0
+glRotate 0.0 1.0 0.0 0.0
+glRotate 0.0 0.0 1.0 0.0
+glPushMatrix 
+glTranslate 0.0 00005.80 0.0
+glRotate 0.0 1.0 0.0 0.0
+glRotate 0.0 0.0 1.0 0.0
+glCallList head
+glPopMatrix 
+glCallList torso
+glPushMatrix 
+glTranslate 00002.10 00004.0320 0.0
+glRotate 25.5 1.0 0.0 0.0
+glCallList upper_arm
+glTranslate 0.0 -3.00 0.0
+glRotate -37.3 1.0 0.0 0.0
+glCallList lower_arm
+glPopMatrix 
+glPushMatrix 
+glTranslate -00002.10 00004.0320 0.0
+glRotate 6.5 1.0 0.0 0.0
+glCallList upper_arm
+glTranslate 0.0 -3.00 0.0
+glRotate -51.5 1.0 0.0 0.0
+glCallList lower_arm
+glPopMatrix 
+glPushMatrix 
+glRotate -4.2 0.0 1.0 0.0
+glCallList lower_torso
+glPushMatrix 
+glTranslate 00001.10 -0000.630 0.0
+glRotate -10.9 1.0 0.0 0.0
+glCallList upper_leg
+glTranslate 0.0 -3.40 0.0
+glRotate 12.8 1.0 0.0 0.0
+glCallList lower_leg
+glTranslate 0.0 -3.00 0.0
+glRotate 7.4 1.0 0.0 0.0
+glCallList foot
+glPopMatrix 
+glPushMatrix 
+glTranslate -00001.10 -0000.630 0.0
+glRotate 3.8 1.0 0.0 0.0
+glCallList upper_leg
+glTranslate 0.0 -3.40 0.0
+glRotate 37.1 1.0 0.0 0.0
+glCallList lower_leg
+glTranslate 0.0 -3.00 0.0
+glRotate 7.6 1.0 0.0 0.0
+glCallList foot
+glPopMatrix 
+glPopMatrix 
+glFlush 
+glutSwapBuffers 
+glClear GL_COLOR_BUFFER_BIT
+glClear GL_DEPTH_BUFFER_BIT
+glLoadIdentity 
+glTranslate 0.0 0.0 -11.0
+glRotate 0.0 1.0 0.0 0.0
+glRotate 0.0 0.0 1.0 0.0
+glPushMatrix 
+glTranslate 0.0 00005.80 0.0
+glRotate 0.0 1.0 0.0 0.0
+glRotate 0.0 0.0 1.0 0.0
+glCallList head
+glPopMatrix 
+glCallList torso
+glPushMatrix 
+glTranslate 00002.10 00004.0320 0.0
+glRotate 25.0 1.0 0.0 0.0
+glCallList upper_arm
+glTranslate 0.0 -3.00 0.0
+glRotate -37.7 1.0 0.0 0.0
+glCallList lower_arm
+glPopMatrix 
+glPushMatrix 
+glTranslate -00002.10 00004.0320 0.0
+glRotate 7.0 1.0 0.0 0.0
+glCallList upper_arm
+glTranslate 0.0 -3.00 0.0
+glRotate -51.2 1.0 0.0 0.0
+glCallList lower_arm
+glPopMatrix 
+glPushMatrix 
+glRotate -4.0 0.0 1.0 0.0
+glCallList lower_torso
+glPushMatrix 
+glTranslate 00001.10 -0000.630 0.0
+glRotate -10.0 1.0 0.0 0.0
+glCallList upper_leg
+glTranslate 0.0 -3.40 0.0
+glRotate 12.5 1.0 0.0 0.0
+glCallList lower_leg
+glTranslate 0.0 -3.00 0.0
+glRotate 6.8 1.0 0.0 0.0
+glCallList foot
+glPopMatrix 
+glPushMatrix 
+glTranslate -00001.10 -0000.630 0.0
+glRotate 2.6 1.0 0.0 0.0
+glCallList upper_leg
+glTranslate 0.0 -3.40 0.0
+glRotate 38.0 1.0 0.0 0.0
+glCallList lower_leg
+glTranslate 0.0 -3.00 0.0
+glRotate 6.4 1.0 0.0 0.0
+glCallList foot
+glPopMatrix 
+glPopMatrix 
+glFlush 
+glutSwapBuffers 
+glClear GL_COLOR_BUFFER_BIT
+glClear GL_DEPTH_BUFFER_BIT
+glLoadIdentity 
+glTranslate 0.0 0.0 -11.0
+glRotate 0.0 1.0 0.0 0.0
+glRotate 0.0 0.0 1.0 0.0
+glPushMatrix 
+glTranslate 0.0 00005.80 0.0
+glRotate 0.0 1.0 0.0 0.0
+glRotate 0.0 0.0 1.0 0.0
+glCallList head
+glPopMatrix 
+glCallList torso
+glPushMatrix 
+glTranslate 00002.10 00004.0320 0.0
+glRotate 24.5 1.0 0.0 0.0
+glCallList upper_arm
+glTranslate 0.0 -3.00 0.0
+glRotate -38.1 1.0 0.0 0.0
+glCallList lower_arm
+glPopMatrix 
+glPushMatrix 
+glTranslate -00002.10 00004.0320 0.0
+glRotate 7.5 1.0 0.0 0.0
+glCallList upper_arm
+glTranslate 0.0 -3.00 0.0
+glRotate -50.9 1.0 0.0 0.0
+glCallList lower_arm
+glPopMatrix 
+glPushMatrix 
+glRotate -3.8 0.0 1.0 0.0
+glCallList lower_torso
+glPushMatrix 
+glTranslate 00001.10 -0000.630 0.0
+glRotate -9.0 1.0 0.0 0.0
+glCallList upper_leg
+glTranslate 0.0 -3.40 0.0
+glRotate 12.3 1.0 0.0 0.0
+glCallList lower_leg
+glTranslate 0.0 -3.00 0.0
+glRotate 6.2 1.0 0.0 0.0
+glCallList foot
+glPopMatrix 
+glPushMatrix 
+glTranslate -00001.10 -0000.630 0.0
+glRotate 1.3 1.0 0.0 0.0
+glCallList upper_leg
+glTranslate 0.0 -3.40 0.0
+glRotate 39.0 1.0 0.0 0.0
+glCallList lower_leg
+glTranslate 0.0 -3.00 0.0
+glRotate 5.2 1.0 0.0 0.0
+glCallList foot
+glPopMatrix 
+glPopMatrix 
+glFlush 
+glutSwapBuffers 
+glClear GL_COLOR_BUFFER_BIT
+glClear GL_DEPTH_BUFFER_BIT
+glLoadIdentity 
+glTranslate 0.0 0.0 -11.0
+glRotate 0.0 1.0 0.0 0.0
+glRotate 0.0 0.0 1.0 0.0
+glPushMatrix 
+glTranslate 0.0 00005.80 0.0
+glRotate 0.0 1.0 0.0 0.0
+glRotate 0.0 0.0 1.0 0.0
+glCallList head
+glPopMatrix 
+glCallList torso
+glPushMatrix 
+glTranslate 00002.10 00004.0320 0.0
+glRotate 24.0 1.0 0.0 0.0
+glCallList upper_arm
+glTranslate 0.0 -3.00 0.0
+glRotate -38.5 1.0 0.0 0.0
+glCallList lower_arm
+glPopMatrix 
+glPushMatrix 
+glTranslate -00002.10 00004.0320 0.0
+glRotate 8.0 1.0 0.0 0.0
+glCallList upper_arm
+glTranslate 0.0 -3.00 0.0
+glRotate -50.5 1.0 0.0 0.0
+glCallList lower_arm
+glPopMatrix 
+glPushMatrix 
+glRotate -3.5 0.0 1.0 0.0
+glCallList lower_torso
+glPushMatrix 
+glTranslate 00001.10 -0000.630 0.0
+glRotate -8.0 1.0 0.0 0.0
+glCallList upper_leg
+glTranslate 0.0 -3.40 0.0
+glRotate 12.0 1.0 0.0 0.0
+glCallList lower_leg
+glTranslate 0.0 -3.00 0.0
+glRotate 5.5 1.0 0.0 0.0
+glCallList foot
+glPopMatrix 
+glPushMatrix 
+glTranslate -00001.10 -0000.630 0.0
+glRotate 0.0 1.0 0.0 0.0
+glCallList upper_leg
+glTranslate 0.0 -3.40 0.0
+glRotate 40.0 1.0 0.0 0.0
+glCallList lower_leg
+glTranslate 0.0 -3.00 0.0
+glRotate 4.0 1.0 0.0 0.0
+glCallList foot
+glPopMatrix 
+glPopMatrix 
+glFlush 
+glutSwapBuffers 
+glClear GL_COLOR_BUFFER_BIT
+glClear GL_DEPTH_BUFFER_BIT
+glLoadIdentity 
+glTranslate 0.0 0.0 -11.0
+glRotate 0.0 1.0 0.0 0.0
+glRotate 0.0 0.0 1.0 0.0
+glPushMatrix 
+glTranslate 0.0 00005.80 0.0
+glRotate 0.0 1.0 0.0 0.0
+glRotate 0.0 0.0 1.0 0.0
+glCallList head
+glPopMatrix 
+glCallList torso
+glPushMatrix 
+glTranslate 00002.10 00004.0320 0.0
+glRotate 23.6 1.0 0.0 0.0
+glCallList upper_arm
+glTranslate 0.0 -3.00 0.0
+glRotate -38.8 1.0 0.0 0.0
+glCallList lower_arm
+glPopMatrix 
+glPushMatrix 
+glTranslate -00002.10 00004.0320 0.0
+glRotate 8.4 1.0 0.0 0.0
+glCallList upper_arm
+glTranslate 0.0 -3.00 0.0
+glRotate -50.2 1.0 0.0 0.0
+glCallList lower_arm
+glPopMatrix 
+glPushMatrix 
+glRotate -3.3 0.0 1.0 0.0
+glCallList lower_torso
+glPushMatrix 
+glTranslate 00001.10 -0000.630 0.0
+glRotate -7.1 1.0 0.0 0.0
+glCallList upper_leg
+glTranslate 0.0 -3.40 0.0
+glRotate 11.8 1.0 0.0 0.0
+glCallList lower_leg
+glTranslate 0.0 -3.00 0.0
+glRotate 4.9 1.0 0.0 0.0
+glCallList foot
+glPopMatrix 
+glPushMatrix 
+glTranslate -00001.10 -0000.630 0.0
+glRotate -1.2 1.0 0.0 0.0
+glCallList upper_leg
+glTranslate 0.0 -3.40 0.0
+glRotate 40.9 1.0 0.0 0.0
+glCallList lower_leg
+glTranslate 0.0 -3.00 0.0
+glRotate 2.8 1.0 0.0 0.0
+glCallList foot
+glPopMatrix 
+glPopMatrix 
+glFlush 
+glutSwapBuffers 
+glClear GL_COLOR_BUFFER_BIT
+glClear GL_DEPTH_BUFFER_BIT
+glLoadIdentity 
+glTranslate 0.0 0.0 -11.0
+glRotate 0.0 1.0 0.0 0.0
+glRotate 0.0 0.0 1.0 0.0
+glPushMatrix 
+glTranslate 0.0 00005.80 0.0
+glRotate 0.0 1.0 0.0 0.0
+glRotate 0.0 0.0 1.0 0.0
+glCallList head
+glPopMatrix 
+glCallList torso
+glPushMatrix 
+glTranslate 00002.10 00004.0320 0.0
+glRotate 23.1 1.0 0.0 0.0
+glCallList upper_arm
+glTranslate 0.0 -3.00 0.0
+glRotate -39.2 1.0 0.0 0.0
+glCallList lower_arm
+glPopMatrix 
+glPushMatrix 
+glTranslate -00002.10 00004.0320 0.0
+glRotate 8.9 1.0 0.0 0.0
+glCallList upper_arm
+glTranslate 0.0 -3.00 0.0
+glRotate -49.9 1.0 0.0 0.0
+glCallList lower_arm
+glPopMatrix 
+glPushMatrix 
+glRotate -3.1 0.0 1.0 0.0
+glCallList lower_torso
+glPushMatrix 
+glTranslate 00001.10 -0000.630 0.0
+glRotate -6.1 1.0 0.0 0.0
+glCallList upper_leg
+glTranslate 0.0 -3.40 0.0
+glRotate 11.6 1.0 0.0 0.0
+glCallList lower_leg
+glTranslate 0.0 -3.00 0.0
+glRotate 4.3 1.0 0.0 0.0
+glCallList foot
+glPopMatrix 
+glPushMatrix 
+glTranslate -00001.10 -0000.630 0.0
+glRotate -2.5 1.0 0.0 0.0
+glCallList upper_leg
+glTranslate 0.0 -3.40 0.0
+glRotate 41.9 1.0 0.0 0.0
+glCallList lower_leg
+glTranslate 0.0 -3.00 0.0
+glRotate 1.6 1.0 0.0 0.0
+glCallList foot
+glPopMatrix 
+glPopMatrix 
+glFlush 
+glutSwapBuffers 
+glClear GL_COLOR_BUFFER_BIT
+glClear GL_DEPTH_BUFFER_BIT
+glLoadIdentity 
+glTranslate 0.0 0.0 -11.0
+glRotate 0.0 1.0 0.0 0.0
+glRotate 0.0 0.0 1.0 0.0
+glPushMatrix 
+glTranslate 0.0 00005.80 0.0
+glRotate 0.0 1.0 0.0 0.0
+glRotate 0.0 0.0 1.0 0.0
+glCallList head
+glPopMatrix 
+glCallList torso
+glPushMatrix 
+glTranslate 00002.10 00004.0320 0.0
+glRotate 22.6 1.0 0.0 0.0
+glCallList upper_arm
+glTranslate 0.0 -3.00 0.0
+glRotate -39.6 1.0 0.0 0.0
+glCallList lower_arm
+glPopMatrix 
+glPushMatrix 
+glTranslate -00002.10 00004.0320 0.0
+glRotate 9.4 1.0 0.0 0.0
+glCallList upper_arm
+glTranslate 0.0 -3.00 0.0
+glRotate -49.6 1.0 0.0 0.0
+glCallList lower_arm
+glPopMatrix 
+glPushMatrix 
+glRotate -2.9 0.0 1.0 0.0
+glCallList lower_torso
+glPushMatrix 
+glTranslate 00001.10 -0000.630 0.0
+glRotate -5.2 1.0 0.0 0.0
+glCallList upper_leg
+glTranslate 0.0 -3.40 0.0
+glRotate 11.3 1.0 0.0 0.0
+glCallList lower_leg
+glTranslate 0.0 -3.00 0.0
+glRotate 3.7 1.0 0.0 0.0
+glCallList foot
+glPopMatrix 
+glPushMatrix 
+glTranslate -00001.10 -0000.630 0.0
+glRotate -3.7 1.0 0.0 0.0
+glCallList upper_leg
+glTranslate 0.0 -3.40 0.0
+glRotate 42.8 1.0 0.0 0.0
+glCallList lower_leg
+glTranslate 0.0 -3.00 0.0
+glRotate 0.4 1.0 0.0 0.0
+glCallList foot
+glPopMatrix 
+glPopMatrix 
+glFlush 
+glutSwapBuffers 
+glClear GL_COLOR_BUFFER_BIT
+glClear GL_DEPTH_BUFFER_BIT
+glLoadIdentity 
+glTranslate 0.0 0.0 -11.0
+glRotate 0.0 1.0 0.0 0.0
+glRotate 0.0 0.0 1.0 0.0
+glPushMatrix 
+glTranslate 0.0 00005.80 0.0
+glRotate 0.0 1.0 0.0 0.0
+glRotate 0.0 0.0 1.0 0.0
+glCallList head
+glPopMatrix 
+glCallList torso
+glPushMatrix 
+glTranslate 00002.10 00004.0320 0.0
+glRotate 22.1 1.0 0.0 0.0
+glCallList upper_arm
+glTranslate 0.0 -3.00 0.0
+glRotate -40.0 1.0 0.0 0.0
+glCallList lower_arm
+glPopMatrix 
+glPushMatrix 
+glTranslate -00002.10 00004.0320 0.0
+glRotate 9.9 1.0 0.0 0.0
+glCallList upper_arm
+glTranslate 0.0 -3.00 0.0
+glRotate -49.2 1.0 0.0 0.0
+glCallList lower_arm
+glPopMatrix 
+glPushMatrix 
+glRotate -2.7 0.0 1.0 0.0
+glCallList lower_torso
+glPushMatrix 
+glTranslate 00001.10 -0000.630 0.0
+glRotate -4.2 1.0 0.0 0.0
+glCallList upper_leg
+glTranslate 0.0 -3.40 0.0
+glRotate 11.1 1.0 0.0 0.0
+glCallList lower_leg
+glTranslate 0.0 -3.00 0.0
+glRotate 3.0 1.0 0.0 0.0
+glCallList foot
+glPopMatrix 
+glPushMatrix 
+glTranslate -00001.10 -0000.630 0.0
+glRotate -5.0 1.0 0.0 0.0
+glCallList upper_leg
+glTranslate 0.0 -3.40 0.0
+glRotate 43.8 1.0 0.0 0.0
+glCallList lower_leg
+glTranslate 0.0 -3.00 0.0
+glRotate -.8 1.0 0.0 0.0
+glCallList foot
+glPopMatrix 
+glPopMatrix 
+glFlush 
+glutSwapBuffers 
+glClear GL_COLOR_BUFFER_BIT
+glClear GL_DEPTH_BUFFER_BIT
+glLoadIdentity 
+glTranslate 0.0 0.0 -11.0
+glRotate 0.0 1.0 0.0 0.0
+glRotate 0.0 0.0 1.0 0.0
+glPushMatrix 
+glTranslate 0.0 00005.80 0.0
+glRotate 0.0 1.0 0.0 0.0
+glRotate 0.0 0.0 1.0 0.0
+glCallList head
+glPopMatrix 
+glCallList torso
+glPushMatrix 
+glTranslate 00002.10 00004.0320 0.0
+glRotate 21.6 1.0 0.0 0.0
+glCallList upper_arm
+glTranslate 0.0 -3.00 0.0
+glRotate -40.4 1.0 0.0 0.0
+glCallList lower_arm
+glPopMatrix 
+glPushMatrix 
+glTranslate -00002.10 00004.0320 0.0
+glRotate 10.4 1.0 0.0 0.0
+glCallList upper_arm
+glTranslate 0.0 -3.00 0.0
+glRotate -48.9 1.0 0.0 0.0
+glCallList lower_arm
+glPopMatrix 
+glPushMatrix 
+glRotate -2.5 0.0 1.0 0.0
+glCallList lower_torso
+glPushMatrix 
+glTranslate 00001.10 -0000.630 0.0
+glRotate -3.2 1.0 0.0 0.0
+glCallList upper_leg
+glTranslate 0.0 -3.40 0.0
+glRotate 10.8 1.0 0.0 0.0
+glCallList lower_leg
+glTranslate 0.0 -3.00 0.0
+glRotate 2.4 1.0 0.0 0.0
+glCallList foot
+glPopMatrix 
+glPushMatrix 
+glTranslate -00001.10 -0000.630 0.0
+glRotate -6.3 1.0 0.0 0.0
+glCallList upper_leg
+glTranslate 0.0 -3.40 0.0
+glRotate 44.8 1.0 0.0 0.0
+glCallList lower_leg
+glTranslate 0.0 -3.00 0.0
+glRotate -2.0 1.0 0.0 0.0
+glCallList foot
+glPopMatrix 
+glPopMatrix 
+glFlush 
+glutSwapBuffers 
+glClear GL_COLOR_BUFFER_BIT
+glClear GL_DEPTH_BUFFER_BIT
+glLoadIdentity 
+glTranslate 0.0 0.0 -11.0
+glRotate 0.0 1.0 0.0 0.0
+glRotate 0.0 0.0 1.0 0.0
+glPushMatrix 
+glTranslate 0.0 00005.80 0.0
+glRotate 0.0 1.0 0.0 0.0
+glRotate 0.0 0.0 1.0 0.0
+glCallList head
+glPopMatrix 
+glCallList torso
+glPushMatrix 
+glTranslate 00002.10 00004.0320 0.0
+glRotate 21.2 1.0 0.0 0.0
+glCallList upper_arm
+glTranslate 0.0 -3.00 0.0
+glRotate -40.8 1.0 0.0 0.0
+glCallList lower_arm
+glPopMatrix 
+glPushMatrix 
+glTranslate -00002.10 00004.0320 0.0
+glRotate 10.8 1.0 0.0 0.0
+glCallList upper_arm
+glTranslate 0.0 -3.00 0.0
+glRotate -48.6 1.0 0.0 0.0
+glCallList lower_arm
+glPopMatrix 
+glPushMatrix 
+glRotate -2.3 0.0 1.0 0.0
+glCallList lower_torso
+glPushMatrix 
+glTranslate 00001.10 -0000.630 0.0
+glRotate -2.3 1.0 0.0 0.0
+glCallList upper_leg
+glTranslate 0.0 -3.40 0.0
+glRotate 10.6 1.0 0.0 0.0
+glCallList lower_leg
+glTranslate 0.0 -3.00 0.0
+glRotate 1.8 1.0 0.0 0.0
+glCallList foot
+glPopMatrix 
+glPushMatrix 
+glTranslate -00001.10 -0000.630 0.0
+glRotate -7.5 1.0 0.0 0.0
+glCallList upper_leg
+glTranslate 0.0 -3.40 0.0
+glRotate 45.7 1.0 0.0 0.0
+glCallList lower_leg
+glTranslate 0.0 -3.00 0.0
+glRotate -3.2 1.0 0.0 0.0
+glCallList foot
+glPopMatrix 
+glPopMatrix 
+glFlush 
+glutSwapBuffers 
+glClear GL_COLOR_BUFFER_BIT
+glClear GL_DEPTH_BUFFER_BIT
+glLoadIdentity 
+glTranslate 0.0 0.0 -11.0
+glRotate 0.0 1.0 0.0 0.0
+glRotate 0.0 0.0 1.0 0.0
+glPushMatrix 
+glTranslate 0.0 00005.80 0.0
+glRotate 0.0 1.0 0.0 0.0
+glRotate 0.0 0.0 1.0 0.0
+glCallList head
+glPopMatrix 
+glCallList torso
+glPushMatrix 
+glTranslate 00002.10 00004.0320 0.0
+glRotate 20.7 1.0 0.0 0.0
+glCallList upper_arm
+glTranslate 0.0 -3.00 0.0
+glRotate -41.2 1.0 0.0 0.0
+glCallList lower_arm
+glPopMatrix 
+glPushMatrix 
+glTranslate -00002.10 00004.0320 0.0
+glRotate 11.3 1.0 0.0 0.0
+glCallList upper_arm
+glTranslate 0.0 -3.00 0.0
+glRotate -48.2 1.0 0.0 0.0
+glCallList lower_arm
+glPopMatrix 
+glPushMatrix 
+glRotate -2.1 0.0 1.0 0.0
+glCallList lower_torso
+glPushMatrix 
+glTranslate 00001.10 -0000.630 0.0
+glRotate -1.3 1.0 0.0 0.0
+glCallList upper_leg
+glTranslate 0.0 -3.40 0.0
+glRotate 10.4 1.0 0.0 0.0
+glCallList lower_leg
+glTranslate 0.0 -3.00 0.0
+glRotate 1.1 1.0 0.0 0.0
+glCallList foot
+glPopMatrix 
+glPushMatrix 
+glTranslate -00001.10 -0000.630 0.0
+glRotate -8.8 1.0 0.0 0.0
+glCallList upper_leg
+glTranslate 0.0 -3.40 0.0
+glRotate 46.7 1.0 0.0 0.0
+glCallList lower_leg
+glTranslate 0.0 -3.00 0.0
+glRotate -4.4 1.0 0.0 0.0
+glCallList foot
+glPopMatrix 
+glPopMatrix 
+glFlush 
+glutSwapBuffers 
+glClear GL_COLOR_BUFFER_BIT
+glClear GL_DEPTH_BUFFER_BIT
+glLoadIdentity 
+glTranslate 0.0 0.0 -11.0
+glRotate 0.0 1.0 0.0 0.0
+glRotate 0.0 0.0 1.0 0.0
+glPushMatrix 
+glTranslate 0.0 00005.80 0.0
+glRotate 0.0 1.0 0.0 0.0
+glRotate 0.0 0.0 1.0 0.0
+glCallList head
+glPopMatrix 
+glCallList torso
+glPushMatrix 
+glTranslate 00002.10 00004.0320 0.0
+glRotate 20.2 1.0 0.0 0.0
+glCallList upper_arm
+glTranslate 0.0 -3.00 0.0
+glRotate -41.6 1.0 0.0 0.0
+glCallList lower_arm
+glPopMatrix 
+glPushMatrix 
+glTranslate -00002.10 00004.0320 0.0
+glRotate 11.8 1.0 0.0 0.0
+glCallList upper_arm
+glTranslate 0.0 -3.00 0.0
+glRotate -47.9 1.0 0.0 0.0
+glCallList lower_arm
+glPopMatrix 
+glPushMatrix 
+glRotate -1.9 0.0 1.0 0.0
+glCallList lower_torso
+glPushMatrix 
+glTranslate 00001.10 -0000.630 0.0
+glRotate -.4 1.0 0.0 0.0
+glCallList upper_leg
+glTranslate 0.0 -3.40 0.0
+glRotate 10.1 1.0 0.0 0.0
+glCallList lower_leg
+glTranslate 0.0 -3.00 0.0
+glRotate 0.5 1.0 0.0 0.0
+glCallList foot
+glPopMatrix 
+glPushMatrix 
+glTranslate -00001.10 -0000.630 0.0
+glRotate -10.0 1.0 0.0 0.0
+glCallList upper_leg
+glTranslate 0.0 -3.40 0.0
+glRotate 47.6 1.0 0.0 0.0
+glCallList lower_leg
+glTranslate 0.0 -3.00 0.0
+glRotate -5.6 1.0 0.0 0.0
+glCallList foot
+glPopMatrix 
+glPopMatrix 
+glFlush 
+glutSwapBuffers 
+glClear GL_COLOR_BUFFER_BIT
+glClear GL_DEPTH_BUFFER_BIT
+glLoadIdentity 
+glTranslate 0.0 0.0 -11.0
+glRotate 0.0 1.0 0.0 0.0
+glRotate 0.0 0.0 1.0 0.0
+glPushMatrix 
+glTranslate 0.0 00005.80 0.0
+glRotate 0.0 1.0 0.0 0.0
+glRotate 0.0 0.0 1.0 0.0
+glCallList head
+glPopMatrix 
+glCallList torso
+glPushMatrix 
+glTranslate 00002.10 00004.0320 0.0
+glRotate 19.7 1.0 0.0 0.0
+glCallList upper_arm
+glTranslate 0.0 -3.00 0.0
+glRotate -42.0 1.0 0.0 0.0
+glCallList lower_arm
+glPopMatrix 
+glPushMatrix 
+glTranslate -00002.10 00004.0320 0.0
+glRotate 12.3 1.0 0.0 0.0
+glCallList upper_arm
+glTranslate 0.0 -3.00 0.0
+glRotate -47.6 1.0 0.0 0.0
+glCallList lower_arm
+glPopMatrix 
+glPushMatrix 
+glRotate -1.7 0.0 1.0 0.0
+glCallList lower_torso
+glPushMatrix 
+glTranslate 00001.10 -0000.630 0.0
+glRotate 0.6 1.0 0.0 0.0
+glCallList upper_leg
+glTranslate 0.0 -3.40 0.0
+glRotate 9.9 1.0 0.0 0.0
+glCallList lower_leg
+glTranslate 0.0 -3.00 0.0
+glRotate -.1 1.0 0.0 0.0
+glCallList foot
+glPopMatrix 
+glPushMatrix 
+glTranslate -00001.10 -0000.630 0.0
+glRotate -11.3 1.0 0.0 0.0
+glCallList upper_leg
+glTranslate 0.0 -3.40 0.0
+glRotate 48.6 1.0 0.0 0.0
+glCallList lower_leg
+glTranslate 0.0 -3.00 0.0
+glRotate -6.8 1.0 0.0 0.0
+glCallList foot
+glPopMatrix 
+glPopMatrix 
+glFlush 
+glutSwapBuffers 
+glClear GL_COLOR_BUFFER_BIT
+glClear GL_DEPTH_BUFFER_BIT
+glLoadIdentity 
+glTranslate 0.0 0.0 -11.0
+glRotate 0.0 1.0 0.0 0.0
+glRotate 0.0 0.0 1.0 0.0
+glPushMatrix 
+glTranslate 0.0 00005.80 0.0
+glRotate 0.0 1.0 0.0 0.0
+glRotate 0.0 0.0 1.0 0.0
+glCallList head
+glPopMatrix 
+glCallList torso
+glPushMatrix 
+glTranslate 00002.10 00004.0320 0.0
+glRotate 19.2 1.0 0.0 0.0
+glCallList upper_arm
+glTranslate 0.0 -3.00 0.0
+glRotate -42.4 1.0 0.0 0.0
+glCallList lower_arm
+glPopMatrix 
+glPushMatrix 
+glTranslate -00002.10 00004.0320 0.0
+glRotate 12.8 1.0 0.0 0.0
+glCallList upper_arm
+glTranslate 0.0 -3.00 0.0
+glRotate -47.2 1.0 0.0 0.0
+glCallList lower_arm
+glPopMatrix 
+glPushMatrix 
+glRotate -1.4 0.0 1.0 0.0
+glCallList lower_torso
+glPushMatrix 
+glTranslate 00001.10 -0000.630 0.0
+glRotate 1.6 1.0 0.0 0.0
+glCallList upper_leg
+glTranslate 0.0 -3.40 0.0
+glRotate 9.6 1.0 0.0 0.0
+glCallList lower_leg
+glTranslate 0.0 -3.00 0.0
+glRotate -.8 1.0 0.0 0.0
+glCallList foot
+glPopMatrix 
+glPushMatrix 
+glTranslate -00001.10 -0000.630 0.0
+glRotate -12.6 1.0 0.0 0.0
+glCallList upper_leg
+glTranslate 0.0 -3.40 0.0
+glRotate 49.6 1.0 0.0 0.0
+glCallList lower_leg
+glTranslate 0.0 -3.00 0.0
+glRotate -8.0 1.0 0.0 0.0
+glCallList foot
+glPopMatrix 
+glPopMatrix 
+glFlush 
+glutSwapBuffers 
+glClear GL_COLOR_BUFFER_BIT
+glClear GL_DEPTH_BUFFER_BIT
+glLoadIdentity 
+glTranslate 0.0 0.0 -11.0
+glRotate 0.0 1.0 0.0 0.0
+glRotate 0.0 0.0 1.0 0.0
+glPushMatrix 
+glTranslate 0.0 00005.80 0.0
+glRotate 0.0 1.0 0.0 0.0
+glRotate 0.0 0.0 1.0 0.0
+glCallList head
+glPopMatrix 
+glCallList torso
+glPushMatrix 
+glTranslate 00002.10 00004.0320 0.0
+glRotate 18.8 1.0 0.0 0.0
+glCallList upper_arm
+glTranslate 0.0 -3.00 0.0
+glRotate -42.7 1.0 0.0 0.0
+glCallList lower_arm
+glPopMatrix 
+glPushMatrix 
+glTranslate -00002.10 00004.0320 0.0
+glRotate 13.2 1.0 0.0 0.0
+glCallList upper_arm
+glTranslate 0.0 -3.00 0.0
+glRotate -46.9 1.0 0.0 0.0
+glCallList lower_arm
+glPopMatrix 
+glPushMatrix 
+glRotate -1.2 0.0 1.0 0.0
+glCallList lower_torso
+glPushMatrix 
+glTranslate 00001.10 -0000.630 0.0
+glRotate 2.5 1.0 0.0 0.0
+glCallList upper_leg
+glTranslate 0.0 -3.40 0.0
+glRotate 9.4 1.0 0.0 0.0
+glCallList lower_leg
+glTranslate 0.0 -3.00 0.0
+glRotate -1.4 1.0 0.0 0.0
+glCallList foot
+glPopMatrix 
+glPushMatrix 
+glTranslate -00001.10 -0000.630 0.0
+glRotate -13.8 1.0 0.0 0.0
+glCallList upper_leg
+glTranslate 0.0 -3.40 0.0
+glRotate 50.5 1.0 0.0 0.0
+glCallList lower_leg
+glTranslate 0.0 -3.00 0.0
+glRotate -9.2 1.0 0.0 0.0
+glCallList foot
+glPopMatrix 
+glPopMatrix 
+glFlush 
+glutSwapBuffers 
+glClear GL_COLOR_BUFFER_BIT
+glClear GL_DEPTH_BUFFER_BIT
+glLoadIdentity 
+glTranslate 0.0 0.0 -11.0
+glRotate 0.0 1.0 0.0 0.0
+glRotate 0.0 0.0 1.0 0.0
+glPushMatrix 
+glTranslate 0.0 00005.80 0.0
+glRotate 0.0 1.0 0.0 0.0
+glRotate 0.0 0.0 1.0 0.0
+glCallList head
+glPopMatrix 
+glCallList torso
+glPushMatrix 
+glTranslate 00002.10 00004.0320 0.0
+glRotate 18.3 1.0 0.0 0.0
+glCallList upper_arm
+glTranslate 0.0 -3.00 0.0
+glRotate -43.1 1.0 0.0 0.0
+glCallList lower_arm
+glPopMatrix 
+glPushMatrix 
+glTranslate -00002.10 00004.0320 0.0
+glRotate 13.7 1.0 0.0 0.0
+glCallList upper_arm
+glTranslate 0.0 -3.00 0.0
+glRotate -46.6 1.0 0.0 0.0
+glCallList lower_arm
+glPopMatrix 
+glPushMatrix 
+glRotate -1.0 0.0 1.0 0.0
+glCallList lower_torso
+glPushMatrix 
+glTranslate 00001.10 -0000.630 0.0
+glRotate 3.5 1.0 0.0 0.0
+glCallList upper_leg
+glTranslate 0.0 -3.40 0.0
+glRotate 9.2 1.0 0.0 0.0
+glCallList lower_leg
+glTranslate 0.0 -3.00 0.0
+glRotate -2.0 1.0 0.0 0.0
+glCallList foot
+glPopMatrix 
+glPushMatrix 
+glTranslate -00001.10 -0000.630 0.0
+glRotate -15.1 1.0 0.0 0.0
+glCallList upper_leg
+glTranslate 0.0 -3.40 0.0
+glRotate 51.5 1.0 0.0 0.0
+glCallList lower_leg
+glTranslate 0.0 -3.00 0.0
+glRotate -10.4 1.0 0.0 0.0
+glCallList foot
+glPopMatrix 
+glPopMatrix 
+glFlush 
+glutSwapBuffers 
+glClear GL_COLOR_BUFFER_BIT
+glClear GL_DEPTH_BUFFER_BIT
+glLoadIdentity 
+glTranslate 0.0 0.0 -11.0
+glRotate 0.0 1.0 0.0 0.0
+glRotate 0.0 0.0 1.0 0.0
+glPushMatrix 
+glTranslate 0.0 00005.80 0.0
+glRotate 0.0 1.0 0.0 0.0
+glRotate 0.0 0.0 1.0 0.0
+glCallList head
+glPopMatrix 
+glCallList torso
+glPushMatrix 
+glTranslate 00002.10 00004.0320 0.0
+glRotate 17.8 1.0 0.0 0.0
+glCallList upper_arm
+glTranslate 0.0 -3.00 0.0
+glRotate -43.5 1.0 0.0 0.0
+glCallList lower_arm
+glPopMatrix 
+glPushMatrix 
+glTranslate -00002.10 00004.0320 0.0
+glRotate 14.2 1.0 0.0 0.0
+glCallList upper_arm
+glTranslate 0.0 -3.00 0.0
+glRotate -46.3 1.0 0.0 0.0
+glCallList lower_arm
+glPopMatrix 
+glPushMatrix 
+glRotate -.8 0.0 1.0 0.0
+glCallList lower_torso
+glPushMatrix 
+glTranslate 00001.10 -0000.630 0.0
+glRotate 4.4 1.0 0.0 0.0
+glCallList upper_leg
+glTranslate 0.0 -3.40 0.0
+glRotate 8.9 1.0 0.0 0.0
+glCallList lower_leg
+glTranslate 0.0 -3.00 0.0
+glRotate -2.6 1.0 0.0 0.0
+glCallList foot
+glPopMatrix 
+glPushMatrix 
+glTranslate -00001.10 -0000.630 0.0
+glRotate -16.3 1.0 0.0 0.0
+glCallList upper_leg
+glTranslate 0.0 -3.40 0.0
+glRotate 52.4 1.0 0.0 0.0
+glCallList lower_leg
+glTranslate 0.0 -3.00 0.0
+glRotate -11.6 1.0 0.0 0.0
+glCallList foot
+glPopMatrix 
+glPopMatrix 
+glFlush 
+glutSwapBuffers 
+glClear GL_COLOR_BUFFER_BIT
+glClear GL_DEPTH_BUFFER_BIT
+glLoadIdentity 
+glTranslate 0.0 0.0 -11.0
+glRotate 0.0 1.0 0.0 0.0
+glRotate 0.0 0.0 1.0 0.0
+glPushMatrix 
+glTranslate 0.0 00005.80 0.0
+glRotate 0.0 1.0 0.0 0.0
+glRotate 0.0 0.0 1.0 0.0
+glCallList head
+glPopMatrix 
+glCallList torso
+glPushMatrix 
+glTranslate 00002.10 00004.0320 0.0
+glRotate 17.3 1.0 0.0 0.0
+glCallList upper_arm
+glTranslate 0.0 -3.00 0.0
+glRotate -43.9 1.0 0.0 0.0
+glCallList lower_arm
+glPopMatrix 
+glPushMatrix 
+glTranslate -00002.10 00004.0320 0.0
+glRotate 14.7 1.0 0.0 0.0
+glCallList upper_arm
+glTranslate 0.0 -3.00 0.0
+glRotate -45.9 1.0 0.0 0.0
+glCallList lower_arm
+glPopMatrix 
+glPushMatrix 
+glRotate -.6 0.0 1.0 0.0
+glCallList lower_torso
+glPushMatrix 
+glTranslate 00001.10 -0000.630 0.0
+glRotate 5.4 1.0 0.0 0.0
+glCallList upper_leg
+glTranslate 0.0 -3.40 0.0
+glRotate 8.7 1.0 0.0 0.0
+glCallList lower_leg
+glTranslate 0.0 -3.00 0.0
+glRotate -3.3 1.0 0.0 0.0
+glCallList foot
+glPopMatrix 
+glPushMatrix 
+glTranslate -00001.10 -0000.630 0.0
+glRotate -17.6 1.0 0.0 0.0
+glCallList upper_leg
+glTranslate 0.0 -3.40 0.0
+glRotate 53.4 1.0 0.0 0.0
+glCallList lower_leg
+glTranslate 0.0 -3.00 0.0
+glRotate -12.8 1.0 0.0 0.0
+glCallList foot
+glPopMatrix 
+glPopMatrix 
+glFlush 
+glutSwapBuffers 
+glClear GL_COLOR_BUFFER_BIT
+glClear GL_DEPTH_BUFFER_BIT
+glLoadIdentity 
+glTranslate 0.0 0.0 -11.0
+glRotate 0.0 1.0 0.0 0.0
+glRotate 0.0 0.0 1.0 0.0
+glPushMatrix 
+glTranslate 0.0 00005.80 0.0
+glRotate 0.0 1.0 0.0 0.0
+glRotate 0.0 0.0 1.0 0.0
+glCallList head
+glPopMatrix 
+glCallList torso
+glPushMatrix 
+glTranslate 00002.10 00004.0320 0.0
+glRotate 16.8 1.0 0.0 0.0
+glCallList upper_arm
+glTranslate 0.0 -3.00 0.0
+glRotate -44.3 1.0 0.0 0.0
+glCallList lower_arm
+glPopMatrix 
+glPushMatrix 
+glTranslate -00002.10 00004.0320 0.0
+glRotate 15.2 1.0 0.0 0.0
+glCallList upper_arm
+glTranslate 0.0 -3.00 0.0
+glRotate -45.6 1.0 0.0 0.0
+glCallList lower_arm
+glPopMatrix 
+glPushMatrix 
+glRotate -.4 0.0 1.0 0.0
+glCallList lower_torso
+glPushMatrix 
+glTranslate 00001.10 -0000.630 0.0
+glRotate 6.4 1.0 0.0 0.0
+glCallList upper_leg
+glTranslate 0.0 -3.40 0.0
+glRotate 8.4 1.0 0.0 0.0
+glCallList lower_leg
+glTranslate 0.0 -3.00 0.0
+glRotate -3.9 1.0 0.0 0.0
+glCallList foot
+glPopMatrix 
+glPushMatrix 
+glTranslate -00001.10 -0000.630 0.0
+glRotate -18.9 1.0 0.0 0.0
+glCallList upper_leg
+glTranslate 0.0 -3.40 0.0
+glRotate 54.4 1.0 0.0 0.0
+glCallList lower_leg
+glTranslate 0.0 -3.00 0.0
+glRotate -14.0 1.0 0.0 0.0
+glCallList foot
+glPopMatrix 
+glPopMatrix 
+glFlush 
+glutSwapBuffers 
+glClear GL_COLOR_BUFFER_BIT
+glClear GL_DEPTH_BUFFER_BIT
+glLoadIdentity 
+glTranslate 0.0 0.0 -11.0
+glRotate 0.0 1.0 0.0 0.0
+glRotate 0.0 0.0 1.0 0.0
+glPushMatrix 
+glTranslate 0.0 00005.80 0.0
+glRotate 0.0 1.0 0.0 0.0
+glRotate 0.0 0.0 1.0 0.0
+glCallList head
+glPopMatrix 
+glCallList torso
+glPushMatrix 
+glTranslate 00002.10 00004.0320 0.0
+glRotate 16.4 1.0 0.0 0.0
+glCallList upper_arm
+glTranslate 0.0 -3.00 0.0
+glRotate -44.7 1.0 0.0 0.0
+glCallList lower_arm
+glPopMatrix 
+glPushMatrix 
+glTranslate -00002.10 00004.0320 0.0
+glRotate 15.6 1.0 0.0 0.0
+glCallList upper_arm
+glTranslate 0.0 -3.00 0.0
+glRotate -45.3 1.0 0.0 0.0
+glCallList lower_arm
+glPopMatrix 
+glPushMatrix 
+glRotate -.2 0.0 1.0 0.0
+glCallList lower_torso
+glPushMatrix 
+glTranslate 00001.10 -0000.630 0.0
+glRotate 7.3 1.0 0.0 0.0
+glCallList upper_leg
+glTranslate 0.0 -3.40 0.0
+glRotate 8.2 1.0 0.0 0.0
+glCallList lower_leg
+glTranslate 0.0 -3.00 0.0
+glRotate -4.5 1.0 0.0 0.0
+glCallList foot
+glPopMatrix 
+glPushMatrix 
+glTranslate -00001.10 -0000.630 0.0
+glRotate -20.1 1.0 0.0 0.0
+glCallList upper_leg
+glTranslate 0.0 -3.40 0.0
+glRotate 55.3 1.0 0.0 0.0
+glCallList lower_leg
+glTranslate 0.0 -3.00 0.0
+glRotate -15.2 1.0 0.0 0.0
+glCallList foot
+glPopMatrix 
+glPopMatrix 
+glFlush 
+glutSwapBuffers 
+glClear GL_COLOR_BUFFER_BIT
+glClear GL_DEPTH_BUFFER_BIT
+glLoadIdentity 
+glTranslate 0.0 0.0 -11.0
+glRotate 0.0 1.0 0.0 0.0
+glRotate 0.0 0.0 1.0 0.0
+glPushMatrix 
+glTranslate 0.0 00005.80 0.0
+glRotate 0.0 1.0 0.0 0.0
+glRotate 0.0 0.0 1.0 0.0
+glCallList head
+glPopMatrix 
+glCallList torso
+glPushMatrix 
+glTranslate 00002.10 00004.0320 0.0
+glRotate 15.9 1.0 0.0 0.0
+glCallList upper_arm
+glTranslate 0.0 -3.00 0.0
+glRotate -45.1 1.0 0.0 0.0
+glCallList lower_arm
+glPopMatrix 
+glPushMatrix 
+glTranslate -00002.10 00004.0320 0.0
+glRotate 16.1 1.0 0.0 0.0
+glCallList upper_arm
+glTranslate 0.0 -3.00 0.0
+glRotate -44.9 1.0 0.0 0.0
+glCallList lower_arm
+glPopMatrix 
+glPushMatrix 
+glRotate 0.0 0.0 1.0 0.0
+glCallList lower_torso
+glPushMatrix 
+glTranslate 00001.10 -0000.630 0.0
+glRotate 8.1 1.0 0.0 0.0
+glCallList upper_leg
+glTranslate 0.0 -3.40 0.0
+glRotate 8.1 1.0 0.0 0.0
+glCallList lower_leg
+glTranslate 0.0 -3.00 0.0
+glRotate -4.8 1.0 0.0 0.0
+glCallList foot
+glPopMatrix 
+glPushMatrix 
+glTranslate -00001.10 -0000.630 0.0
+glRotate -21.0 1.0 0.0 0.0
+glCallList upper_leg
+glTranslate 0.0 -3.40 0.0
+glRotate 55.6 1.0 0.0 0.0
+glCallList lower_leg
+glTranslate 0.0 -3.00 0.0
+glRotate -15.7 1.0 0.0 0.0
+glCallList foot
+glPopMatrix 
+glPopMatrix 
+glFlush 
+glutSwapBuffers 
+glClear GL_COLOR_BUFFER_BIT
+glClear GL_DEPTH_BUFFER_BIT
+glLoadIdentity 
+glTranslate 0.0 0.0 -11.0
+glRotate 0.0 1.0 0.0 0.0
+glRotate 0.0 0.0 1.0 0.0
+glPushMatrix 
+glTranslate 0.0 00005.80 0.0
+glRotate 0.0 1.0 0.0 0.0
+glRotate 0.0 0.0 1.0 0.0
+glCallList head
+glPopMatrix 
+glCallList torso
+glPushMatrix 
+glTranslate 00002.10 00004.0320 0.0
+glRotate 15.4 1.0 0.0 0.0
+glCallList upper_arm
+glTranslate 0.0 -3.00 0.0
+glRotate -45.4 1.0 0.0 0.0
+glCallList lower_arm
+glPopMatrix 
+glPushMatrix 
+glTranslate -00002.10 00004.0320 0.0
+glRotate 16.6 1.0 0.0 0.0
+glCallList upper_arm
+glTranslate 0.0 -3.00 0.0
+glRotate -44.5 1.0 0.0 0.0
+glCallList lower_arm
+glPopMatrix 
+glPushMatrix 
+glRotate 0.2 0.0 1.0 0.0
+glCallList lower_torso
+glPushMatrix 
+glTranslate 00001.10 -0000.630 0.0
+glRotate 8.5 1.0 0.0 0.0
+glCallList upper_leg
+glTranslate 0.0 -3.40 0.0
+glRotate 8.6 1.0 0.0 0.0
+glCallList lower_leg
+glTranslate 0.0 -3.00 0.0
+glRotate -3.9 1.0 0.0 0.0
+glCallList foot
+glPopMatrix 
+glPushMatrix 
+glTranslate -00001.10 -0000.630 0.0
+glRotate -21.1 1.0 0.0 0.0
+glCallList upper_leg
+glTranslate 0.0 -3.40 0.0
+glRotate 54.4 1.0 0.0 0.0
+glCallList lower_leg
+glTranslate 0.0 -3.00 0.0
+glRotate -14.8 1.0 0.0 0.0
+glCallList foot
+glPopMatrix 
+glPopMatrix 
+glFlush 
+glutSwapBuffers 
+glClear GL_COLOR_BUFFER_BIT
+glClear GL_DEPTH_BUFFER_BIT
+glLoadIdentity 
+glTranslate 0.0 0.0 -11.0
+glRotate 0.0 1.0 0.0 0.0
+glRotate 0.0 0.0 1.0 0.0
+glPushMatrix 
+glTranslate 0.0 00005.80 0.0
+glRotate 0.0 1.0 0.0 0.0
+glRotate 0.0 0.0 1.0 0.0
+glCallList head
+glPopMatrix 
+glCallList torso
+glPushMatrix 
+glTranslate 00002.10 00004.0320 0.0
+glRotate 14.9 1.0 0.0 0.0
+glCallList upper_arm
+glTranslate 0.0 -3.00 0.0
+glRotate -45.7 1.0 0.0 0.0
+glCallList lower_arm
+glPopMatrix 
+glPushMatrix 
+glTranslate -00002.10 00004.0320 0.0
+glRotate 17.1 1.0 0.0 0.0
+glCallList upper_arm
+glTranslate 0.0 -3.00 0.0
+glRotate -44.1 1.0 0.0 0.0
+glCallList lower_arm
+glPopMatrix 
+glPushMatrix 
+glRotate 0.4 0.0 1.0 0.0
+glCallList lower_torso
+glPushMatrix 
+glTranslate 00001.10 -0000.630 0.0
+glRotate 8.9 1.0 0.0 0.0
+glCallList upper_leg
+glTranslate 0.0 -3.40 0.0
+glRotate 9.1 1.0 0.0 0.0
+glCallList lower_leg
+glTranslate 0.0 -3.00 0.0
+glRotate -3.0 1.0 0.0 0.0
+glCallList foot
+glPopMatrix 
+glPushMatrix 
+glTranslate -00001.10 -0000.630 0.0
+glRotate -21.2 1.0 0.0 0.0
+glCallList upper_leg
+glTranslate 0.0 -3.40 0.0
+glRotate 53.2 1.0 0.0 0.0
+glCallList lower_leg
+glTranslate 0.0 -3.00 0.0
+glRotate -13.8 1.0 0.0 0.0
+glCallList foot
+glPopMatrix 
+glPopMatrix 
+glFlush 
+glutSwapBuffers 
+glClear GL_COLOR_BUFFER_BIT
+glClear GL_DEPTH_BUFFER_BIT
+glLoadIdentity 
+glTranslate 0.0 0.0 -11.0
+glRotate 0.0 1.0 0.0 0.0
+glRotate 0.0 0.0 1.0 0.0
+glPushMatrix 
+glTranslate 0.0 00005.80 0.0
+glRotate 0.0 1.0 0.0 0.0
+glRotate 0.0 0.0 1.0 0.0
+glCallList head
+glPopMatrix 
+glCallList torso
+glPushMatrix 
+glTranslate 00002.10 00004.0320 0.0
+glRotate 14.4 1.0 0.0 0.0
+glCallList upper_arm
+glTranslate 0.0 -3.00 0.0
+glRotate -46.1 1.0 0.0 0.0
+glCallList lower_arm
+glPopMatrix 
+glPushMatrix 
+glTranslate -00002.10 00004.0320 0.0
+glRotate 17.6 1.0 0.0 0.0
+glCallList upper_arm
+glTranslate 0.0 -3.00 0.0
+glRotate -43.7 1.0 0.0 0.0
+glCallList lower_arm
+glPopMatrix 
+glPushMatrix 
+glRotate 0.7 0.0 1.0 0.0
+glCallList lower_torso
+glPushMatrix 
+glTranslate 00001.10 -0000.630 0.0
+glRotate 9.3 1.0 0.0 0.0
+glCallList upper_leg
+glTranslate 0.0 -3.40 0.0
+glRotate 9.6 1.0 0.0 0.0
+glCallList lower_leg
+glTranslate 0.0 -3.00 0.0
+glRotate -2.1 1.0 0.0 0.0
+glCallList foot
+glPopMatrix 
+glPushMatrix 
+glTranslate -00001.10 -0000.630 0.0
+glRotate -21.3 1.0 0.0 0.0
+glCallList upper_leg
+glTranslate 0.0 -3.40 0.0
+glRotate 52.0 1.0 0.0 0.0
+glCallList lower_leg
+glTranslate 0.0 -3.00 0.0
+glRotate -12.8 1.0 0.0 0.0
+glCallList foot
+glPopMatrix 
+glPopMatrix 
+glFlush 
+glutSwapBuffers 
+glClear GL_COLOR_BUFFER_BIT
+glClear GL_DEPTH_BUFFER_BIT
+glLoadIdentity 
+glTranslate 0.0 0.0 -11.0
+glRotate 0.0 1.0 0.0 0.0
+glRotate 0.0 0.0 1.0 0.0
+glPushMatrix 
+glTranslate 0.0 00005.80 0.0
+glRotate 0.0 1.0 0.0 0.0
+glRotate 0.0 0.0 1.0 0.0
+glCallList head
+glPopMatrix 
+glCallList torso
+glPushMatrix 
+glTranslate 00002.10 00004.0320 0.0
+glRotate 14.0 1.0 0.0 0.0
+glCallList upper_arm
+glTranslate 0.0 -3.00 0.0
+glRotate -46.4 1.0 0.0 0.0
+glCallList lower_arm
+glPopMatrix 
+glPushMatrix 
+glTranslate -00002.10 00004.0320 0.0
+glRotate 18.0 1.0 0.0 0.0
+glCallList upper_arm
+glTranslate 0.0 -3.00 0.0
+glRotate -43.4 1.0 0.0 0.0
+glCallList lower_arm
+glPopMatrix 
+glPushMatrix 
+glRotate 0.9 0.0 1.0 0.0
+glCallList lower_torso
+glPushMatrix 
+glTranslate 00001.10 -0000.630 0.0
+glRotate 9.6 1.0 0.0 0.0
+glCallList upper_leg
+glTranslate 0.0 -3.40 0.0
+glRotate 10.0 1.0 0.0 0.0
+glCallList lower_leg
+glTranslate 0.0 -3.00 0.0
+glRotate -1.3 1.0 0.0 0.0
+glCallList foot
+glPopMatrix 
+glPushMatrix 
+glTranslate -00001.10 -0000.630 0.0
+glRotate -21.3 1.0 0.0 0.0
+glCallList upper_leg
+glTranslate 0.0 -3.40 0.0
+glRotate 50.8 1.0 0.0 0.0
+glCallList lower_leg
+glTranslate 0.0 -3.00 0.0
+glRotate -11.9 1.0 0.0 0.0
+glCallList foot
+glPopMatrix 
+glPopMatrix 
+glFlush 
+glutSwapBuffers 
+glClear GL_COLOR_BUFFER_BIT
+glClear GL_DEPTH_BUFFER_BIT
+glLoadIdentity 
+glTranslate 0.0 0.0 -11.0
+glRotate 0.0 1.0 0.0 0.0
+glRotate 0.0 0.0 1.0 0.0
+glPushMatrix 
+glTranslate 0.0 00005.80 0.0
+glRotate 0.0 1.0 0.0 0.0
+glRotate 0.0 0.0 1.0 0.0
+glCallList head
+glPopMatrix 
+glCallList torso
+glPushMatrix 
+glTranslate 00002.10 00004.0320 0.0
+glRotate 13.5 1.0 0.0 0.0
+glCallList upper_arm
+glTranslate 0.0 -3.00 0.0
+glRotate -46.7 1.0 0.0 0.0
+glCallList lower_arm
+glPopMatrix 
+glPushMatrix 
+glTranslate -00002.10 00004.0320 0.0
+glRotate 18.5 1.0 0.0 0.0
+glCallList upper_arm
+glTranslate 0.0 -3.00 0.0
+glRotate -43.0 1.0 0.0 0.0
+glCallList lower_arm
+glPopMatrix 
+glPushMatrix 
+glRotate 1.1 0.0 1.0 0.0
+glCallList lower_torso
+glPushMatrix 
+glTranslate 00001.10 -0000.630 0.0
+glRotate 10.0 1.0 0.0 0.0
+glCallList upper_leg
+glTranslate 0.0 -3.40 0.0
+glRotate 10.5 1.0 0.0 0.0
+glCallList lower_leg
+glTranslate 0.0 -3.00 0.0
+glRotate -.4 1.0 0.0 0.0
+glCallList foot
+glPopMatrix 
+glPushMatrix 
+glTranslate -00001.10 -0000.630 0.0
+glRotate -21.4 1.0 0.0 0.0
+glCallList upper_leg
+glTranslate 0.0 -3.40 0.0
+glRotate 49.6 1.0 0.0 0.0
+glCallList lower_leg
+glTranslate 0.0 -3.00 0.0
+glRotate -10.9 1.0 0.0 0.0
+glCallList foot
+glPopMatrix 
+glPopMatrix 
+glFlush 
+glutSwapBuffers 
+glClear GL_COLOR_BUFFER_BIT
+glClear GL_DEPTH_BUFFER_BIT
+glLoadIdentity 
+glTranslate 0.0 0.0 -11.0
+glRotate 0.0 1.0 0.0 0.0
+glRotate 0.0 0.0 1.0 0.0
+glPushMatrix 
+glTranslate 0.0 00005.80 0.0
+glRotate 0.0 1.0 0.0 0.0
+glRotate 0.0 0.0 1.0 0.0
+glCallList head
+glPopMatrix 
+glCallList torso
+glPushMatrix 
+glTranslate 00002.10 00004.0320 0.0
+glRotate 13.0 1.0 0.0 0.0
+glCallList upper_arm
+glTranslate 0.0 -3.00 0.0
+glRotate -47.0 1.0 0.0 0.0
+glCallList lower_arm
+glPopMatrix 
+glPushMatrix 
+glTranslate -00002.10 00004.0320 0.0
+glRotate 19.0 1.0 0.0 0.0
+glCallList upper_arm
+glTranslate 0.0 -3.00 0.0
+glRotate -42.6 1.0 0.0 0.0
+glCallList lower_arm
+glPopMatrix 
+glPushMatrix 
+glRotate 1.3 0.0 1.0 0.0
+glCallList lower_torso
+glPushMatrix 
+glTranslate 00001.10 -0000.630 0.0
+glRotate 10.4 1.0 0.0 0.0
+glCallList upper_leg
+glTranslate 0.0 -3.40 0.0
+glRotate 11.0 1.0 0.0 0.0
+glCallList lower_leg
+glTranslate 0.0 -3.00 0.0
+glRotate 0.5 1.0 0.0 0.0
+glCallList foot
+glPopMatrix 
+glPushMatrix 
+glTranslate -00001.10 -0000.630 0.0
+glRotate -21.5 1.0 0.0 0.0
+glCallList upper_leg
+glTranslate 0.0 -3.40 0.0
+glRotate 48.4 1.0 0.0 0.0
+glCallList lower_leg
+glTranslate 0.0 -3.00 0.0
+glRotate -10.0 1.0 0.0 0.0
+glCallList foot
+glPopMatrix 
+glPopMatrix 
+glFlush 
+glutSwapBuffers 
+glClear GL_COLOR_BUFFER_BIT
+glClear GL_DEPTH_BUFFER_BIT
+glLoadIdentity 
+glTranslate 0.0 0.0 -11.0
+glRotate 0.0 1.0 0.0 0.0
+glRotate 0.0 0.0 1.0 0.0
+glPushMatrix 
+glTranslate 0.0 00005.80 0.0
+glRotate 0.0 1.0 0.0 0.0
+glRotate 0.0 0.0 1.0 0.0
+glCallList head
+glPopMatrix 
+glCallList torso
+glPushMatrix 
+glTranslate 00002.10 00004.0320 0.0
+glRotate 12.5 1.0 0.0 0.0
+glCallList upper_arm
+glTranslate 0.0 -3.00 0.0
+glRotate -47.4 1.0 0.0 0.0
+glCallList lower_arm
+glPopMatrix 
+glPushMatrix 
+glTranslate -00002.10 00004.0320 0.0
+glRotate 19.5 1.0 0.0 0.0
+glCallList upper_arm
+glTranslate 0.0 -3.00 0.0
+glRotate -42.2 1.0 0.0 0.0
+glCallList lower_arm
+glPopMatrix 
+glPushMatrix 
+glRotate 1.5 0.0 1.0 0.0
+glCallList lower_torso
+glPushMatrix 
+glTranslate 00001.10 -0000.630 0.0
+glRotate 10.8 1.0 0.0 0.0
+glCallList upper_leg
+glTranslate 0.0 -3.40 0.0
+glRotate 11.5 1.0 0.0 0.0
+glCallList lower_leg
+glTranslate 0.0 -3.00 0.0
+glRotate 1.3 1.0 0.0 0.0
+glCallList foot
+glPopMatrix 
+glPushMatrix 
+glTranslate -00001.10 -0000.630 0.0
+glRotate -21.6 1.0 0.0 0.0
+glCallList upper_leg
+glTranslate 0.0 -3.40 0.0
+glRotate 47.2 1.0 0.0 0.0
+glCallList lower_leg
+glTranslate 0.0 -3.00 0.0
+glRotate -9.0 1.0 0.0 0.0
+glCallList foot
+glPopMatrix 
+glPopMatrix 
+glFlush 
+glutSwapBuffers 
+glClear GL_COLOR_BUFFER_BIT
+glClear GL_DEPTH_BUFFER_BIT
+glLoadIdentity 
+glTranslate 0.0 0.0 -11.0
+glRotate 0.0 1.0 0.0 0.0
+glRotate 0.0 0.0 1.0 0.0
+glPushMatrix 
+glTranslate 0.0 00005.80 0.0
+glRotate 0.0 1.0 0.0 0.0
+glRotate 0.0 0.0 1.0 0.0
+glCallList head
+glPopMatrix 
+glCallList torso
+glPushMatrix 
+glTranslate 00002.10 00004.0320 0.0
+glRotate 12.0 1.0 0.0 0.0
+glCallList upper_arm
+glTranslate 0.0 -3.00 0.0
+glRotate -47.7 1.0 0.0 0.0
+glCallList lower_arm
+glPopMatrix 
+glPushMatrix 
+glTranslate -00002.10 00004.0320 0.0
+glRotate 20.0 1.0 0.0 0.0
+glCallList upper_arm
+glTranslate 0.0 -3.00 0.0
+glRotate -41.8 1.0 0.0 0.0
+glCallList lower_arm
+glPopMatrix 
+glPushMatrix 
+glRotate 1.7 0.0 1.0 0.0
+glCallList lower_torso
+glPushMatrix 
+glTranslate 00001.10 -0000.630 0.0
+glRotate 11.2 1.0 0.0 0.0
+glCallList upper_leg
+glTranslate 0.0 -3.40 0.0
+glRotate 12.0 1.0 0.0 0.0
+glCallList lower_leg
+glTranslate 0.0 -3.00 0.0
+glRotate 2.2 1.0 0.0 0.0
+glCallList foot
+glPopMatrix 
+glPushMatrix 
+glTranslate -00001.10 -0000.630 0.0
+glRotate -21.7 1.0 0.0 0.0
+glCallList upper_leg
+glTranslate 0.0 -3.40 0.0
+glRotate 46.0 1.0 0.0 0.0
+glCallList lower_leg
+glTranslate 0.0 -3.00 0.0
+glRotate -8.0 1.0 0.0 0.0
+glCallList foot
+glPopMatrix 
+glPopMatrix 
+glFlush 
+glutSwapBuffers 
+glClear GL_COLOR_BUFFER_BIT
+glClear GL_DEPTH_BUFFER_BIT
+glLoadIdentity 
+glTranslate 0.0 0.0 -11.0
+glRotate 0.0 1.0 0.0 0.0
+glRotate 0.0 0.0 1.0 0.0
+glPushMatrix 
+glTranslate 0.0 00005.80 0.0
+glRotate 0.0 1.0 0.0 0.0
+glRotate 0.0 0.0 1.0 0.0
+glCallList head
+glPopMatrix 
+glCallList torso
+glPushMatrix 
+glTranslate 00002.10 00004.0320 0.0
+glRotate 11.6 1.0 0.0 0.0
+glCallList upper_arm
+glTranslate 0.0 -3.00 0.0
+glRotate -48.0 1.0 0.0 0.0
+glCallList lower_arm
+glPopMatrix 
+glPushMatrix 
+glTranslate -00002.10 00004.0320 0.0
+glRotate 20.4 1.0 0.0 0.0
+glCallList upper_arm
+glTranslate 0.0 -3.00 0.0
+glRotate -41.4 1.0 0.0 0.0
+glCallList lower_arm
+glPopMatrix 
+glPushMatrix 
+glRotate 1.9 0.0 1.0 0.0
+glCallList lower_torso
+glPushMatrix 
+glTranslate 00001.10 -0000.630 0.0
+glRotate 11.6 1.0 0.0 0.0
+glCallList upper_leg
+glTranslate 0.0 -3.40 0.0
+glRotate 12.4 1.0 0.0 0.0
+glCallList lower_leg
+glTranslate 0.0 -3.00 0.0
+glRotate 3.1 1.0 0.0 0.0
+glCallList foot
+glPopMatrix 
+glPushMatrix 
+glTranslate -00001.10 -0000.630 0.0
+glRotate -21.8 1.0 0.0 0.0
+glCallList upper_leg
+glTranslate 0.0 -3.40 0.0
+glRotate 44.8 1.0 0.0 0.0
+glCallList lower_leg
+glTranslate 0.0 -3.00 0.0
+glRotate -7.1 1.0 0.0 0.0
+glCallList foot
+glPopMatrix 
+glPopMatrix 
+glFlush 
+glutSwapBuffers 
+glClear GL_COLOR_BUFFER_BIT
+glClear GL_DEPTH_BUFFER_BIT
+glLoadIdentity 
+glTranslate 0.0 0.0 -11.0
+glRotate 0.0 1.0 0.0 0.0
+glRotate 0.0 0.0 1.0 0.0
+glPushMatrix 
+glTranslate 0.0 00005.80 0.0
+glRotate 0.0 1.0 0.0 0.0
+glRotate 0.0 0.0 1.0 0.0
+glCallList head
+glPopMatrix 
+glCallList torso
+glPushMatrix 
+glTranslate 00002.10 00004.0320 0.0
+glRotate 11.1 1.0 0.0 0.0
+glCallList upper_arm
+glTranslate 0.0 -3.00 0.0
+glRotate -48.4 1.0 0.0 0.0
+glCallList lower_arm
+glPopMatrix 
+glPushMatrix 
+glTranslate -00002.10 00004.0320 0.0
+glRotate 20.9 1.0 0.0 0.0
+glCallList upper_arm
+glTranslate 0.0 -3.00 0.0
+glRotate -41.0 1.0 0.0 0.0
+glCallList lower_arm
+glPopMatrix 
+glPushMatrix 
+glRotate 2.1 0.0 1.0 0.0
+glCallList lower_torso
+glPushMatrix 
+glTranslate 00001.10 -0000.630 0.0
+glRotate 12.0 1.0 0.0 0.0
+glCallList upper_leg
+glTranslate 0.0 -3.40 0.0
+glRotate 12.9 1.0 0.0 0.0
+glCallList lower_leg
+glTranslate 0.0 -3.00 0.0
+glRotate 3.9 1.0 0.0 0.0
+glCallList foot
+glPopMatrix 
+glPushMatrix 
+glTranslate -00001.10 -0000.630 0.0
+glRotate -21.9 1.0 0.0 0.0
+glCallList upper_leg
+glTranslate 0.0 -3.40 0.0
+glRotate 43.6 1.0 0.0 0.0
+glCallList lower_leg
+glTranslate 0.0 -3.00 0.0
+glRotate -6.1 1.0 0.0 0.0
+glCallList foot
+glPopMatrix 
+glPopMatrix 
+glFlush 
+glutSwapBuffers 
+glClear GL_COLOR_BUFFER_BIT
+glClear GL_DEPTH_BUFFER_BIT
+glLoadIdentity 
+glTranslate 0.0 0.0 -11.0
+glRotate 0.0 1.0 0.0 0.0
+glRotate 0.0 0.0 1.0 0.0
+glPushMatrix 
+glTranslate 0.0 00005.80 0.0
+glRotate 0.0 1.0 0.0 0.0
+glRotate 0.0 0.0 1.0 0.0
+glCallList head
+glPopMatrix 
+glCallList torso
+glPushMatrix 
+glTranslate 00002.10 00004.0320 0.0
+glRotate 10.6 1.0 0.0 0.0
+glCallList upper_arm
+glTranslate 0.0 -3.00 0.0
+glRotate -48.7 1.0 0.0 0.0
+glCallList lower_arm
+glPopMatrix 
+glPushMatrix 
+glTranslate -00002.10 00004.0320 0.0
+glRotate 21.4 1.0 0.0 0.0
+glCallList upper_arm
+glTranslate 0.0 -3.00 0.0
+glRotate -40.6 1.0 0.0 0.0
+glCallList lower_arm
+glPopMatrix 
+glPushMatrix 
+glRotate 2.3 0.0 1.0 0.0
+glCallList lower_torso
+glPushMatrix 
+glTranslate 00001.10 -0000.630 0.0
+glRotate 12.4 1.0 0.0 0.0
+glCallList upper_leg
+glTranslate 0.0 -3.40 0.0
+glRotate 13.4 1.0 0.0 0.0
+glCallList lower_leg
+glTranslate 0.0 -3.00 0.0
+glRotate 4.8 1.0 0.0 0.0
+glCallList foot
+glPopMatrix 
+glPushMatrix 
+glTranslate -00001.10 -0000.630 0.0
+glRotate -22.0 1.0 0.0 0.0
+glCallList upper_leg
+glTranslate 0.0 -3.40 0.0
+glRotate 42.4 1.0 0.0 0.0
+glCallList lower_leg
+glTranslate 0.0 -3.00 0.0
+glRotate -5.2 1.0 0.0 0.0
+glCallList foot
+glPopMatrix 
+glPopMatrix 
+glFlush 
+glutSwapBuffers 
+glClear GL_COLOR_BUFFER_BIT
+glClear GL_DEPTH_BUFFER_BIT
+glLoadIdentity 
+glTranslate 0.0 0.0 -11.0
+glRotate 0.0 1.0 0.0 0.0
+glRotate 0.0 0.0 1.0 0.0
+glPushMatrix 
+glTranslate 0.0 00005.80 0.0
+glRotate 0.0 1.0 0.0 0.0
+glRotate 0.0 0.0 1.0 0.0
+glCallList head
+glPopMatrix 
+glCallList torso
+glPushMatrix 
+glTranslate 00002.10 00004.0320 0.0
+glRotate 10.1 1.0 0.0 0.0
+glCallList upper_arm
+glTranslate 0.0 -3.00 0.0
+glRotate -49.0 1.0 0.0 0.0
+glCallList lower_arm
+glPopMatrix 
+glPushMatrix 
+glTranslate -00002.10 00004.0320 0.0
+glRotate 21.9 1.0 0.0 0.0
+glCallList upper_arm
+glTranslate 0.0 -3.00 0.0
+glRotate -40.2 1.0 0.0 0.0
+glCallList lower_arm
+glPopMatrix 
+glPushMatrix 
+glRotate 2.5 0.0 1.0 0.0
+glCallList lower_torso
+glPushMatrix 
+glTranslate 00001.10 -0000.630 0.0
+glRotate 12.8 1.0 0.0 0.0
+glCallList upper_leg
+glTranslate 0.0 -3.40 0.0
+glRotate 13.9 1.0 0.0 0.0
+glCallList lower_leg
+glTranslate 0.0 -3.00 0.0
+glRotate 5.7 1.0 0.0 0.0
+glCallList foot
+glPopMatrix 
+glPushMatrix 
+glTranslate -00001.10 -0000.630 0.0
+glRotate -22.1 1.0 0.0 0.0
+glCallList upper_leg
+glTranslate 0.0 -3.40 0.0
+glRotate 41.2 1.0 0.0 0.0
+glCallList lower_leg
+glTranslate 0.0 -3.00 0.0
+glRotate -4.2 1.0 0.0 0.0
+glCallList foot
+glPopMatrix 
+glPopMatrix 
+glFlush 
+glutSwapBuffers 
+glClear GL_COLOR_BUFFER_BIT
+glClear GL_DEPTH_BUFFER_BIT
+glLoadIdentity 
+glTranslate 0.0 0.0 -11.0
+glRotate 0.0 1.0 0.0 0.0
+glRotate 0.0 0.0 1.0 0.0
+glPushMatrix 
+glTranslate 0.0 00005.80 0.0
+glRotate 0.0 1.0 0.0 0.0
+glRotate 0.0 0.0 1.0 0.0
+glCallList head
+glPopMatrix 
+glCallList torso
+glPushMatrix 
+glTranslate 00002.10 00004.0320 0.0
+glRotate 9.6 1.0 0.0 0.0
+glCallList upper_arm
+glTranslate 0.0 -3.00 0.0
+glRotate -49.4 1.0 0.0 0.0
+glCallList lower_arm
+glPopMatrix 
+glPushMatrix 
+glTranslate -00002.10 00004.0320 0.0
+glRotate 22.4 1.0 0.0 0.0
+glCallList upper_arm
+glTranslate 0.0 -3.00 0.0
+glRotate -39.8 1.0 0.0 0.0
+glCallList lower_arm
+glPopMatrix 
+glPushMatrix 
+glRotate 2.8 0.0 1.0 0.0
+glCallList lower_torso
+glPushMatrix 
+glTranslate 00001.10 -0000.630 0.0
+glRotate 13.2 1.0 0.0 0.0
+glCallList upper_leg
+glTranslate 0.0 -3.40 0.0
+glRotate 14.4 1.0 0.0 0.0
+glCallList lower_leg
+glTranslate 0.0 -3.00 0.0
+glRotate 6.6 1.0 0.0 0.0
+glCallList foot
+glPopMatrix 
+glPushMatrix 
+glTranslate -00001.10 -0000.630 0.0
+glRotate -22.2 1.0 0.0 0.0
+glCallList upper_leg
+glTranslate 0.0 -3.40 0.0
+glRotate 40.0 1.0 0.0 0.0
+glCallList lower_leg
+glTranslate 0.0 -3.00 0.0
+glRotate -3.2 1.0 0.0 0.0
+glCallList foot
+glPopMatrix 
+glPopMatrix 
+glFlush 
+glutSwapBuffers 
+glClear GL_COLOR_BUFFER_BIT
+glClear GL_DEPTH_BUFFER_BIT
+glLoadIdentity 
+glTranslate 0.0 0.0 -11.0
+glRotate 0.0 1.0 0.0 0.0
+glRotate 0.0 0.0 1.0 0.0
+glPushMatrix 
+glTranslate 0.0 00005.80 0.0
+glRotate 0.0 1.0 0.0 0.0
+glRotate 0.0 0.0 1.0 0.0
+glCallList head
+glPopMatrix 
+glCallList torso
+glPushMatrix 
+glTranslate 00002.10 00004.0320 0.0
+glRotate 9.2 1.0 0.0 0.0
+glCallList upper_arm
+glTranslate 0.0 -3.00 0.0
+glRotate -49.7 1.0 0.0 0.0
+glCallList lower_arm
+glPopMatrix 
+glPushMatrix 
+glTranslate -00002.10 00004.0320 0.0
+glRotate 22.8 1.0 0.0 0.0
+glCallList upper_arm
+glTranslate 0.0 -3.00 0.0
+glRotate -39.5 1.0 0.0 0.0
+glCallList lower_arm
+glPopMatrix 
+glPushMatrix 
+glRotate 3.0 0.0 1.0 0.0
+glCallList lower_torso
+glPushMatrix 
+glTranslate 00001.10 -0000.630 0.0
+glRotate 13.5 1.0 0.0 0.0
+glCallList upper_leg
+glTranslate 0.0 -3.40 0.0
+glRotate 14.8 1.0 0.0 0.0
+glCallList lower_leg
+glTranslate 0.0 -3.00 0.0
+glRotate 7.4 1.0 0.0 0.0
+glCallList foot
+glPopMatrix 
+glPushMatrix 
+glTranslate -00001.10 -0000.630 0.0
+glRotate -22.2 1.0 0.0 0.0
+glCallList upper_leg
+glTranslate 0.0 -3.40 0.0
+glRotate 38.8 1.0 0.0 0.0
+glCallList lower_leg
+glTranslate 0.0 -3.00 0.0
+glRotate -2.3 1.0 0.0 0.0
+glCallList foot
+glPopMatrix 
+glPopMatrix 
+glFlush 
+glutSwapBuffers 
+glClear GL_COLOR_BUFFER_BIT
+glClear GL_DEPTH_BUFFER_BIT
+glLoadIdentity 
+glTranslate 0.0 0.0 -11.0
+glRotate 0.0 1.0 0.0 0.0
+glRotate 0.0 0.0 1.0 0.0
+glPushMatrix 
+glTranslate 0.0 00005.80 0.0
+glRotate 0.0 1.0 0.0 0.0
+glRotate 0.0 0.0 1.0 0.0
+glCallList head
+glPopMatrix 
+glCallList torso
+glPushMatrix 
+glTranslate 00002.10 00004.0320 0.0
+glRotate 8.7 1.0 0.0 0.0
+glCallList upper_arm
+glTranslate 0.0 -3.00 0.0
+glRotate -50.0 1.0 0.0 0.0
+glCallList lower_arm
+glPopMatrix 
+glPushMatrix 
+glTranslate -00002.10 00004.0320 0.0
+glRotate 23.3 1.0 0.0 0.0
+glCallList upper_arm
+glTranslate 0.0 -3.00 0.0
+glRotate -39.1 1.0 0.0 0.0
+glCallList lower_arm
+glPopMatrix 
+glPushMatrix 
+glRotate 3.2 0.0 1.0 0.0
+glCallList lower_torso
+glPushMatrix 
+glTranslate 00001.10 -0000.630 0.0
+glRotate 13.9 1.0 0.0 0.0
+glCallList upper_leg
+glTranslate 0.0 -3.40 0.0
+glRotate 15.3 1.0 0.0 0.0
+glCallList lower_leg
+glTranslate 0.0 -3.00 0.0
+glRotate 8.3 1.0 0.0 0.0
+glCallList foot
+glPopMatrix 
+glPushMatrix 
+glTranslate -00001.10 -0000.630 0.0
+glRotate -22.3 1.0 0.0 0.0
+glCallList upper_leg
+glTranslate 0.0 -3.40 0.0
+glRotate 37.6 1.0 0.0 0.0
+glCallList lower_leg
+glTranslate 0.0 -3.00 0.0
+glRotate -1.3 1.0 0.0 0.0
+glCallList foot
+glPopMatrix 
+glPopMatrix 
+glFlush 
+glutSwapBuffers 
+glClear GL_COLOR_BUFFER_BIT
+glClear GL_DEPTH_BUFFER_BIT
+glLoadIdentity 
+glTranslate 0.0 0.0 -11.0
+glRotate 0.0 1.0 0.0 0.0
+glRotate 0.0 0.0 1.0 0.0
+glPushMatrix 
+glTranslate 0.0 00005.80 0.0
+glRotate 0.0 1.0 0.0 0.0
+glRotate 0.0 0.0 1.0 0.0
+glCallList head
+glPopMatrix 
+glCallList torso
+glPushMatrix 
+glTranslate 00002.10 00004.0320 0.0
+glRotate 8.2 1.0 0.0 0.0
+glCallList upper_arm
+glTranslate 0.0 -3.00 0.0
+glRotate -50.3 1.0 0.0 0.0
+glCallList lower_arm
+glPopMatrix 
+glPushMatrix 
+glTranslate -00002.10 00004.0320 0.0
+glRotate 23.8 1.0 0.0 0.0
+glCallList upper_arm
+glTranslate 0.0 -3.00 0.0
+glRotate -38.7 1.0 0.0 0.0
+glCallList lower_arm
+glPopMatrix 
+glPushMatrix 
+glRotate 3.4 0.0 1.0 0.0
+glCallList lower_torso
+glPushMatrix 
+glTranslate 00001.10 -0000.630 0.0
+glRotate 14.3 1.0 0.0 0.0
+glCallList upper_leg
+glTranslate 0.0 -3.40 0.0
+glRotate 15.8 1.0 0.0 0.0
+glCallList lower_leg
+glTranslate 0.0 -3.00 0.0
+glRotate 9.2 1.0 0.0 0.0
+glCallList foot
+glPopMatrix 
+glPushMatrix 
+glTranslate -00001.10 -0000.630 0.0
+glRotate -22.4 1.0 0.0 0.0
+glCallList upper_leg
+glTranslate 0.0 -3.40 0.0
+glRotate 36.4 1.0 0.0 0.0
+glCallList lower_leg
+glTranslate 0.0 -3.00 0.0
+glRotate -.4 1.0 0.0 0.0
+glCallList foot
+glPopMatrix 
+glPopMatrix 
+glFlush 
+glutSwapBuffers 
+glClear GL_COLOR_BUFFER_BIT
+glClear GL_DEPTH_BUFFER_BIT
+glLoadIdentity 
+glTranslate 0.0 0.0 -11.0
+glRotate 0.0 1.0 0.0 0.0
+glRotate 0.0 0.0 1.0 0.0
+glPushMatrix 
+glTranslate 0.0 00005.80 0.0
+glRotate 0.0 1.0 0.0 0.0
+glRotate 0.0 0.0 1.0 0.0
+glCallList head
+glPopMatrix 
+glCallList torso
+glPushMatrix 
+glTranslate 00002.10 00004.0320 0.0
+glRotate 7.7 1.0 0.0 0.0
+glCallList upper_arm
+glTranslate 0.0 -3.00 0.0
+glRotate -50.7 1.0 0.0 0.0
+glCallList lower_arm
+glPopMatrix 
+glPushMatrix 
+glTranslate -00002.10 00004.0320 0.0
+glRotate 24.3 1.0 0.0 0.0
+glCallList upper_arm
+glTranslate 0.0 -3.00 0.0
+glRotate -38.3 1.0 0.0 0.0
+glCallList lower_arm
+glPopMatrix 
+glPushMatrix 
+glRotate 3.6 0.0 1.0 0.0
+glCallList lower_torso
+glPushMatrix 
+glTranslate 00001.10 -0000.630 0.0
+glRotate 14.7 1.0 0.0 0.0
+glCallList upper_leg
+glTranslate 0.0 -3.40 0.0
+glRotate 16.3 1.0 0.0 0.0
+glCallList lower_leg
+glTranslate 0.0 -3.00 0.0
+glRotate 10.0 1.0 0.0 0.0
+glCallList foot
+glPopMatrix 
+glPushMatrix 
+glTranslate -00001.10 -0000.630 0.0
+glRotate -22.5 1.0 0.0 0.0
+glCallList upper_leg
+glTranslate 0.0 -3.40 0.0
+glRotate 35.2 1.0 0.0 0.0
+glCallList lower_leg
+glTranslate 0.0 -3.00 0.0
+glRotate 0.6 1.0 0.0 0.0
+glCallList foot
+glPopMatrix 
+glPopMatrix 
+glFlush 
+glutSwapBuffers 
+glClear GL_COLOR_BUFFER_BIT
+glClear GL_DEPTH_BUFFER_BIT
+glLoadIdentity 
+glTranslate 0.0 0.0 -11.0
+glRotate 0.0 1.0 0.0 0.0
+glRotate 0.0 0.0 1.0 0.0
+glPushMatrix 
+glTranslate 0.0 00005.80 0.0
+glRotate 0.0 1.0 0.0 0.0
+glRotate 0.0 0.0 1.0 0.0
+glCallList head
+glPopMatrix 
+glCallList torso
+glPushMatrix 
+glTranslate 00002.10 00004.0320 0.0
+glRotate 7.2 1.0 0.0 0.0
+glCallList upper_arm
+glTranslate 0.0 -3.00 0.0
+glRotate -51.0 1.0 0.0 0.0
+glCallList lower_arm
+glPopMatrix 
+glPushMatrix 
+glTranslate -00002.10 00004.0320 0.0
+glRotate 24.8 1.0 0.0 0.0
+glCallList upper_arm
+glTranslate 0.0 -3.00 0.0
+glRotate -37.9 1.0 0.0 0.0
+glCallList lower_arm
+glPopMatrix 
+glPushMatrix 
+glRotate 3.8 0.0 1.0 0.0
+glCallList lower_torso
+glPushMatrix 
+glTranslate 00001.10 -0000.630 0.0
+glRotate 15.1 1.0 0.0 0.0
+glCallList upper_leg
+glTranslate 0.0 -3.40 0.0
+glRotate 16.8 1.0 0.0 0.0
+glCallList lower_leg
+glTranslate 0.0 -3.00 0.0
+glRotate 10.9 1.0 0.0 0.0
+glCallList foot
+glPopMatrix 
+glPushMatrix 
+glTranslate -00001.10 -0000.630 0.0
+glRotate -22.6 1.0 0.0 0.0
+glCallList upper_leg
+glTranslate 0.0 -3.40 0.0
+glRotate 34.0 1.0 0.0 0.0
+glCallList lower_leg
+glTranslate 0.0 -3.00 0.0
+glRotate 1.6 1.0 0.0 0.0
+glCallList foot
+glPopMatrix 
+glPopMatrix 
+glFlush 
+glutSwapBuffers 
+glClear GL_COLOR_BUFFER_BIT
+glClear GL_DEPTH_BUFFER_BIT
+glLoadIdentity 
+glTranslate 0.0 0.0 -11.0
+glRotate 0.0 1.0 0.0 0.0
+glRotate 0.0 0.0 1.0 0.0
+glPushMatrix 
+glTranslate 0.0 00005.80 0.0
+glRotate 0.0 1.0 0.0 0.0
+glRotate 0.0 0.0 1.0 0.0
+glCallList head
+glPopMatrix 
+glCallList torso
+glPushMatrix 
+glTranslate 00002.10 00004.0320 0.0
+glRotate 6.8 1.0 0.0 0.0
+glCallList upper_arm
+glTranslate 0.0 -3.00 0.0
+glRotate -51.3 1.0 0.0 0.0
+glCallList lower_arm
+glPopMatrix 
+glPushMatrix 
+glTranslate -00002.10 00004.0320 0.0
+glRotate 25.2 1.0 0.0 0.0
+glCallList upper_arm
+glTranslate 0.0 -3.00 0.0
+glRotate -37.5 1.0 0.0 0.0
+glCallList lower_arm
+glPopMatrix 
+glPushMatrix 
+glRotate 4.0 0.0 1.0 0.0
+glCallList lower_torso
+glPushMatrix 
+glTranslate 00001.10 -0000.630 0.0
+glRotate 15.5 1.0 0.0 0.0
+glCallList upper_leg
+glTranslate 0.0 -3.40 0.0
+glRotate 17.2 1.0 0.0 0.0
+glCallList lower_leg
+glTranslate 0.0 -3.00 0.0
+glRotate 11.8 1.0 0.0 0.0
+glCallList foot
+glPopMatrix 
+glPushMatrix 
+glTranslate -00001.10 -0000.630 0.0
+glRotate -22.7 1.0 0.0 0.0
+glCallList upper_leg
+glTranslate 0.0 -3.40 0.0
+glRotate 32.8 1.0 0.0 0.0
+glCallList lower_leg
+glTranslate 0.0 -3.00 0.0
+glRotate 2.5 1.0 0.0 0.0
+glCallList foot
+glPopMatrix 
+glPopMatrix 
+glFlush 
+glutSwapBuffers 
+glClear GL_COLOR_BUFFER_BIT
+glClear GL_DEPTH_BUFFER_BIT
+glLoadIdentity 
+glTranslate 0.0 0.0 -11.0
+glRotate 0.0 1.0 0.0 0.0
+glRotate 0.0 0.0 1.0 0.0
+glPushMatrix 
+glTranslate 0.0 00005.80 0.0
+glRotate 0.0 1.0 0.0 0.0
+glRotate 0.0 0.0 1.0 0.0
+glCallList head
+glPopMatrix 
+glCallList torso
+glPushMatrix 
+glTranslate 00002.10 00004.0320 0.0
+glRotate 6.3 1.0 0.0 0.0
+glCallList upper_arm
+glTranslate 0.0 -3.00 0.0
+glRotate -51.7 1.0 0.0 0.0
+glCallList lower_arm
+glPopMatrix 
+glPushMatrix 
+glTranslate -00002.10 00004.0320 0.0
+glRotate 25.7 1.0 0.0 0.0
+glCallList upper_arm
+glTranslate 0.0 -3.00 0.0
+glRotate -37.1 1.0 0.0 0.0
+glCallList lower_arm
+glPopMatrix 
+glPushMatrix 
+glRotate 4.2 0.0 1.0 0.0
+glCallList lower_torso
+glPushMatrix 
+glTranslate 00001.10 -0000.630 0.0
+glRotate 15.9 1.0 0.0 0.0
+glCallList upper_leg
+glTranslate 0.0 -3.40 0.0
+glRotate 17.7 1.0 0.0 0.0
+glCallList lower_leg
+glTranslate 0.0 -3.00 0.0
+glRotate 12.6 1.0 0.0 0.0
+glCallList foot
+glPopMatrix 
+glPushMatrix 
+glTranslate -00001.10 -0000.630 0.0
+glRotate -22.8 1.0 0.0 0.0
+glCallList upper_leg
+glTranslate 0.0 -3.40 0.0
+glRotate 31.6 1.0 0.0 0.0
+glCallList lower_leg
+glTranslate 0.0 -3.00 0.0
+glRotate 3.5 1.0 0.0 0.0
+glCallList foot
+glPopMatrix 
+glPopMatrix 
+glFlush 
+glutSwapBuffers 
+glClear GL_COLOR_BUFFER_BIT
+glClear GL_DEPTH_BUFFER_BIT
+glLoadIdentity 
+glTranslate 0.0 0.0 -11.0
+glRotate 0.0 1.0 0.0 0.0
+glRotate 0.0 0.0 1.0 0.0
+glPushMatrix 
+glTranslate 0.0 00005.80 0.0
+glRotate 0.0 1.0 0.0 0.0
+glRotate 0.0 0.0 1.0 0.0
+glCallList head
+glPopMatrix 
+glCallList torso
+glPushMatrix 
+glTranslate 00002.10 00004.0320 0.0
+glRotate 5.8 1.0 0.0 0.0
+glCallList upper_arm
+glTranslate 0.0 -3.00 0.0
+glRotate -52.0 1.0 0.0 0.0
+glCallList lower_arm
+glPopMatrix 
+glPushMatrix 
+glTranslate -00002.10 00004.0320 0.0
+glRotate 26.2 1.0 0.0 0.0
+glCallList upper_arm
+glTranslate 0.0 -3.00 0.0
+glRotate -36.7 1.0 0.0 0.0
+glCallList lower_arm
+glPopMatrix 
+glPushMatrix 
+glRotate 4.4 0.0 1.0 0.0
+glCallList lower_torso
+glPushMatrix 
+glTranslate 00001.10 -0000.630 0.0
+glRotate 16.3 1.0 0.0 0.0
+glCallList upper_leg
+glTranslate 0.0 -3.40 0.0
+glRotate 18.2 1.0 0.0 0.0
+glCallList lower_leg
+glTranslate 0.0 -3.00 0.0
+glRotate 13.5 1.0 0.0 0.0
+glCallList foot
+glPopMatrix 
+glPushMatrix 
+glTranslate -00001.10 -0000.630 0.0
+glRotate -22.9 1.0 0.0 0.0
+glCallList upper_leg
+glTranslate 0.0 -3.40 0.0
+glRotate 30.4 1.0 0.0 0.0
+glCallList lower_leg
+glTranslate 0.0 -3.00 0.0
+glRotate 4.4 1.0 0.0 0.0
+glCallList foot
+glPopMatrix 
+glPopMatrix 
+glFlush 
+glutSwapBuffers 
+glClear GL_COLOR_BUFFER_BIT
+glClear GL_DEPTH_BUFFER_BIT
+glLoadIdentity 
+glTranslate 0.0 0.0 -11.0
+glRotate 0.0 1.0 0.0 0.0
+glRotate 0.0 0.0 1.0 0.0
+glPushMatrix 
+glTranslate 0.0 00005.80 0.0
+glRotate 0.0 1.0 0.0 0.0
+glRotate 0.0 0.0 1.0 0.0
+glCallList head
+glPopMatrix 
+glCallList torso
+glPushMatrix 
+glTranslate 00002.10 00004.0320 0.0
+glRotate 5.3 1.0 0.0 0.0
+glCallList upper_arm
+glTranslate 0.0 -3.00 0.0
+glRotate -52.3 1.0 0.0 0.0
+glCallList lower_arm
+glPopMatrix 
+glPushMatrix 
+glTranslate -00002.10 00004.0320 0.0
+glRotate 26.7 1.0 0.0 0.0
+glCallList upper_arm
+glTranslate 0.0 -3.00 0.0
+glRotate -36.3 1.0 0.0 0.0
+glCallList lower_arm
+glPopMatrix 
+glPushMatrix 
+glRotate 4.6 0.0 1.0 0.0
+glCallList lower_torso
+glPushMatrix 
+glTranslate 00001.10 -0000.630 0.0
+glRotate 16.7 1.0 0.0 0.0
+glCallList upper_leg
+glTranslate 0.0 -3.40 0.0
+glRotate 18.7 1.0 0.0 0.0
+glCallList lower_leg
+glTranslate 0.0 -3.00 0.0
+glRotate 14.4 1.0 0.0 0.0
+glCallList foot
+glPopMatrix 
+glPushMatrix 
+glTranslate -00001.10 -0000.630 0.0
+glRotate -23.0 1.0 0.0 0.0
+glCallList upper_leg
+glTranslate 0.0 -3.40 0.0
+glRotate 29.2 1.0 0.0 0.0
+glCallList lower_leg
+glTranslate 0.0 -3.00 0.0
+glRotate 5.4 1.0 0.0 0.0
+glCallList foot
+glPopMatrix 
+glPopMatrix 
+glFlush 
+glutSwapBuffers 
+glClear GL_COLOR_BUFFER_BIT
+glClear GL_DEPTH_BUFFER_BIT
+glLoadIdentity 
+glTranslate 0.0 0.0 -11.0
+glRotate 0.0 1.0 0.0 0.0
+glRotate 0.0 0.0 1.0 0.0
+glPushMatrix 
+glTranslate 0.0 00005.80 0.0
+glRotate 0.0 1.0 0.0 0.0
+glRotate 0.0 0.0 1.0 0.0
+glCallList head
+glPopMatrix 
+glCallList torso
+glPushMatrix 
+glTranslate 00002.10 00004.0320 0.0
+glRotate 4.8 1.0 0.0 0.0
+glCallList upper_arm
+glTranslate 0.0 -3.00 0.0
+glRotate -52.7 1.0 0.0 0.0
+glCallList lower_arm
+glPopMatrix 
+glPushMatrix 
+glTranslate -00002.10 00004.0320 0.0
+glRotate 27.2 1.0 0.0 0.0
+glCallList upper_arm
+glTranslate 0.0 -3.00 0.0
+glRotate -35.9 1.0 0.0 0.0
+glCallList lower_arm
+glPopMatrix 
+glPushMatrix 
+glRotate 4.9 0.0 1.0 0.0
+glCallList lower_torso
+glPushMatrix 
+glTranslate 00001.10 -0000.630 0.0
+glRotate 17.1 1.0 0.0 0.0
+glCallList upper_leg
+glTranslate 0.0 -3.40 0.0
+glRotate 19.2 1.0 0.0 0.0
+glCallList lower_leg
+glTranslate 0.0 -3.00 0.0
+glRotate 15.3 1.0 0.0 0.0
+glCallList foot
+glPopMatrix 
+glPushMatrix 
+glTranslate -00001.10 -0000.630 0.0
+glRotate -23.1 1.0 0.0 0.0
+glCallList upper_leg
+glTranslate 0.0 -3.40 0.0
+glRotate 28.0 1.0 0.0 0.0
+glCallList lower_leg
+glTranslate 0.0 -3.00 0.0
+glRotate 6.4 1.0 0.0 0.0
+glCallList foot
+glPopMatrix 
+glPopMatrix 
+glFlush 
+glutSwapBuffers 
+glClear GL_COLOR_BUFFER_BIT
+glClear GL_DEPTH_BUFFER_BIT
+glLoadIdentity 
+glTranslate 0.0 0.0 -11.0
+glRotate 0.0 1.0 0.0 0.0
+glRotate 0.0 0.0 1.0 0.0
+glPushMatrix 
+glTranslate 0.0 00005.80 0.0
+glRotate 0.0 1.0 0.0 0.0
+glRotate 0.0 0.0 1.0 0.0
+glCallList head
+glPopMatrix 
+glCallList torso
+glPushMatrix 
+glTranslate 00002.10 00004.0320 0.0
+glRotate 4.4 1.0 0.0 0.0
+glCallList upper_arm
+glTranslate 0.0 -3.00 0.0
+glRotate -53.0 1.0 0.0 0.0
+glCallList lower_arm
+glPopMatrix 
+glPushMatrix 
+glTranslate -00002.10 00004.0320 0.0
+glRotate 27.6 1.0 0.0 0.0
+glCallList upper_arm
+glTranslate 0.0 -3.00 0.0
+glRotate -35.6 1.0 0.0 0.0
+glCallList lower_arm
+glPopMatrix 
+glPushMatrix 
+glRotate 5.1 0.0 1.0 0.0
+glCallList lower_torso
+glPushMatrix 
+glTranslate 00001.10 -0000.630 0.0
+glRotate 17.4 1.0 0.0 0.0
+glCallList upper_leg
+glTranslate 0.0 -3.40 0.0
+glRotate 19.6 1.0 0.0 0.0
+glCallList lower_leg
+glTranslate 0.0 -3.00 0.0
+glRotate 16.1 1.0 0.0 0.0
+glCallList foot
+glPopMatrix 
+glPushMatrix 
+glTranslate -00001.10 -0000.630 0.0
+glRotate -23.1 1.0 0.0 0.0
+glCallList upper_leg
+glTranslate 0.0 -3.40 0.0
+glRotate 26.8 1.0 0.0 0.0
+glCallList lower_leg
+glTranslate 0.0 -3.00 0.0
+glRotate 7.3 1.0 0.0 0.0
+glCallList foot
+glPopMatrix 
+glPopMatrix 
+glFlush 
+glutSwapBuffers 
+glClear GL_COLOR_BUFFER_BIT
+glClear GL_DEPTH_BUFFER_BIT
+glLoadIdentity 
+glTranslate 0.0 0.0 -11.0
+glRotate 0.0 1.0 0.0 0.0
+glRotate 0.0 0.0 1.0 0.0
+glPushMatrix 
+glTranslate 0.0 00005.80 0.0
+glRotate 0.0 1.0 0.0 0.0
+glRotate 0.0 0.0 1.0 0.0
+glCallList head
+glPopMatrix 
+glCallList torso
+glPushMatrix 
+glTranslate 00002.10 00004.0320 0.0
+glRotate 3.9 1.0 0.0 0.0
+glCallList upper_arm
+glTranslate 0.0 -3.00 0.0
+glRotate -53.3 1.0 0.0 0.0
+glCallList lower_arm
+glPopMatrix 
+glPushMatrix 
+glTranslate -00002.10 00004.0320 0.0
+glRotate 28.1 1.0 0.0 0.0
+glCallList upper_arm
+glTranslate 0.0 -3.00 0.0
+glRotate -35.2 1.0 0.0 0.0
+glCallList lower_arm
+glPopMatrix 
+glPushMatrix 
+glRotate 5.3 0.0 1.0 0.0
+glCallList lower_torso
+glPushMatrix 
+glTranslate 00001.10 -0000.630 0.0
+glRotate 17.8 1.0 0.0 0.0
+glCallList upper_leg
+glTranslate 0.0 -3.40 0.0
+glRotate 20.1 1.0 0.0 0.0
+glCallList lower_leg
+glTranslate 0.0 -3.00 0.0
+glRotate 17.0 1.0 0.0 0.0
+glCallList foot
+glPopMatrix 
+glPushMatrix 
+glTranslate -00001.10 -0000.630 0.0
+glRotate -23.2 1.0 0.0 0.0
+glCallList upper_leg
+glTranslate 0.0 -3.40 0.0
+glRotate 25.6 1.0 0.0 0.0
+glCallList lower_leg
+glTranslate 0.0 -3.00 0.0
+glRotate 8.3 1.0 0.0 0.0
+glCallList foot
+glPopMatrix 
+glPopMatrix 
+glFlush 
+glutSwapBuffers 
+glClear GL_COLOR_BUFFER_BIT
+glClear GL_DEPTH_BUFFER_BIT
+glLoadIdentity 
+glTranslate 0.0 0.0 -11.0
+glRotate 0.0 1.0 0.0 0.0
+glRotate 0.0 0.0 1.0 0.0
+glPushMatrix 
+glTranslate 0.0 00005.80 0.0
+glRotate 0.0 1.0 0.0 0.0
+glRotate 0.0 0.0 1.0 0.0
+glCallList head
+glPopMatrix 
+glCallList torso
+glPushMatrix 
+glTranslate 00002.10 00004.0320 0.0
+glRotate 3.4 1.0 0.0 0.0
+glCallList upper_arm
+glTranslate 0.0 -3.00 0.0
+glRotate -53.6 1.0 0.0 0.0
+glCallList lower_arm
+glPopMatrix 
+glPushMatrix 
+glTranslate -00002.10 00004.0320 0.0
+glRotate 28.6 1.0 0.0 0.0
+glCallList upper_arm
+glTranslate 0.0 -3.00 0.0
+glRotate -34.8 1.0 0.0 0.0
+glCallList lower_arm
+glPopMatrix 
+glPushMatrix 
+glRotate 5.5 0.0 1.0 0.0
+glCallList lower_torso
+glPushMatrix 
+glTranslate 00001.10 -0000.630 0.0
+glRotate 18.2 1.0 0.0 0.0
+glCallList upper_leg
+glTranslate 0.0 -3.40 0.0
+glRotate 20.6 1.0 0.0 0.0
+glCallList lower_leg
+glTranslate 0.0 -3.00 0.0
+glRotate 17.9 1.0 0.0 0.0
+glCallList foot
+glPopMatrix 
+glPushMatrix 
+glTranslate -00001.10 -0000.630 0.0
+glRotate -23.3 1.0 0.0 0.0
+glCallList upper_leg
+glTranslate 0.0 -3.40 0.0
+glRotate 24.4 1.0 0.0 0.0
+glCallList lower_leg
+glTranslate 0.0 -3.00 0.0
+glRotate 9.2 1.0 0.0 0.0
+glCallList foot
+glPopMatrix 
+glPopMatrix 
+glFlush 
+glutSwapBuffers 
+glClear GL_COLOR_BUFFER_BIT
+glClear GL_DEPTH_BUFFER_BIT
+glLoadIdentity 
+glTranslate 0.0 0.0 -11.0
+glRotate 0.0 1.0 0.0 0.0
+glRotate 0.0 0.0 1.0 0.0
+glPushMatrix 
+glTranslate 0.0 00005.80 0.0
+glRotate 0.0 1.0 0.0 0.0
+glRotate 0.0 0.0 1.0 0.0
+glCallList head
+glPopMatrix 
+glCallList torso
+glPushMatrix 
+glTranslate 00002.10 00004.0320 0.0
+glRotate 2.9 1.0 0.0 0.0
+glCallList upper_arm
+glTranslate 0.0 -3.00 0.0
+glRotate -54.0 1.0 0.0 0.0
+glCallList lower_arm
+glPopMatrix 
+glPushMatrix 
+glTranslate -00002.10 00004.0320 0.0
+glRotate 29.1 1.0 0.0 0.0
+glCallList upper_arm
+glTranslate 0.0 -3.00 0.0
+glRotate -34.4 1.0 0.0 0.0
+glCallList lower_arm
+glPopMatrix 
+glPushMatrix 
+glRotate 5.7 0.0 1.0 0.0
+glCallList lower_torso
+glPushMatrix 
+glTranslate 00001.10 -0000.630 0.0
+glRotate 18.6 1.0 0.0 0.0
+glCallList upper_leg
+glTranslate 0.0 -3.40 0.0
+glRotate 21.1 1.0 0.0 0.0
+glCallList lower_leg
+glTranslate 0.0 -3.00 0.0
+glRotate 18.7 1.0 0.0 0.0
+glCallList foot
+glPopMatrix 
+glPushMatrix 
+glTranslate -00001.10 -0000.630 0.0
+glRotate -23.4 1.0 0.0 0.0
+glCallList upper_leg
+glTranslate 0.0 -3.40 0.0
+glRotate 23.2 1.0 0.0 0.0
+glCallList lower_leg
+glTranslate 0.0 -3.00 0.0
+glRotate 10.2 1.0 0.0 0.0
+glCallList foot
+glPopMatrix 
+glPopMatrix 
+glFlush 
+glutSwapBuffers 
+glClear GL_COLOR_BUFFER_BIT
+glClear GL_DEPTH_BUFFER_BIT
+glLoadIdentity 
+glTranslate 0.0 0.0 -11.0
+glRotate 0.0 1.0 0.0 0.0
+glRotate 0.0 0.0 1.0 0.0
+glPushMatrix 
+glTranslate 0.0 00005.80 0.0
+glRotate 0.0 1.0 0.0 0.0
+glRotate 0.0 0.0 1.0 0.0
+glCallList head
+glPopMatrix 
+glCallList torso
+glPushMatrix 
+glTranslate 00002.10 00004.0320 0.0
+glRotate 2.4 1.0 0.0 0.0
+glCallList upper_arm
+glTranslate 0.0 -3.00 0.0
+glRotate -54.3 1.0 0.0 0.0
+glCallList lower_arm
+glPopMatrix 
+glPushMatrix 
+glTranslate -00002.10 00004.0320 0.0
+glRotate 29.6 1.0 0.0 0.0
+glCallList upper_arm
+glTranslate 0.0 -3.00 0.0
+glRotate -34.0 1.0 0.0 0.0
+glCallList lower_arm
+glPopMatrix 
+glPushMatrix 
+glRotate 5.9 0.0 1.0 0.0
+glCallList lower_torso
+glPushMatrix 
+glTranslate 00001.10 -0000.630 0.0
+glRotate 19.0 1.0 0.0 0.0
+glCallList upper_leg
+glTranslate 0.0 -3.40 0.0
+glRotate 21.6 1.0 0.0 0.0
+glCallList lower_leg
+glTranslate 0.0 -3.00 0.0
+glRotate 19.6 1.0 0.0 0.0
+glCallList foot
+glPopMatrix 
+glPushMatrix 
+glTranslate -00001.10 -0000.630 0.0
+glRotate -23.5 1.0 0.0 0.0
+glCallList upper_leg
+glTranslate 0.0 -3.40 0.0
+glRotate 22.0 1.0 0.0 0.0
+glCallList lower_leg
+glTranslate 0.0 -3.00 0.0
+glRotate 11.2 1.0 0.0 0.0
+glCallList foot
+glPopMatrix 
+glPopMatrix 
+glFlush 
+glutSwapBuffers 
+glClear GL_COLOR_BUFFER_BIT
+glClear GL_DEPTH_BUFFER_BIT
+glLoadIdentity 
+glTranslate 0.0 0.0 -11.0
+glRotate 0.0 1.0 0.0 0.0
+glRotate 0.0 0.0 1.0 0.0
+glPushMatrix 
+glTranslate 0.0 00005.80 0.0
+glRotate 0.0 1.0 0.0 0.0
+glRotate 0.0 0.0 1.0 0.0
+glCallList head
+glPopMatrix 
+glCallList torso
+glPushMatrix 
+glTranslate 00002.10 00004.0320 0.0
+glRotate 2.0 1.0 0.0 0.0
+glCallList upper_arm
+glTranslate 0.0 -3.00 0.0
+glRotate -54.6 1.0 0.0 0.0
+glCallList lower_arm
+glPopMatrix 
+glPushMatrix 
+glTranslate -00002.10 00004.0320 0.0
+glRotate 30.0 1.0 0.0 0.0
+glCallList upper_arm
+glTranslate 0.0 -3.00 0.0
+glRotate -33.6 1.0 0.0 0.0
+glCallList lower_arm
+glPopMatrix 
+glPushMatrix 
+glRotate 6.1 0.0 1.0 0.0
+glCallList lower_torso
+glPushMatrix 
+glTranslate 00001.10 -0000.630 0.0
+glRotate 19.4 1.0 0.0 0.0
+glCallList upper_leg
+glTranslate 0.0 -3.40 0.0
+glRotate 22.0 1.0 0.0 0.0
+glCallList lower_leg
+glTranslate 0.0 -3.00 0.0
+glRotate 20.5 1.0 0.0 0.0
+glCallList foot
+glPopMatrix 
+glPushMatrix 
+glTranslate -00001.10 -0000.630 0.0
+glRotate -23.6 1.0 0.0 0.0
+glCallList upper_leg
+glTranslate 0.0 -3.40 0.0
+glRotate 20.8 1.0 0.0 0.0
+glCallList lower_leg
+glTranslate 0.0 -3.00 0.0
+glRotate 12.1 1.0 0.0 0.0
+glCallList foot
+glPopMatrix 
+glPopMatrix 
+glFlush 
+glutSwapBuffers 
+glClear GL_COLOR_BUFFER_BIT
+glClear GL_DEPTH_BUFFER_BIT
+glLoadIdentity 
+glTranslate 0.0 0.0 -11.0
+glRotate 0.0 1.0 0.0 0.0
+glRotate 0.0 0.0 1.0 0.0
+glPushMatrix 
+glTranslate 0.0 00005.80 0.0
+glRotate 0.0 1.0 0.0 0.0
+glRotate 0.0 0.0 1.0 0.0
+glCallList head
+glPopMatrix 
+glCallList torso
+glPushMatrix 
+glTranslate 00002.10 00004.0320 0.0
+glRotate 1.5 1.0 0.0 0.0
+glCallList upper_arm
+glTranslate 0.0 -3.00 0.0
+glRotate -55.0 1.0 0.0 0.0
+glCallList lower_arm
+glPopMatrix 
+glPushMatrix 
+glTranslate -00002.10 00004.0320 0.0
+glRotate 30.5 1.0 0.0 0.0
+glCallList upper_arm
+glTranslate 0.0 -3.00 0.0
+glRotate -33.2 1.0 0.0 0.0
+glCallList lower_arm
+glPopMatrix 
+glPushMatrix 
+glRotate 6.3 0.0 1.0 0.0
+glCallList lower_torso
+glPushMatrix 
+glTranslate 00001.10 -0000.630 0.0
+glRotate 19.8 1.0 0.0 0.0
+glCallList upper_leg
+glTranslate 0.0 -3.40 0.0
+glRotate 22.5 1.0 0.0 0.0
+glCallList lower_leg
+glTranslate 0.0 -3.00 0.0
+glRotate 21.3 1.0 0.0 0.0
+glCallList foot
+glPopMatrix 
+glPushMatrix 
+glTranslate -00001.10 -0000.630 0.0
+glRotate -23.7 1.0 0.0 0.0
+glCallList upper_leg
+glTranslate 0.0 -3.40 0.0
+glRotate 19.6 1.0 0.0 0.0
+glCallList lower_leg
+glTranslate 0.0 -3.00 0.0
+glRotate 13.1 1.0 0.0 0.0
+glCallList foot
+glPopMatrix 
+glPopMatrix 
+glFlush 
+glutSwapBuffers 
+glClear GL_COLOR_BUFFER_BIT
+glClear GL_DEPTH_BUFFER_BIT
+glLoadIdentity 
+glTranslate 0.0 0.0 -11.0
+glRotate 0.0 1.0 0.0 0.0
+glRotate 0.0 0.0 1.0 0.0
+glPushMatrix 
+glTranslate 0.0 00005.80 0.0
+glRotate 0.0 1.0 0.0 0.0
+glRotate 0.0 0.0 1.0 0.0
+glCallList head
+glPopMatrix 
+glCallList torso
+glPushMatrix 
+glTranslate 00002.10 00004.0320 0.0
+glRotate 1.0 1.0 0.0 0.0
+glCallList upper_arm
+glTranslate 0.0 -3.00 0.0
+glRotate -55.3 1.0 0.0 0.0
+glCallList lower_arm
+glPopMatrix 
+glPushMatrix 
+glTranslate -00002.10 00004.0320 0.0
+glRotate 31.0 1.0 0.0 0.0
+glCallList upper_arm
+glTranslate 0.0 -3.00 0.0
+glRotate -32.8 1.0 0.0 0.0
+glCallList lower_arm
+glPopMatrix 
+glPushMatrix 
+glRotate 6.5 0.0 1.0 0.0
+glCallList lower_torso
+glPushMatrix 
+glTranslate 00001.10 -0000.630 0.0
+glRotate 20.2 1.0 0.0 0.0
+glCallList upper_leg
+glTranslate 0.0 -3.40 0.0
+glRotate 23.0 1.0 0.0 0.0
+glCallList lower_leg
+glTranslate 0.0 -3.00 0.0
+glRotate 22.2 1.0 0.0 0.0
+glCallList foot
+glPopMatrix 
+glPushMatrix 
+glTranslate -00001.10 -0000.630 0.0
+glRotate -23.8 1.0 0.0 0.0
+glCallList upper_leg
+glTranslate 0.0 -3.40 0.0
+glRotate 18.4 1.0 0.0 0.0
+glCallList lower_leg
+glTranslate 0.0 -3.00 0.0
+glRotate 14.0 1.0 0.0 0.0
+glCallList foot
+glPopMatrix 
+glPopMatrix 
+glFlush 
+glutSwapBuffers 
+glClear GL_COLOR_BUFFER_BIT
+glClear GL_DEPTH_BUFFER_BIT
+glLoadIdentity 
+glTranslate 0.0 0.0 -11.0
+glRotate 0.0 1.0 0.0 0.0
+glRotate 0.0 0.0 1.0 0.0
+glPushMatrix 
+glTranslate 0.0 00005.80 0.0
+glRotate 0.0 1.0 0.0 0.0
+glRotate 0.0 0.0 1.0 0.0
+glCallList head
+glPopMatrix 
+glCallList torso
+glPushMatrix 
+glTranslate 00002.10 00004.0320 0.0
+glRotate 0.5 1.0 0.0 0.0
+glCallList upper_arm
+glTranslate 0.0 -3.00 0.0
+glRotate -55.6 1.0 0.0 0.0
+glCallList lower_arm
+glPopMatrix 
+glPushMatrix 
+glTranslate -00002.10 00004.0320 0.0
+glRotate 31.5 1.0 0.0 0.0
+glCallList upper_arm
+glTranslate 0.0 -3.00 0.0
+glRotate -32.4 1.0 0.0 0.0
+glCallList lower_arm
+glPopMatrix 
+glPushMatrix 
+glRotate 6.7 0.0 1.0 0.0
+glCallList lower_torso
+glPushMatrix 
+glTranslate 00001.10 -0000.630 0.0
+glRotate 20.6 1.0 0.0 0.0
+glCallList upper_leg
+glTranslate 0.0 -3.40 0.0
+glRotate 23.5 1.0 0.0 0.0
+glCallList lower_leg
+glTranslate 0.0 -3.00 0.0
+glRotate 23.1 1.0 0.0 0.0
+glCallList foot
+glPopMatrix 
+glPushMatrix 
+glTranslate -00001.10 -0000.630 0.0
+glRotate -23.9 1.0 0.0 0.0
+glCallList upper_leg
+glTranslate 0.0 -3.40 0.0
+glRotate 17.2 1.0 0.0 0.0
+glCallList lower_leg
+glTranslate 0.0 -3.00 0.0
+glRotate 15.0 1.0 0.0 0.0
+glCallList foot
+glPopMatrix 
+glPopMatrix 
+glFlush 
+glutSwapBuffers 
+glClear GL_COLOR_BUFFER_BIT
+glClear GL_DEPTH_BUFFER_BIT
+glLoadIdentity 
+glTranslate 0.0 0.0 -11.0
+glRotate 0.0 1.0 0.0 0.0
+glRotate 0.0 0.0 1.0 0.0
+glPushMatrix 
+glTranslate 0.0 00005.80 0.0
+glRotate 0.0 1.0 0.0 0.0
+glRotate 0.0 0.0 1.0 0.0
+glCallList head
+glPopMatrix 
+glCallList torso
+glPushMatrix 
+glTranslate 00002.10 00004.0320 0.0
+glRotate 0.0 1.0 0.0 0.0
+glCallList upper_arm
+glTranslate 0.0 -3.00 0.0
+glRotate -56.0 1.0 0.0 0.0
+glCallList lower_arm
+glPopMatrix 
+glPushMatrix 
+glTranslate -00002.10 00004.0320 0.0
+glRotate 32.0 1.0 0.0 0.0
+glCallList upper_arm
+glTranslate 0.0 -3.00 0.0
+glRotate -32.0 1.0 0.0 0.0
+glCallList lower_arm
+glPopMatrix 
+glPushMatrix 
+glRotate 7.0 0.0 1.0 0.0
+glCallList lower_torso
+glPushMatrix 
+glTranslate 00001.10 -0000.630 0.0
+glRotate 21.0 1.0 0.0 0.0
+glCallList upper_leg
+glTranslate 0.0 -3.40 0.0
+glRotate 24.0 1.0 0.0 0.0
+glCallList lower_leg
+glTranslate 0.0 -3.00 0.0
+glRotate 24.0 1.0 0.0 0.0
+glCallList foot
+glPopMatrix 
+glPushMatrix 
+glTranslate -00001.10 -0000.630 0.0
+glRotate -24.0 1.0 0.0 0.0
+glCallList upper_leg
+glTranslate 0.0 -3.40 0.0
+glRotate 16.0 1.0 0.0 0.0
+glCallList lower_leg
+glTranslate 0.0 -3.00 0.0
+glRotate 16.0 1.0 0.0 0.0
+glCallList foot
+glPopMatrix 
+glPopMatrix 
+glFlush 
+glutSwapBuffers 
+glClear GL_COLOR_BUFFER_BIT
+glClear GL_DEPTH_BUFFER_BIT
+glLoadIdentity 
+glTranslate 0.0 0.0 -11.0
+glRotate 0.0 1.0 0.0 0.0
+glRotate 0.0 0.0 1.0 0.0
+glPushMatrix 
+glTranslate 0.0 00005.80 0.0
+glRotate 0.0 1.0 0.0 0.0
+glRotate 0.0 0.0 1.0 0.0
+glCallList head
+glPopMatrix 
+glCallList torso
+glPushMatrix 
+glTranslate 00002.10 00004.0320 0.0
+glRotate 0.4 1.0 0.0 0.0
+glCallList upper_arm
+glTranslate 0.0 -3.00 0.0
+glRotate -55.7 1.0 0.0 0.0
+glCallList lower_arm
+glPopMatrix 
+glPushMatrix 
+glTranslate -00002.10 00004.0320 0.0
+glRotate 31.6 1.0 0.0 0.0
+glCallList upper_arm
+glTranslate 0.0 -3.00 0.0
+glRotate -32.3 1.0 0.0 0.0
+glCallList lower_arm
+glPopMatrix 
+glPushMatrix 
+glRotate 6.8 0.0 1.0 0.0
+glCallList lower_torso
+glPushMatrix 
+glTranslate 00001.10 -0000.630 0.0
+glRotate 19.8 1.0 0.0 0.0
+glCallList upper_leg
+glTranslate 0.0 -3.40 0.0
+glRotate 24.9 1.0 0.0 0.0
+glCallList lower_leg
+glTranslate 0.0 -3.00 0.0
+glRotate 22.8 1.0 0.0 0.0
+glCallList foot
+glPopMatrix 
+glPushMatrix 
+glTranslate -00001.10 -0000.630 0.0
+glRotate -23.1 1.0 0.0 0.0
+glCallList upper_leg
+glTranslate 0.0 -3.40 0.0
+glRotate 15.8 1.0 0.0 0.0
+glCallList lower_leg
+glTranslate 0.0 -3.00 0.0
+glRotate 15.4 1.0 0.0 0.0
+glCallList foot
+glPopMatrix 
+glPopMatrix 
+glFlush 
+glutSwapBuffers 
+glClear GL_COLOR_BUFFER_BIT
+glClear GL_DEPTH_BUFFER_BIT
+glLoadIdentity 
+glTranslate 0.0 0.0 -11.0
+glRotate 0.0 1.0 0.0 0.0
+glRotate 0.0 0.0 1.0 0.0
+glPushMatrix 
+glTranslate 0.0 00005.80 0.0
+glRotate 0.0 1.0 0.0 0.0
+glRotate 0.0 0.0 1.0 0.0
+glCallList head
+glPopMatrix 
+glCallList torso
+glPushMatrix 
+glTranslate 00002.10 00004.0320 0.0
+glRotate 0.9 1.0 0.0 0.0
+glCallList upper_arm
+glTranslate 0.0 -3.00 0.0
+glRotate -55.4 1.0 0.0 0.0
+glCallList lower_arm
+glPopMatrix 
+glPushMatrix 
+glTranslate -00002.10 00004.0320 0.0
+glRotate 31.1 1.0 0.0 0.0
+glCallList upper_arm
+glTranslate 0.0 -3.00 0.0
+glRotate -32.7 1.0 0.0 0.0
+glCallList lower_arm
+glPopMatrix 
+glPushMatrix 
+glRotate 6.6 0.0 1.0 0.0
+glCallList lower_torso
+glPushMatrix 
+glTranslate 00001.10 -0000.630 0.0
+glRotate 18.5 1.0 0.0 0.0
+glCallList upper_leg
+glTranslate 0.0 -3.40 0.0
+glRotate 25.9 1.0 0.0 0.0
+glCallList lower_leg
+glTranslate 0.0 -3.00 0.0
+glRotate 21.6 1.0 0.0 0.0
+glCallList foot
+glPopMatrix 
+glPushMatrix 
+glTranslate -00001.10 -0000.630 0.0
+glRotate -22.1 1.0 0.0 0.0
+glCallList upper_leg
+glTranslate 0.0 -3.40 0.0
+glRotate 15.6 1.0 0.0 0.0
+glCallList lower_leg
+glTranslate 0.0 -3.00 0.0
+glRotate 14.8 1.0 0.0 0.0
+glCallList foot
+glPopMatrix 
+glPopMatrix 
+glFlush 
+glutSwapBuffers 
+glClear GL_COLOR_BUFFER_BIT
+glClear GL_DEPTH_BUFFER_BIT
+glLoadIdentity 
+glTranslate 0.0 0.0 -11.0
+glRotate 0.0 1.0 0.0 0.0
+glRotate 0.0 0.0 1.0 0.0
+glPushMatrix 
+glTranslate 0.0 00005.80 0.0
+glRotate 0.0 1.0 0.0 0.0
+glRotate 0.0 0.0 1.0 0.0
+glCallList head
+glPopMatrix 
+glCallList torso
+glPushMatrix 
+glTranslate 00002.10 00004.0320 0.0
+glRotate 1.4 1.0 0.0 0.0
+glCallList upper_arm
+glTranslate 0.0 -3.00 0.0
+glRotate -55.1 1.0 0.0 0.0
+glCallList lower_arm
+glPopMatrix 
+glPushMatrix 
+glTranslate -00002.10 00004.0320 0.0
+glRotate 30.6 1.0 0.0 0.0
+glCallList upper_arm
+glTranslate 0.0 -3.00 0.0
+glRotate -33.1 1.0 0.0 0.0
+glCallList lower_arm
+glPopMatrix 
+glPushMatrix 
+glRotate 6.4 0.0 1.0 0.0
+glCallList lower_torso
+glPushMatrix 
+glTranslate 00001.10 -0000.630 0.0
+glRotate 17.3 1.0 0.0 0.0
+glCallList upper_leg
+glTranslate 0.0 -3.40 0.0
+glRotate 26.8 1.0 0.0 0.0
+glCallList lower_leg
+glTranslate 0.0 -3.00 0.0
+glRotate 20.4 1.0 0.0 0.0
+glCallList foot
+glPopMatrix 
+glPushMatrix 
+glTranslate -00001.10 -0000.630 0.0
+glRotate -21.2 1.0 0.0 0.0
+glCallList upper_leg
+glTranslate 0.0 -3.40 0.0
+glRotate 15.3 1.0 0.0 0.0
+glCallList lower_leg
+glTranslate 0.0 -3.00 0.0
+glRotate 14.2 1.0 0.0 0.0
+glCallList foot
+glPopMatrix 
+glPopMatrix 
+glFlush 
+glutSwapBuffers 
+glClear GL_COLOR_BUFFER_BIT
+glClear GL_DEPTH_BUFFER_BIT
+glLoadIdentity 
+glTranslate 0.0 0.0 -11.0
+glRotate 0.0 1.0 0.0 0.0
+glRotate 0.0 0.0 1.0 0.0
+glPushMatrix 
+glTranslate 0.0 00005.80 0.0
+glRotate 0.0 1.0 0.0 0.0
+glRotate 0.0 0.0 1.0 0.0
+glCallList head
+glPopMatrix 
+glCallList torso
+glPushMatrix 
+glTranslate 00002.10 00004.0320 0.0
+glRotate 1.9 1.0 0.0 0.0
+glCallList upper_arm
+glTranslate 0.0 -3.00 0.0
+glRotate -54.7 1.0 0.0 0.0
+glCallList lower_arm
+glPopMatrix 
+glPushMatrix 
+glTranslate -00002.10 00004.0320 0.0
+glRotate 30.1 1.0 0.0 0.0
+glCallList upper_arm
+glTranslate 0.0 -3.00 0.0
+glRotate -33.5 1.0 0.0 0.0
+glCallList lower_arm
+glPopMatrix 
+glPushMatrix 
+glRotate 6.2 0.0 1.0 0.0
+glCallList lower_torso
+glPushMatrix 
+glTranslate 00001.10 -0000.630 0.0
+glRotate 16.0 1.0 0.0 0.0
+glCallList upper_leg
+glTranslate 0.0 -3.40 0.0
+glRotate 27.8 1.0 0.0 0.0
+glCallList lower_leg
+glTranslate 0.0 -3.00 0.0
+glRotate 19.2 1.0 0.0 0.0
+glCallList foot
+glPopMatrix 
+glPushMatrix 
+glTranslate -00001.10 -0000.630 0.0
+glRotate -20.2 1.0 0.0 0.0
+glCallList upper_leg
+glTranslate 0.0 -3.40 0.0
+glRotate 15.1 1.0 0.0 0.0
+glCallList lower_leg
+glTranslate 0.0 -3.00 0.0
+glRotate 13.5 1.0 0.0 0.0
+glCallList foot
+glPopMatrix 
+glPopMatrix 
+glFlush 
+glutSwapBuffers 
+glClear GL_COLOR_BUFFER_BIT
+glClear GL_DEPTH_BUFFER_BIT
+glLoadIdentity 
+glTranslate 0.0 0.0 -11.0
+glRotate 0.0 1.0 0.0 0.0
+glRotate 0.0 0.0 1.0 0.0
+glPushMatrix 
+glTranslate 0.0 00005.80 0.0
+glRotate 0.0 1.0 0.0 0.0
+glRotate 0.0 0.0 1.0 0.0
+glCallList head
+glPopMatrix 
+glCallList torso
+glPushMatrix 
+glTranslate 00002.10 00004.0320 0.0
+glRotate 2.4 1.0 0.0 0.0
+glCallList upper_arm
+glTranslate 0.0 -3.00 0.0
+glRotate -54.4 1.0 0.0 0.0
+glCallList lower_arm
+glPopMatrix 
+glPushMatrix 
+glTranslate -00002.10 00004.0320 0.0
+glRotate 29.6 1.0 0.0 0.0
+glCallList upper_arm
+glTranslate 0.0 -3.00 0.0
+glRotate -33.9 1.0 0.0 0.0
+glCallList lower_arm
+glPopMatrix 
+glPushMatrix 
+glRotate 6.0 0.0 1.0 0.0
+glCallList lower_torso
+glPushMatrix 
+glTranslate 00001.10 -0000.630 0.0
+glRotate 14.7 1.0 0.0 0.0
+glCallList upper_leg
+glTranslate 0.0 -3.40 0.0
+glRotate 28.8 1.0 0.0 0.0
+glCallList lower_leg
+glTranslate 0.0 -3.00 0.0
+glRotate 18.0 1.0 0.0 0.0
+glCallList foot
+glPopMatrix 
+glPushMatrix 
+glTranslate -00001.10 -0000.630 0.0
+glRotate -19.2 1.0 0.0 0.0
+glCallList upper_leg
+glTranslate 0.0 -3.40 0.0
+glRotate 14.8 1.0 0.0 0.0
+glCallList lower_leg
+glTranslate 0.0 -3.00 0.0
+glRotate 12.9 1.0 0.0 0.0
+glCallList foot
+glPopMatrix 
+glPopMatrix 
+glFlush 
+glutSwapBuffers 
+glClear GL_COLOR_BUFFER_BIT
+glClear GL_DEPTH_BUFFER_BIT
+glLoadIdentity 
+glTranslate 0.0 0.0 -11.0
+glRotate 0.0 1.0 0.0 0.0
+glRotate 0.0 0.0 1.0 0.0
+glPushMatrix 
+glTranslate 0.0 00005.80 0.0
+glRotate 0.0 1.0 0.0 0.0
+glRotate 0.0 0.0 1.0 0.0
+glCallList head
+glPopMatrix 
+glCallList torso
+glPushMatrix 
+glTranslate 00002.10 00004.0320 0.0
+glRotate 2.8 1.0 0.0 0.0
+glCallList upper_arm
+glTranslate 0.0 -3.00 0.0
+glRotate -54.1 1.0 0.0 0.0
+glCallList lower_arm
+glPopMatrix 
+glPushMatrix 
+glTranslate -00002.10 00004.0320 0.0
+glRotate 29.2 1.0 0.0 0.0
+glCallList upper_arm
+glTranslate 0.0 -3.00 0.0
+glRotate -34.3 1.0 0.0 0.0
+glCallList lower_arm
+glPopMatrix 
+glPushMatrix 
+glRotate 5.8 0.0 1.0 0.0
+glCallList lower_torso
+glPushMatrix 
+glTranslate 00001.10 -0000.630 0.0
+glRotate 13.5 1.0 0.0 0.0
+glCallList upper_leg
+glTranslate 0.0 -3.40 0.0
+glRotate 29.7 1.0 0.0 0.0
+glCallList lower_leg
+glTranslate 0.0 -3.00 0.0
+glRotate 16.8 1.0 0.0 0.0
+glCallList foot
+glPopMatrix 
+glPushMatrix 
+glTranslate -00001.10 -0000.630 0.0
+glRotate -18.3 1.0 0.0 0.0
+glCallList upper_leg
+glTranslate 0.0 -3.40 0.0
+glRotate 14.6 1.0 0.0 0.0
+glCallList lower_leg
+glTranslate 0.0 -3.00 0.0
+glRotate 12.3 1.0 0.0 0.0
+glCallList foot
+glPopMatrix 
+glPopMatrix 
+glFlush 
+glutSwapBuffers 
+glClear GL_COLOR_BUFFER_BIT
+glClear GL_DEPTH_BUFFER_BIT
+glLoadIdentity 
+glTranslate 0.0 0.0 -11.0
+glRotate 0.0 1.0 0.0 0.0
+glRotate 0.0 0.0 1.0 0.0
+glPushMatrix 
+glTranslate 0.0 00005.80 0.0
+glRotate 0.0 1.0 0.0 0.0
+glRotate 0.0 0.0 1.0 0.0
+glCallList head
+glPopMatrix 
+glCallList torso
+glPushMatrix 
+glTranslate 00002.10 00004.0320 0.0
+glRotate 3.3 1.0 0.0 0.0
+glCallList upper_arm
+glTranslate 0.0 -3.00 0.0
+glRotate -53.7 1.0 0.0 0.0
+glCallList lower_arm
+glPopMatrix 
+glPushMatrix 
+glTranslate -00002.10 00004.0320 0.0
+glRotate 28.7 1.0 0.0 0.0
+glCallList upper_arm
+glTranslate 0.0 -3.00 0.0
+glRotate -34.7 1.0 0.0 0.0
+glCallList lower_arm
+glPopMatrix 
+glPushMatrix 
+glRotate 5.6 0.0 1.0 0.0
+glCallList lower_torso
+glPushMatrix 
+glTranslate 00001.10 -0000.630 0.0
+glRotate 12.2 1.0 0.0 0.0
+glCallList upper_leg
+glTranslate 0.0 -3.40 0.0
+glRotate 30.7 1.0 0.0 0.0
+glCallList lower_leg
+glTranslate 0.0 -3.00 0.0
+glRotate 15.6 1.0 0.0 0.0
+glCallList foot
+glPopMatrix 
+glPushMatrix 
+glTranslate -00001.10 -0000.630 0.0
+glRotate -17.3 1.0 0.0 0.0
+glCallList upper_leg
+glTranslate 0.0 -3.40 0.0
+glRotate 14.4 1.0 0.0 0.0
+glCallList lower_leg
+glTranslate 0.0 -3.00 0.0
+glRotate 11.6 1.0 0.0 0.0
+glCallList foot
+glPopMatrix 
+glPopMatrix 
+glFlush 
+glutSwapBuffers 
+glClear GL_COLOR_BUFFER_BIT
+glClear GL_DEPTH_BUFFER_BIT
+glLoadIdentity 
+glTranslate 0.0 0.0 -11.0
+glRotate 0.0 1.0 0.0 0.0
+glRotate 0.0 0.0 1.0 0.0
+glPushMatrix 
+glTranslate 0.0 00005.80 0.0
+glRotate 0.0 1.0 0.0 0.0
+glRotate 0.0 0.0 1.0 0.0
+glCallList head
+glPopMatrix 
+glCallList torso
+glPushMatrix 
+glTranslate 00002.10 00004.0320 0.0
+glRotate 3.8 1.0 0.0 0.0
+glCallList upper_arm
+glTranslate 0.0 -3.00 0.0
+glRotate -53.4 1.0 0.0 0.0
+glCallList lower_arm
+glPopMatrix 
+glPushMatrix 
+glTranslate -00002.10 00004.0320 0.0
+glRotate 28.2 1.0 0.0 0.0
+glCallList upper_arm
+glTranslate 0.0 -3.00 0.0
+glRotate -35.1 1.0 0.0 0.0
+glCallList lower_arm
+glPopMatrix 
+glPushMatrix 
+glRotate 5.4 0.0 1.0 0.0
+glCallList lower_torso
+glPushMatrix 
+glTranslate 00001.10 -0000.630 0.0
+glRotate 11.0 1.0 0.0 0.0
+glCallList upper_leg
+glTranslate 0.0 -3.40 0.0
+glRotate 31.6 1.0 0.0 0.0
+glCallList lower_leg
+glTranslate 0.0 -3.00 0.0
+glRotate 14.4 1.0 0.0 0.0
+glCallList foot
+glPopMatrix 
+glPushMatrix 
+glTranslate -00001.10 -0000.630 0.0
+glRotate -16.4 1.0 0.0 0.0
+glCallList upper_leg
+glTranslate 0.0 -3.40 0.0
+glRotate 14.1 1.0 0.0 0.0
+glCallList lower_leg
+glTranslate 0.0 -3.00 0.0
+glRotate 11.0 1.0 0.0 0.0
+glCallList foot
+glPopMatrix 
+glPopMatrix 
+glFlush 
+glutSwapBuffers 
+glClear GL_COLOR_BUFFER_BIT
+glClear GL_DEPTH_BUFFER_BIT
+glLoadIdentity 
+glTranslate 0.0 0.0 -11.0
+glRotate 0.0 1.0 0.0 0.0
+glRotate 0.0 0.0 1.0 0.0
+glPushMatrix 
+glTranslate 0.0 00005.80 0.0
+glRotate 0.0 1.0 0.0 0.0
+glRotate 0.0 0.0 1.0 0.0
+glCallList head
+glPopMatrix 
+glCallList torso
+glPushMatrix 
+glTranslate 00002.10 00004.0320 0.0
+glRotate 4.3 1.0 0.0 0.0
+glCallList upper_arm
+glTranslate 0.0 -3.00 0.0
+glRotate -53.1 1.0 0.0 0.0
+glCallList lower_arm
+glPopMatrix 
+glPushMatrix 
+glTranslate -00002.10 00004.0320 0.0
+glRotate 27.7 1.0 0.0 0.0
+glCallList upper_arm
+glTranslate 0.0 -3.00 0.0
+glRotate -35.5 1.0 0.0 0.0
+glCallList lower_arm
+glPopMatrix 
+glPushMatrix 
+glRotate 5.2 0.0 1.0 0.0
+glCallList lower_torso
+glPushMatrix 
+glTranslate 00001.10 -0000.630 0.0
+glRotate 9.7 1.0 0.0 0.0
+glCallList upper_leg
+glTranslate 0.0 -3.40 0.0
+glRotate 32.6 1.0 0.0 0.0
+glCallList lower_leg
+glTranslate 0.0 -3.00 0.0
+glRotate 13.2 1.0 0.0 0.0
+glCallList foot
+glPopMatrix 
+glPushMatrix 
+glTranslate -00001.10 -0000.630 0.0
+glRotate -15.4 1.0 0.0 0.0
+glCallList upper_leg
+glTranslate 0.0 -3.40 0.0
+glRotate 13.9 1.0 0.0 0.0
+glCallList lower_leg
+glTranslate 0.0 -3.00 0.0
+glRotate 10.4 1.0 0.0 0.0
+glCallList foot
+glPopMatrix 
+glPopMatrix 
+glFlush 
+glutSwapBuffers 
+glClear GL_COLOR_BUFFER_BIT
+glClear GL_DEPTH_BUFFER_BIT
+glLoadIdentity 
+glTranslate 0.0 0.0 -11.0
+glRotate 0.0 1.0 0.0 0.0
+glRotate 0.0 0.0 1.0 0.0
+glPushMatrix 
+glTranslate 0.0 00005.80 0.0
+glRotate 0.0 1.0 0.0 0.0
+glRotate 0.0 0.0 1.0 0.0
+glCallList head
+glPopMatrix 
+glCallList torso
+glPushMatrix 
+glTranslate 00002.10 00004.0320 0.0
+glRotate 4.8 1.0 0.0 0.0
+glCallList upper_arm
+glTranslate 0.0 -3.00 0.0
+glRotate -52.7 1.0 0.0 0.0
+glCallList lower_arm
+glPopMatrix 
+glPushMatrix 
+glTranslate -00002.10 00004.0320 0.0
+glRotate 27.2 1.0 0.0 0.0
+glCallList upper_arm
+glTranslate 0.0 -3.00 0.0
+glRotate -35.9 1.0 0.0 0.0
+glCallList lower_arm
+glPopMatrix 
+glPushMatrix 
+glRotate 4.9 0.0 1.0 0.0
+glCallList lower_torso
+glPushMatrix 
+glTranslate 00001.10 -0000.630 0.0
+glRotate 8.4 1.0 0.0 0.0
+glCallList upper_leg
+glTranslate 0.0 -3.40 0.0
+glRotate 33.6 1.0 0.0 0.0
+glCallList lower_leg
+glTranslate 0.0 -3.00 0.0
+glRotate 12.0 1.0 0.0 0.0
+glCallList foot
+glPopMatrix 
+glPushMatrix 
+glTranslate -00001.10 -0000.630 0.0
+glRotate -14.4 1.0 0.0 0.0
+glCallList upper_leg
+glTranslate 0.0 -3.40 0.0
+glRotate 13.6 1.0 0.0 0.0
+glCallList lower_leg
+glTranslate 0.0 -3.00 0.0
+glRotate 9.7 1.0 0.0 0.0
+glCallList foot
+glPopMatrix 
+glPopMatrix 
+glFlush 
+glutSwapBuffers 
+glClear GL_COLOR_BUFFER_BIT
+glClear GL_DEPTH_BUFFER_BIT
+glLoadIdentity 
+glTranslate 0.0 0.0 -11.0
+glRotate 0.0 1.0 0.0 0.0
+glRotate 0.0 0.0 1.0 0.0
+glPushMatrix 
+glTranslate 0.0 00005.80 0.0
+glRotate 0.0 1.0 0.0 0.0
+glRotate 0.0 0.0 1.0 0.0
+glCallList head
+glPopMatrix 
+glCallList torso
+glPushMatrix 
+glTranslate 00002.10 00004.0320 0.0
+glRotate 5.2 1.0 0.0 0.0
+glCallList upper_arm
+glTranslate 0.0 -3.00 0.0
+glRotate -52.4 1.0 0.0 0.0
+glCallList lower_arm
+glPopMatrix 
+glPushMatrix 
+glTranslate -00002.10 00004.0320 0.0
+glRotate 26.8 1.0 0.0 0.0
+glCallList upper_arm
+glTranslate 0.0 -3.00 0.0
+glRotate -36.2 1.0 0.0 0.0
+glCallList lower_arm
+glPopMatrix 
+glPushMatrix 
+glRotate 4.7 0.0 1.0 0.0
+glCallList lower_torso
+glPushMatrix 
+glTranslate 00001.10 -0000.630 0.0
+glRotate 7.2 1.0 0.0 0.0
+glCallList upper_leg
+glTranslate 0.0 -3.40 0.0
+glRotate 34.5 1.0 0.0 0.0
+glCallList lower_leg
+glTranslate 0.0 -3.00 0.0
+glRotate 10.8 1.0 0.0 0.0
+glCallList foot
+glPopMatrix 
+glPushMatrix 
+glTranslate -00001.10 -0000.630 0.0
+glRotate -13.5 1.0 0.0 0.0
+glCallList upper_leg
+glTranslate 0.0 -3.40 0.0
+glRotate 13.4 1.0 0.0 0.0
+glCallList lower_leg
+glTranslate 0.0 -3.00 0.0
+glRotate 9.1 1.0 0.0 0.0
+glCallList foot
+glPopMatrix 
+glPopMatrix 
+glFlush 
+glutSwapBuffers 
+glClear GL_COLOR_BUFFER_BIT
+glClear GL_DEPTH_BUFFER_BIT
+glLoadIdentity 
+glTranslate 0.0 0.0 -11.0
+glRotate 0.0 1.0 0.0 0.0
+glRotate 0.0 0.0 1.0 0.0
+glPushMatrix 
+glTranslate 0.0 00005.80 0.0
+glRotate 0.0 1.0 0.0 0.0
+glRotate 0.0 0.0 1.0 0.0
+glCallList head
+glPopMatrix 
+glCallList torso
+glPushMatrix 
+glTranslate 00002.10 00004.0320 0.0
+glRotate 5.7 1.0 0.0 0.0
+glCallList upper_arm
+glTranslate 0.0 -3.00 0.0
+glRotate -52.1 1.0 0.0 0.0
+glCallList lower_arm
+glPopMatrix 
+glPushMatrix 
+glTranslate -00002.10 00004.0320 0.0
+glRotate 26.3 1.0 0.0 0.0
+glCallList upper_arm
+glTranslate 0.0 -3.00 0.0
+glRotate -36.6 1.0 0.0 0.0
+glCallList lower_arm
+glPopMatrix 
+glPushMatrix 
+glRotate 4.5 0.0 1.0 0.0
+glCallList lower_torso
+glPushMatrix 
+glTranslate 00001.10 -0000.630 0.0
+glRotate 5.9 1.0 0.0 0.0
+glCallList upper_leg
+glTranslate 0.0 -3.40 0.0
+glRotate 35.5 1.0 0.0 0.0
+glCallList lower_leg
+glTranslate 0.0 -3.00 0.0
+glRotate 9.6 1.0 0.0 0.0
+glCallList foot
+glPopMatrix 
+glPushMatrix 
+glTranslate -00001.10 -0000.630 0.0
+glRotate -12.5 1.0 0.0 0.0
+glCallList upper_leg
+glTranslate 0.0 -3.40 0.0
+glRotate 13.2 1.0 0.0 0.0
+glCallList lower_leg
+glTranslate 0.0 -3.00 0.0
+glRotate 8.5 1.0 0.0 0.0
+glCallList foot
+glPopMatrix 
+glPopMatrix 
+glFlush 
+glutSwapBuffers 
+glClear GL_COLOR_BUFFER_BIT
+glClear GL_DEPTH_BUFFER_BIT
+glLoadIdentity 
+glTranslate 0.0 0.0 -11.0
+glRotate 0.0 1.0 0.0 0.0
+glRotate 0.0 0.0 1.0 0.0
+glPushMatrix 
+glTranslate 0.0 00005.80 0.0
+glRotate 0.0 1.0 0.0 0.0
+glRotate 0.0 0.0 1.0 0.0
+glCallList head
+glPopMatrix 
+glCallList torso
+glPushMatrix 
+glTranslate 00002.10 00004.0320 0.0
+glRotate 6.2 1.0 0.0 0.0
+glCallList upper_arm
+glTranslate 0.0 -3.00 0.0
+glRotate -51.8 1.0 0.0 0.0
+glCallList lower_arm
+glPopMatrix 
+glPushMatrix 
+glTranslate -00002.10 00004.0320 0.0
+glRotate 25.8 1.0 0.0 0.0
+glCallList upper_arm
+glTranslate 0.0 -3.00 0.0
+glRotate -37.0 1.0 0.0 0.0
+glCallList lower_arm
+glPopMatrix 
+glPushMatrix 
+glRotate 4.3 0.0 1.0 0.0
+glCallList lower_torso
+glPushMatrix 
+glTranslate 00001.10 -0000.630 0.0
+glRotate 4.7 1.0 0.0 0.0
+glCallList upper_leg
+glTranslate 0.0 -3.40 0.0
+glRotate 36.4 1.0 0.0 0.0
+glCallList lower_leg
+glTranslate 0.0 -3.00 0.0
+glRotate 8.4 1.0 0.0 0.0
+glCallList foot
+glPopMatrix 
+glPushMatrix 
+glTranslate -00001.10 -0000.630 0.0
+glRotate -11.6 1.0 0.0 0.0
+glCallList upper_leg
+glTranslate 0.0 -3.40 0.0
+glRotate 12.9 1.0 0.0 0.0
+glCallList lower_leg
+glTranslate 0.0 -3.00 0.0
+glRotate 7.9 1.0 0.0 0.0
+glCallList foot
+glPopMatrix 
+glPopMatrix 
+glFlush 
+glutSwapBuffers 
+glClear GL_COLOR_BUFFER_BIT
+glClear GL_DEPTH_BUFFER_BIT
+glLoadIdentity 
+glTranslate 0.0 0.0 -11.0
+glRotate 0.0 1.0 0.0 0.0
+glRotate 0.0 0.0 1.0 0.0
+glPushMatrix 
+glTranslate 0.0 00005.80 0.0
+glRotate 0.0 1.0 0.0 0.0
+glRotate 0.0 0.0 1.0 0.0
+glCallList head
+glPopMatrix 
+glCallList torso
+glPushMatrix 
+glTranslate 00002.10 00004.0320 0.0
+glRotate 6.7 1.0 0.0 0.0
+glCallList upper_arm
+glTranslate 0.0 -3.00 0.0
+glRotate -51.4 1.0 0.0 0.0
+glCallList lower_arm
+glPopMatrix 
+glPushMatrix 
+glTranslate -00002.10 00004.0320 0.0
+glRotate 25.3 1.0 0.0 0.0
+glCallList upper_arm
+glTranslate 0.0 -3.00 0.0
+glRotate -37.4 1.0 0.0 0.0
+glCallList lower_arm
+glPopMatrix 
+glPushMatrix 
+glRotate 4.1 0.0 1.0 0.0
+glCallList lower_torso
+glPushMatrix 
+glTranslate 00001.10 -0000.630 0.0
+glRotate 3.4 1.0 0.0 0.0
+glCallList upper_leg
+glTranslate 0.0 -3.40 0.0
+glRotate 37.4 1.0 0.0 0.0
+glCallList lower_leg
+glTranslate 0.0 -3.00 0.0
+glRotate 7.2 1.0 0.0 0.0
+glCallList foot
+glPopMatrix 
+glPushMatrix 
+glTranslate -00001.10 -0000.630 0.0
+glRotate -10.6 1.0 0.0 0.0
+glCallList upper_leg
+glTranslate 0.0 -3.40 0.0
+glRotate 12.7 1.0 0.0 0.0
+glCallList lower_leg
+glTranslate 0.0 -3.00 0.0
+glRotate 7.2 1.0 0.0 0.0
+glCallList foot
+glPopMatrix 
+glPopMatrix 
+glFlush 
+glutSwapBuffers 
+glClear GL_COLOR_BUFFER_BIT
+glClear GL_DEPTH_BUFFER_BIT
+glLoadIdentity 
+glTranslate 0.0 0.0 -11.0
+glRotate 0.0 1.0 0.0 0.0
+glRotate 0.0 0.0 1.0 0.0
+glPushMatrix 
+glTranslate 0.0 00005.80 0.0
+glRotate 0.0 1.0 0.0 0.0
+glRotate 0.0 0.0 1.0 0.0
+glCallList head
+glPopMatrix 
+glCallList torso
+glPushMatrix 
+glTranslate 00002.10 00004.0320 0.0
+glRotate 7.2 1.0 0.0 0.0
+glCallList upper_arm
+glTranslate 0.0 -3.00 0.0
+glRotate -51.1 1.0 0.0 0.0
+glCallList lower_arm
+glPopMatrix 
+glPushMatrix 
+glTranslate -00002.10 00004.0320 0.0
+glRotate 24.8 1.0 0.0 0.0
+glCallList upper_arm
+glTranslate 0.0 -3.00 0.0
+glRotate -37.8 1.0 0.0 0.0
+glCallList lower_arm
+glPopMatrix 
+glPushMatrix 
+glRotate 3.9 0.0 1.0 0.0
+glCallList lower_torso
+glPushMatrix 
+glTranslate 00001.10 -0000.630 0.0
+glRotate 2.1 1.0 0.0 0.0
+glCallList upper_leg
+glTranslate 0.0 -3.40 0.0
+glRotate 38.4 1.0 0.0 0.0
+glCallList lower_leg
+glTranslate 0.0 -3.00 0.0
+glRotate 6.0 1.0 0.0 0.0
+glCallList foot
+glPopMatrix 
+glPushMatrix 
+glTranslate -00001.10 -0000.630 0.0
+glRotate -9.6 1.0 0.0 0.0
+glCallList upper_leg
+glTranslate 0.0 -3.40 0.0
+glRotate 12.4 1.0 0.0 0.0
+glCallList lower_leg
+glTranslate 0.0 -3.00 0.0
+glRotate 6.6 1.0 0.0 0.0
+glCallList foot
+glPopMatrix 
+glPopMatrix 
+glFlush 
+glutSwapBuffers 
+glClear GL_COLOR_BUFFER_BIT
+glClear GL_DEPTH_BUFFER_BIT
+glLoadIdentity 
+glTranslate 0.0 0.0 -11.0
+glRotate 0.0 1.0 0.0 0.0
+glRotate 0.0 0.0 1.0 0.0
+glPushMatrix 
+glTranslate 0.0 00005.80 0.0
+glRotate 0.0 1.0 0.0 0.0
+glRotate 0.0 0.0 1.0 0.0
+glCallList head
+glPopMatrix 
+glCallList torso
+glPushMatrix 
+glTranslate 00002.10 00004.0320 0.0
+glRotate 7.6 1.0 0.0 0.0
+glCallList upper_arm
+glTranslate 0.0 -3.00 0.0
+glRotate -50.8 1.0 0.0 0.0
+glCallList lower_arm
+glPopMatrix 
+glPushMatrix 
+glTranslate -00002.10 00004.0320 0.0
+glRotate 24.4 1.0 0.0 0.0
+glCallList upper_arm
+glTranslate 0.0 -3.00 0.0
+glRotate -38.2 1.0 0.0 0.0
+glCallList lower_arm
+glPopMatrix 
+glPushMatrix 
+glRotate 3.7 0.0 1.0 0.0
+glCallList lower_torso
+glPushMatrix 
+glTranslate 00001.10 -0000.630 0.0
+glRotate 0.9 1.0 0.0 0.0
+glCallList upper_leg
+glTranslate 0.0 -3.40 0.0
+glRotate 39.3 1.0 0.0 0.0
+glCallList lower_leg
+glTranslate 0.0 -3.00 0.0
+glRotate 4.8 1.0 0.0 0.0
+glCallList foot
+glPopMatrix 
+glPushMatrix 
+glTranslate -00001.10 -0000.630 0.0
+glRotate -8.7 1.0 0.0 0.0
+glCallList upper_leg
+glTranslate 0.0 -3.40 0.0
+glRotate 12.2 1.0 0.0 0.0
+glCallList lower_leg
+glTranslate 0.0 -3.00 0.0
+glRotate 6.0 1.0 0.0 0.0
+glCallList foot
+glPopMatrix 
+glPopMatrix 
+glFlush 
+glutSwapBuffers 
+glClear GL_COLOR_BUFFER_BIT
+glClear GL_DEPTH_BUFFER_BIT
+glLoadIdentity 
+glTranslate 0.0 0.0 -11.0
+glRotate 0.0 1.0 0.0 0.0
+glRotate 0.0 0.0 1.0 0.0
+glPushMatrix 
+glTranslate 0.0 00005.80 0.0
+glRotate 0.0 1.0 0.0 0.0
+glRotate 0.0 0.0 1.0 0.0
+glCallList head
+glPopMatrix 
+glCallList torso
+glPushMatrix 
+glTranslate 00002.10 00004.0320 0.0
+glRotate 8.1 1.0 0.0 0.0
+glCallList upper_arm
+glTranslate 0.0 -3.00 0.0
+glRotate -50.4 1.0 0.0 0.0
+glCallList lower_arm
+glPopMatrix 
+glPushMatrix 
+glTranslate -00002.10 00004.0320 0.0
+glRotate 23.9 1.0 0.0 0.0
+glCallList upper_arm
+glTranslate 0.0 -3.00 0.0
+glRotate -38.6 1.0 0.0 0.0
+glCallList lower_arm
+glPopMatrix 
+glPushMatrix 
+glRotate 3.5 0.0 1.0 0.0
+glCallList lower_torso
+glPushMatrix 
+glTranslate 00001.10 -0000.630 0.0
+glRotate -.4 1.0 0.0 0.0
+glCallList upper_leg
+glTranslate 0.0 -3.40 0.0
+glRotate 40.3 1.0 0.0 0.0
+glCallList lower_leg
+glTranslate 0.0 -3.00 0.0
+glRotate 3.6 1.0 0.0 0.0
+glCallList foot
+glPopMatrix 
+glPushMatrix 
+glTranslate -00001.10 -0000.630 0.0
+glRotate -7.7 1.0 0.0 0.0
+glCallList upper_leg
+glTranslate 0.0 -3.40 0.0
+glRotate 12.0 1.0 0.0 0.0
+glCallList lower_leg
+glTranslate 0.0 -3.00 0.0
+glRotate 5.3 1.0 0.0 0.0
+glCallList foot
+glPopMatrix 
+glPopMatrix 
+glFlush 
+glutSwapBuffers 
+glClear GL_COLOR_BUFFER_BIT
+glClear GL_DEPTH_BUFFER_BIT
+glLoadIdentity 
+glTranslate 0.0 0.0 -11.0
+glRotate 0.0 1.0 0.0 0.0
+glRotate 0.0 0.0 1.0 0.0
+glPushMatrix 
+glTranslate 0.0 00005.80 0.0
+glRotate 0.0 1.0 0.0 0.0
+glRotate 0.0 0.0 1.0 0.0
+glCallList head
+glPopMatrix 
+glCallList torso
+glPushMatrix 
+glTranslate 00002.10 00004.0320 0.0
+glRotate 8.6 1.0 0.0 0.0
+glCallList upper_arm
+glTranslate 0.0 -3.00 0.0
+glRotate -50.1 1.0 0.0 0.0
+glCallList lower_arm
+glPopMatrix 
+glPushMatrix 
+glTranslate -00002.10 00004.0320 0.0
+glRotate 23.4 1.0 0.0 0.0
+glCallList upper_arm
+glTranslate 0.0 -3.00 0.0
+glRotate -39.0 1.0 0.0 0.0
+glCallList lower_arm
+glPopMatrix 
+glPushMatrix 
+glRotate 3.3 0.0 1.0 0.0
+glCallList lower_torso
+glPushMatrix 
+glTranslate 00001.10 -0000.630 0.0
+glRotate -1.6 1.0 0.0 0.0
+glCallList upper_leg
+glTranslate 0.0 -3.40 0.0
+glRotate 41.2 1.0 0.0 0.0
+glCallList lower_leg
+glTranslate 0.0 -3.00 0.0
+glRotate 2.4 1.0 0.0 0.0
+glCallList foot
+glPopMatrix 
+glPushMatrix 
+glTranslate -00001.10 -0000.630 0.0
+glRotate -6.8 1.0 0.0 0.0
+glCallList upper_leg
+glTranslate 0.0 -3.40 0.0
+glRotate 11.7 1.0 0.0 0.0
+glCallList lower_leg
+glTranslate 0.0 -3.00 0.0
+glRotate 4.7 1.0 0.0 0.0
+glCallList foot
+glPopMatrix 
+glPopMatrix 
+glFlush 
+glutSwapBuffers 
+glClear GL_COLOR_BUFFER_BIT
+glClear GL_DEPTH_BUFFER_BIT
+glLoadIdentity 
+glTranslate 0.0 0.0 -11.0
+glRotate 0.0 1.0 0.0 0.0
+glRotate 0.0 0.0 1.0 0.0
+glPushMatrix 
+glTranslate 0.0 00005.80 0.0
+glRotate 0.0 1.0 0.0 0.0
+glRotate 0.0 0.0 1.0 0.0
+glCallList head
+glPopMatrix 
+glCallList torso
+glPushMatrix 
+glTranslate 00002.10 00004.0320 0.0
+glRotate 9.1 1.0 0.0 0.0
+glCallList upper_arm
+glTranslate 0.0 -3.00 0.0
+glRotate -49.8 1.0 0.0 0.0
+glCallList lower_arm
+glPopMatrix 
+glPushMatrix 
+glTranslate -00002.10 00004.0320 0.0
+glRotate 22.9 1.0 0.0 0.0
+glCallList upper_arm
+glTranslate 0.0 -3.00 0.0
+glRotate -39.4 1.0 0.0 0.0
+glCallList lower_arm
+glPopMatrix 
+glPushMatrix 
+glRotate 3.1 0.0 1.0 0.0
+glCallList lower_torso
+glPushMatrix 
+glTranslate 00001.10 -0000.630 0.0
+glRotate -2.9 1.0 0.0 0.0
+glCallList upper_leg
+glTranslate 0.0 -3.40 0.0
+glRotate 42.2 1.0 0.0 0.0
+glCallList lower_leg
+glTranslate 0.0 -3.00 0.0
+glRotate 1.2 1.0 0.0 0.0
+glCallList foot
+glPopMatrix 
+glPushMatrix 
+glTranslate -00001.10 -0000.630 0.0
+glRotate -5.8 1.0 0.0 0.0
+glCallList upper_leg
+glTranslate 0.0 -3.40 0.0
+glRotate 11.5 1.0 0.0 0.0
+glCallList lower_leg
+glTranslate 0.0 -3.00 0.0
+glRotate 4.1 1.0 0.0 0.0
+glCallList foot
+glPopMatrix 
+glPopMatrix 
+glFlush 
+glutSwapBuffers 
+glClear GL_COLOR_BUFFER_BIT
+glClear GL_DEPTH_BUFFER_BIT
+glLoadIdentity 
+glTranslate 0.0 0.0 -11.0
+glRotate 0.0 1.0 0.0 0.0
+glRotate 0.0 0.0 1.0 0.0
+glPushMatrix 
+glTranslate 0.0 00005.80 0.0
+glRotate 0.0 1.0 0.0 0.0
+glRotate 0.0 0.0 1.0 0.0
+glCallList head
+glPopMatrix 
+glCallList torso
+glPushMatrix 
+glTranslate 00002.10 00004.0320 0.0
+glRotate 9.6 1.0 0.0 0.0
+glCallList upper_arm
+glTranslate 0.0 -3.00 0.0
+glRotate -49.4 1.0 0.0 0.0
+glCallList lower_arm
+glPopMatrix 
+glPushMatrix 
+glTranslate -00002.10 00004.0320 0.0
+glRotate 22.4 1.0 0.0 0.0
+glCallList upper_arm
+glTranslate 0.0 -3.00 0.0
+glRotate -39.8 1.0 0.0 0.0
+glCallList lower_arm
+glPopMatrix 
+glPushMatrix 
+glRotate 2.8 0.0 1.0 0.0
+glCallList lower_torso
+glPushMatrix 
+glTranslate 00001.10 -0000.630 0.0
+glRotate -4.2 1.0 0.0 0.0
+glCallList upper_leg
+glTranslate 0.0 -3.40 0.0
+glRotate 43.2 1.0 0.0 0.0
+glCallList lower_leg
+glTranslate 0.0 -3.00 0.0
+glRotate 0.0 1.0 0.0 0.0
+glCallList foot
+glPopMatrix 
+glPushMatrix 
+glTranslate -00001.10 -0000.630 0.0
+glRotate -4.8 1.0 0.0 0.0
+glCallList upper_leg
+glTranslate 0.0 -3.40 0.0
+glRotate 11.2 1.0 0.0 0.0
+glCallList lower_leg
+glTranslate 0.0 -3.00 0.0
+glRotate 3.4 1.0 0.0 0.0
+glCallList foot
+glPopMatrix 
+glPopMatrix 
+glFlush 
+glutSwapBuffers 
+glClear GL_COLOR_BUFFER_BIT
+glClear GL_DEPTH_BUFFER_BIT
+glLoadIdentity 
+glTranslate 0.0 0.0 -11.0
+glRotate 0.0 1.0 0.0 0.0
+glRotate 0.0 0.0 1.0 0.0
+glPushMatrix 
+glTranslate 0.0 00005.80 0.0
+glRotate 0.0 1.0 0.0 0.0
+glRotate 0.0 0.0 1.0 0.0
+glCallList head
+glPopMatrix 
+glCallList torso
+glPushMatrix 
+glTranslate 00002.10 00004.0320 0.0
+glRotate 10.0 1.0 0.0 0.0
+glCallList upper_arm
+glTranslate 0.0 -3.00 0.0
+glRotate -49.1 1.0 0.0 0.0
+glCallList lower_arm
+glPopMatrix 
+glPushMatrix 
+glTranslate -00002.10 00004.0320 0.0
+glRotate 22.0 1.0 0.0 0.0
+glCallList upper_arm
+glTranslate 0.0 -3.00 0.0
+glRotate -40.1 1.0 0.0 0.0
+glCallList lower_arm
+glPopMatrix 
+glPushMatrix 
+glRotate 2.6 0.0 1.0 0.0
+glCallList lower_torso
+glPushMatrix 
+glTranslate 00001.10 -0000.630 0.0
+glRotate -5.4 1.0 0.0 0.0
+glCallList upper_leg
+glTranslate 0.0 -3.40 0.0
+glRotate 44.1 1.0 0.0 0.0
+glCallList lower_leg
+glTranslate 0.0 -3.00 0.0
+glRotate -1.2 1.0 0.0 0.0
+glCallList foot
+glPopMatrix 
+glPushMatrix 
+glTranslate -00001.10 -0000.630 0.0
+glRotate -3.9 1.0 0.0 0.0
+glCallList upper_leg
+glTranslate 0.0 -3.40 0.0
+glRotate 11.0 1.0 0.0 0.0
+glCallList lower_leg
+glTranslate 0.0 -3.00 0.0
+glRotate 2.8 1.0 0.0 0.0
+glCallList foot
+glPopMatrix 
+glPopMatrix 
+glFlush 
+glutSwapBuffers 
+glClear GL_COLOR_BUFFER_BIT
+glClear GL_DEPTH_BUFFER_BIT
+glLoadIdentity 
+glTranslate 0.0 0.0 -11.0
+glRotate 0.0 1.0 0.0 0.0
+glRotate 0.0 0.0 1.0 0.0
+glPushMatrix 
+glTranslate 0.0 00005.80 0.0
+glRotate 0.0 1.0 0.0 0.0
+glRotate 0.0 0.0 1.0 0.0
+glCallList head
+glPopMatrix 
+glCallList torso
+glPushMatrix 
+glTranslate 00002.10 00004.0320 0.0
+glRotate 10.5 1.0 0.0 0.0
+glCallList upper_arm
+glTranslate 0.0 -3.00 0.0
+glRotate -48.8 1.0 0.0 0.0
+glCallList lower_arm
+glPopMatrix 
+glPushMatrix 
+glTranslate -00002.10 00004.0320 0.0
+glRotate 21.5 1.0 0.0 0.0
+glCallList upper_arm
+glTranslate 0.0 -3.00 0.0
+glRotate -40.5 1.0 0.0 0.0
+glCallList lower_arm
+glPopMatrix 
+glPushMatrix 
+glRotate 2.4 0.0 1.0 0.0
+glCallList lower_torso
+glPushMatrix 
+glTranslate 00001.10 -0000.630 0.0
+glRotate -6.7 1.0 0.0 0.0
+glCallList upper_leg
+glTranslate 0.0 -3.40 0.0
+glRotate 45.1 1.0 0.0 0.0
+glCallList lower_leg
+glTranslate 0.0 -3.00 0.0
+glRotate -2.4 1.0 0.0 0.0
+glCallList foot
+glPopMatrix 
+glPushMatrix 
+glTranslate -00001.10 -0000.630 0.0
+glRotate -2.9 1.0 0.0 0.0
+glCallList upper_leg
+glTranslate 0.0 -3.40 0.0
+glRotate 10.8 1.0 0.0 0.0
+glCallList lower_leg
+glTranslate 0.0 -3.00 0.0
+glRotate 2.2 1.0 0.0 0.0
+glCallList foot
+glPopMatrix 
+glPopMatrix 
+glFlush 
+glutSwapBuffers 
+glClear GL_COLOR_BUFFER_BIT
+glClear GL_DEPTH_BUFFER_BIT
+glLoadIdentity 
+glTranslate 0.0 0.0 -11.0
+glRotate 0.0 1.0 0.0 0.0
+glRotate 0.0 0.0 1.0 0.0
+glPushMatrix 
+glTranslate 0.0 00005.80 0.0
+glRotate 0.0 1.0 0.0 0.0
+glRotate 0.0 0.0 1.0 0.0
+glCallList head
+glPopMatrix 
+glCallList torso
+glPushMatrix 
+glTranslate 00002.10 00004.0320 0.0
+glRotate 11.0 1.0 0.0 0.0
+glCallList upper_arm
+glTranslate 0.0 -3.00 0.0
+glRotate -48.5 1.0 0.0 0.0
+glCallList lower_arm
+glPopMatrix 
+glPushMatrix 
+glTranslate -00002.10 00004.0320 0.0
+glRotate 21.0 1.0 0.0 0.0
+glCallList upper_arm
+glTranslate 0.0 -3.00 0.0
+glRotate -40.9 1.0 0.0 0.0
+glCallList lower_arm
+glPopMatrix 
+glPushMatrix 
+glRotate 2.2 0.0 1.0 0.0
+glCallList lower_torso
+glPushMatrix 
+glTranslate 00001.10 -0000.630 0.0
+glRotate -7.9 1.0 0.0 0.0
+glCallList upper_leg
+glTranslate 0.0 -3.40 0.0
+glRotate 46.0 1.0 0.0 0.0
+glCallList lower_leg
+glTranslate 0.0 -3.00 0.0
+glRotate -3.6 1.0 0.0 0.0
+glCallList foot
+glPopMatrix 
+glPushMatrix 
+glTranslate -00001.10 -0000.630 0.0
+glRotate -2.0 1.0 0.0 0.0
+glCallList upper_leg
+glTranslate 0.0 -3.40 0.0
+glRotate 10.5 1.0 0.0 0.0
+glCallList lower_leg
+glTranslate 0.0 -3.00 0.0
+glRotate 1.6 1.0 0.0 0.0
+glCallList foot
+glPopMatrix 
+glPopMatrix 
+glFlush 
+glutSwapBuffers 
+glClear GL_COLOR_BUFFER_BIT
+glClear GL_DEPTH_BUFFER_BIT
+glLoadIdentity 
+glTranslate 0.0 0.0 -11.0
+glRotate 0.0 1.0 0.0 0.0
+glRotate 0.0 0.0 1.0 0.0
+glPushMatrix 
+glTranslate 0.0 00005.80 0.0
+glRotate 0.0 1.0 0.0 0.0
+glRotate 0.0 0.0 1.0 0.0
+glCallList head
+glPopMatrix 
+glCallList torso
+glPushMatrix 
+glTranslate 00002.10 00004.0320 0.0
+glRotate 11.5 1.0 0.0 0.0
+glCallList upper_arm
+glTranslate 0.0 -3.00 0.0
+glRotate -48.1 1.0 0.0 0.0
+glCallList lower_arm
+glPopMatrix 
+glPushMatrix 
+glTranslate -00002.10 00004.0320 0.0
+glRotate 20.5 1.0 0.0 0.0
+glCallList upper_arm
+glTranslate 0.0 -3.00 0.0
+glRotate -41.3 1.0 0.0 0.0
+glCallList lower_arm
+glPopMatrix 
+glPushMatrix 
+glRotate 2.0 0.0 1.0 0.0
+glCallList lower_torso
+glPushMatrix 
+glTranslate 00001.10 -0000.630 0.0
+glRotate -9.2 1.0 0.0 0.0
+glCallList upper_leg
+glTranslate 0.0 -3.40 0.0
+glRotate 47.0 1.0 0.0 0.0
+glCallList lower_leg
+glTranslate 0.0 -3.00 0.0
+glRotate -4.8 1.0 0.0 0.0
+glCallList foot
+glPopMatrix 
+glPushMatrix 
+glTranslate -00001.10 -0000.630 0.0
+glRotate -1.0 1.0 0.0 0.0
+glCallList upper_leg
+glTranslate 0.0 -3.40 0.0
+glRotate 10.3 1.0 0.0 0.0
+glCallList lower_leg
+glTranslate 0.0 -3.00 0.0
+glRotate 0.9 1.0 0.0 0.0
+glCallList foot
+glPopMatrix 
+glPopMatrix 
+glFlush 
+glutSwapBuffers 
+glClear GL_COLOR_BUFFER_BIT
+glClear GL_DEPTH_BUFFER_BIT
+glLoadIdentity 
+glTranslate 0.0 0.0 -11.0
+glRotate 0.0 1.0 0.0 0.0
+glRotate 0.0 0.0 1.0 0.0
+glPushMatrix 
+glTranslate 0.0 00005.80 0.0
+glRotate 0.0 1.0 0.0 0.0
+glRotate 0.0 0.0 1.0 0.0
+glCallList head
+glPopMatrix 
+glCallList torso
+glPushMatrix 
+glTranslate 00002.10 00004.0320 0.0
+glRotate 12.0 1.0 0.0 0.0
+glCallList upper_arm
+glTranslate 0.0 -3.00 0.0
+glRotate -47.8 1.0 0.0 0.0
+glCallList lower_arm
+glPopMatrix 
+glPushMatrix 
+glTranslate -00002.10 00004.0320 0.0
+glRotate 20.0 1.0 0.0 0.0
+glCallList upper_arm
+glTranslate 0.0 -3.00 0.0
+glRotate -41.7 1.0 0.0 0.0
+glCallList lower_arm
+glPopMatrix 
+glPushMatrix 
+glRotate 1.8 0.0 1.0 0.0
+glCallList lower_torso
+glPushMatrix 
+glTranslate 00001.10 -0000.630 0.0
+glRotate -10.5 1.0 0.0 0.0
+glCallList upper_leg
+glTranslate 0.0 -3.40 0.0
+glRotate 48.0 1.0 0.0 0.0
+glCallList lower_leg
+glTranslate 0.0 -3.00 0.0
+glRotate -6.0 1.0 0.0 0.0
+glCallList foot
+glPopMatrix 
+glPushMatrix 
+glTranslate -00001.10 -0000.630 0.0
+glRotate 0.0 1.0 0.0 0.0
+glCallList upper_leg
+glTranslate 0.0 -3.40 0.0
+glRotate 10.0 1.0 0.0 0.0
+glCallList lower_leg
+glTranslate 0.0 -3.00 0.0
+glRotate 0.3 1.0 0.0 0.0
+glCallList foot
+glPopMatrix 
+glPopMatrix 
+glFlush 
+glutSwapBuffers 
+glClear GL_COLOR_BUFFER_BIT
+glClear GL_DEPTH_BUFFER_BIT
+glLoadIdentity 
+glTranslate 0.0 0.0 -11.0
+glRotate 0.0 1.0 0.0 0.0
+glRotate 0.0 0.0 1.0 0.0
+glPushMatrix 
+glTranslate 0.0 00005.80 0.0
+glRotate 0.0 1.0 0.0 0.0
+glRotate 0.0 0.0 1.0 0.0
+glCallList head
+glPopMatrix 
+glCallList torso
+glPushMatrix 
+glTranslate 00002.10 00004.0320 0.0
+glRotate 12.4 1.0 0.0 0.0
+glCallList upper_arm
+glTranslate 0.0 -3.00 0.0
+glRotate -47.5 1.0 0.0 0.0
+glCallList lower_arm
+glPopMatrix 
+glPushMatrix 
+glTranslate -00002.10 00004.0320 0.0
+glRotate 19.6 1.0 0.0 0.0
+glCallList upper_arm
+glTranslate 0.0 -3.00 0.0
+glRotate -42.1 1.0 0.0 0.0
+glCallList lower_arm
+glPopMatrix 
+glPushMatrix 
+glRotate 1.6 0.0 1.0 0.0
+glCallList lower_torso
+glPushMatrix 
+glTranslate 00001.10 -0000.630 0.0
+glRotate -11.7 1.0 0.0 0.0
+glCallList upper_leg
+glTranslate 0.0 -3.40 0.0
+glRotate 48.9 1.0 0.0 0.0
+glCallList lower_leg
+glTranslate 0.0 -3.00 0.0
+glRotate -7.2 1.0 0.0 0.0
+glCallList foot
+glPopMatrix 
+glPushMatrix 
+glTranslate -00001.10 -0000.630 0.0
+glRotate 0.9 1.0 0.0 0.0
+glCallList upper_leg
+glTranslate 0.0 -3.40 0.0
+glRotate 9.8 1.0 0.0 0.0
+glCallList lower_leg
+glTranslate 0.0 -3.00 0.0
+glRotate -.3 1.0 0.0 0.0
+glCallList foot
+glPopMatrix 
+glPopMatrix 
+glFlush 
+glutSwapBuffers 
+glClear GL_COLOR_BUFFER_BIT
+glClear GL_DEPTH_BUFFER_BIT
+glLoadIdentity 
+glTranslate 0.0 0.0 -11.0
+glRotate 0.0 1.0 0.0 0.0
+glRotate 0.0 0.0 1.0 0.0
+glPushMatrix 
+glTranslate 0.0 00005.80 0.0
+glRotate 0.0 1.0 0.0 0.0
+glRotate 0.0 0.0 1.0 0.0
+glCallList head
+glPopMatrix 
+glCallList torso
+glPushMatrix 
+glTranslate 00002.10 00004.0320 0.0
+glRotate 12.9 1.0 0.0 0.0
+glCallList upper_arm
+glTranslate 0.0 -3.00 0.0
+glRotate -47.1 1.0 0.0 0.0
+glCallList lower_arm
+glPopMatrix 
+glPushMatrix 
+glTranslate -00002.10 00004.0320 0.0
+glRotate 19.1 1.0 0.0 0.0
+glCallList upper_arm
+glTranslate 0.0 -3.00 0.0
+glRotate -42.5 1.0 0.0 0.0
+glCallList lower_arm
+glPopMatrix 
+glPushMatrix 
+glRotate 1.4 0.0 1.0 0.0
+glCallList lower_torso
+glPushMatrix 
+glTranslate 00001.10 -0000.630 0.0
+glRotate -13.0 1.0 0.0 0.0
+glCallList upper_leg
+glTranslate 0.0 -3.40 0.0
+glRotate 49.9 1.0 0.0 0.0
+glCallList lower_leg
+glTranslate 0.0 -3.00 0.0
+glRotate -8.4 1.0 0.0 0.0
+glCallList foot
+glPopMatrix 
+glPushMatrix 
+glTranslate -00001.10 -0000.630 0.0
+glRotate 1.9 1.0 0.0 0.0
+glCallList upper_leg
+glTranslate 0.0 -3.40 0.0
+glRotate 9.6 1.0 0.0 0.0
+glCallList lower_leg
+glTranslate 0.0 -3.00 0.0
+glRotate -1.0 1.0 0.0 0.0
+glCallList foot
+glPopMatrix 
+glPopMatrix 
+glFlush 
+glutSwapBuffers 
+glClear GL_COLOR_BUFFER_BIT
+glClear GL_DEPTH_BUFFER_BIT
+glLoadIdentity 
+glTranslate 0.0 0.0 -11.0
+glRotate 0.0 1.0 0.0 0.0
+glRotate 0.0 0.0 1.0 0.0
+glPushMatrix 
+glTranslate 0.0 00005.80 0.0
+glRotate 0.0 1.0 0.0 0.0
+glRotate 0.0 0.0 1.0 0.0
+glCallList head
+glPopMatrix 
+glCallList torso
+glPushMatrix 
+glTranslate 00002.10 00004.0320 0.0
+glRotate 13.4 1.0 0.0 0.0
+glCallList upper_arm
+glTranslate 0.0 -3.00 0.0
+glRotate -46.8 1.0 0.0 0.0
+glCallList lower_arm
+glPopMatrix 
+glPushMatrix 
+glTranslate -00002.10 00004.0320 0.0
+glRotate 18.6 1.0 0.0 0.0
+glCallList upper_arm
+glTranslate 0.0 -3.00 0.0
+glRotate -42.9 1.0 0.0 0.0
+glCallList lower_arm
+glPopMatrix 
+glPushMatrix 
+glRotate 1.2 0.0 1.0 0.0
+glCallList lower_torso
+glPushMatrix 
+glTranslate 00001.10 -0000.630 0.0
+glRotate -14.2 1.0 0.0 0.0
+glCallList upper_leg
+glTranslate 0.0 -3.40 0.0
+glRotate 50.8 1.0 0.0 0.0
+glCallList lower_leg
+glTranslate 0.0 -3.00 0.0
+glRotate -9.6 1.0 0.0 0.0
+glCallList foot
+glPopMatrix 
+glPushMatrix 
+glTranslate -00001.10 -0000.630 0.0
+glRotate 2.8 1.0 0.0 0.0
+glCallList upper_leg
+glTranslate 0.0 -3.40 0.0
+glRotate 9.3 1.0 0.0 0.0
+glCallList lower_leg
+glTranslate 0.0 -3.00 0.0
+glRotate -1.6 1.0 0.0 0.0
+glCallList foot
+glPopMatrix 
+glPopMatrix 
+glFlush 
+glutSwapBuffers 
+glClear GL_COLOR_BUFFER_BIT
+glClear GL_DEPTH_BUFFER_BIT
+glLoadIdentity 
+glTranslate 0.0 0.0 -11.0
+glRotate 0.0 1.0 0.0 0.0
+glRotate 0.0 0.0 1.0 0.0
+glPushMatrix 
+glTranslate 0.0 00005.80 0.0
+glRotate 0.0 1.0 0.0 0.0
+glRotate 0.0 0.0 1.0 0.0
+glCallList head
+glPopMatrix 
+glCallList torso
+glPushMatrix 
+glTranslate 00002.10 00004.0320 0.0
+glRotate 13.9 1.0 0.0 0.0
+glCallList upper_arm
+glTranslate 0.0 -3.00 0.0
+glRotate -46.5 1.0 0.0 0.0
+glCallList lower_arm
+glPopMatrix 
+glPushMatrix 
+glTranslate -00002.10 00004.0320 0.0
+glRotate 18.1 1.0 0.0 0.0
+glCallList upper_arm
+glTranslate 0.0 -3.00 0.0
+glRotate -43.3 1.0 0.0 0.0
+glCallList lower_arm
+glPopMatrix 
+glPushMatrix 
+glRotate 1.0 0.0 1.0 0.0
+glCallList lower_torso
+glPushMatrix 
+glTranslate 00001.10 -0000.630 0.0
+glRotate -15.5 1.0 0.0 0.0
+glCallList upper_leg
+glTranslate 0.0 -3.40 0.0
+glRotate 51.8 1.0 0.0 0.0
+glCallList lower_leg
+glTranslate 0.0 -3.00 0.0
+glRotate -10.8 1.0 0.0 0.0
+glCallList foot
+glPopMatrix 
+glPushMatrix 
+glTranslate -00001.10 -0000.630 0.0
+glRotate 3.8 1.0 0.0 0.0
+glCallList upper_leg
+glTranslate 0.0 -3.40 0.0
+glRotate 9.1 1.0 0.0 0.0
+glCallList lower_leg
+glTranslate 0.0 -3.00 0.0
+glRotate -2.2 1.0 0.0 0.0
+glCallList foot
+glPopMatrix 
+glPopMatrix 
+glFlush 
+glutSwapBuffers 
+glClear GL_COLOR_BUFFER_BIT
+glClear GL_DEPTH_BUFFER_BIT
+glLoadIdentity 
+glTranslate 0.0 0.0 -11.0
+glRotate 0.0 1.0 0.0 0.0
+glRotate 0.0 0.0 1.0 0.0
+glPushMatrix 
+glTranslate 0.0 00005.80 0.0
+glRotate 0.0 1.0 0.0 0.0
+glRotate 0.0 0.0 1.0 0.0
+glCallList head
+glPopMatrix 
+glCallList torso
+glPushMatrix 
+glTranslate 00002.10 00004.0320 0.0
+glRotate 14.4 1.0 0.0 0.0
+glCallList upper_arm
+glTranslate 0.0 -3.00 0.0
+glRotate -46.1 1.0 0.0 0.0
+glCallList lower_arm
+glPopMatrix 
+glPushMatrix 
+glTranslate -00002.10 00004.0320 0.0
+glRotate 17.6 1.0 0.0 0.0
+glCallList upper_arm
+glTranslate 0.0 -3.00 0.0
+glRotate -43.7 1.0 0.0 0.0
+glCallList lower_arm
+glPopMatrix 
+glPushMatrix 
+glRotate 0.7 0.0 1.0 0.0
+glCallList lower_torso
+glPushMatrix 
+glTranslate 00001.10 -0000.630 0.0
+glRotate -16.8 1.0 0.0 0.0
+glCallList upper_leg
+glTranslate 0.0 -3.40 0.0
+glRotate 52.8 1.0 0.0 0.0
+glCallList lower_leg
+glTranslate 0.0 -3.00 0.0
+glRotate -12.0 1.0 0.0 0.0
+glCallList foot
+glPopMatrix 
+glPushMatrix 
+glTranslate -00001.10 -0000.630 0.0
+glRotate 4.8 1.0 0.0 0.0
+glCallList upper_leg
+glTranslate 0.0 -3.40 0.0
+glRotate 8.8 1.0 0.0 0.0
+glCallList lower_leg
+glTranslate 0.0 -3.00 0.0
+glRotate -2.9 1.0 0.0 0.0
+glCallList foot
+glPopMatrix 
+glPopMatrix 
+glFlush 
+glutSwapBuffers 
+glClear GL_COLOR_BUFFER_BIT
+glClear GL_DEPTH_BUFFER_BIT
+glLoadIdentity 
+glTranslate 0.0 0.0 -11.0
+glRotate 0.0 1.0 0.0 0.0
+glRotate 0.0 0.0 1.0 0.0
+glPushMatrix 
+glTranslate 0.0 00005.80 0.0
+glRotate 0.0 1.0 0.0 0.0
+glRotate 0.0 0.0 1.0 0.0
+glCallList head
+glPopMatrix 
+glCallList torso
+glPushMatrix 
+glTranslate 00002.10 00004.0320 0.0
+glRotate 14.8 1.0 0.0 0.0
+glCallList upper_arm
+glTranslate 0.0 -3.00 0.0
+glRotate -45.8 1.0 0.0 0.0
+glCallList lower_arm
+glPopMatrix 
+glPushMatrix 
+glTranslate -00002.10 00004.0320 0.0
+glRotate 17.2 1.0 0.0 0.0
+glCallList upper_arm
+glTranslate 0.0 -3.00 0.0
+glRotate -44.0 1.0 0.0 0.0
+glCallList lower_arm
+glPopMatrix 
+glPushMatrix 
+glRotate 0.5 0.0 1.0 0.0
+glCallList lower_torso
+glPushMatrix 
+glTranslate 00001.10 -0000.630 0.0
+glRotate -18.0 1.0 0.0 0.0
+glCallList upper_leg
+glTranslate 0.0 -3.40 0.0
+glRotate 53.7 1.0 0.0 0.0
+glCallList lower_leg
+glTranslate 0.0 -3.00 0.0
+glRotate -13.2 1.0 0.0 0.0
+glCallList foot
+glPopMatrix 
+glPushMatrix 
+glTranslate -00001.10 -0000.630 0.0
+glRotate 5.7 1.0 0.0 0.0
+glCallList upper_leg
+glTranslate 0.0 -3.40 0.0
+glRotate 8.6 1.0 0.0 0.0
+glCallList lower_leg
+glTranslate 0.0 -3.00 0.0
+glRotate -3.5 1.0 0.0 0.0
+glCallList foot
+glPopMatrix 
+glPopMatrix 
+glFlush 
+glutSwapBuffers 
+glClear GL_COLOR_BUFFER_BIT
+glClear GL_DEPTH_BUFFER_BIT
+glLoadIdentity 
+glTranslate 0.0 0.0 -11.0
+glRotate 0.0 1.0 0.0 0.0
+glRotate 0.0 0.0 1.0 0.0
+glPushMatrix 
+glTranslate 0.0 00005.80 0.0
+glRotate 0.0 1.0 0.0 0.0
+glRotate 0.0 0.0 1.0 0.0
+glCallList head
+glPopMatrix 
+glCallList torso
+glPushMatrix 
+glTranslate 00002.10 00004.0320 0.0
+glRotate 15.3 1.0 0.0 0.0
+glCallList upper_arm
+glTranslate 0.0 -3.00 0.0
+glRotate -45.5 1.0 0.0 0.0
+glCallList lower_arm
+glPopMatrix 
+glPushMatrix 
+glTranslate -00002.10 00004.0320 0.0
+glRotate 16.7 1.0 0.0 0.0
+glCallList upper_arm
+glTranslate 0.0 -3.00 0.0
+glRotate -44.4 1.0 0.0 0.0
+glCallList lower_arm
+glPopMatrix 
+glPushMatrix 
+glRotate 0.3 0.0 1.0 0.0
+glCallList lower_torso
+glPushMatrix 
+glTranslate 00001.10 -0000.630 0.0
+glRotate -19.3 1.0 0.0 0.0
+glCallList upper_leg
+glTranslate 0.0 -3.40 0.0
+glRotate 54.7 1.0 0.0 0.0
+glCallList lower_leg
+glTranslate 0.0 -3.00 0.0
+glRotate -14.4 1.0 0.0 0.0
+glCallList foot
+glPopMatrix 
+glPushMatrix 
+glTranslate -00001.10 -0000.630 0.0
+glRotate 6.7 1.0 0.0 0.0
+glCallList upper_leg
+glTranslate 0.0 -3.40 0.0
+glRotate 8.4 1.0 0.0 0.0
+glCallList lower_leg
+glTranslate 0.0 -3.00 0.0
+glRotate -4.1 1.0 0.0 0.0
+glCallList foot
+glPopMatrix 
+glPopMatrix 
+glFlush 
+glutSwapBuffers 
+glClear GL_COLOR_BUFFER_BIT
+glClear GL_DEPTH_BUFFER_BIT
+glLoadIdentity 
+glTranslate 0.0 0.0 -11.0
+glRotate 0.0 1.0 0.0 0.0
+glRotate 0.0 0.0 1.0 0.0
+glPushMatrix 
+glTranslate 0.0 00005.80 0.0
+glRotate 0.0 1.0 0.0 0.0
+glRotate 0.0 0.0 1.0 0.0
+glCallList head
+glPopMatrix 
+glCallList torso
+glPushMatrix 
+glTranslate 00002.10 00004.0320 0.0
+glRotate 15.8 1.0 0.0 0.0
+glCallList upper_arm
+glTranslate 0.0 -3.00 0.0
+glRotate -45.2 1.0 0.0 0.0
+glCallList lower_arm
+glPopMatrix 
+glPushMatrix 
+glTranslate -00002.10 00004.0320 0.0
+glRotate 16.2 1.0 0.0 0.0
+glCallList upper_arm
+glTranslate 0.0 -3.00 0.0
+glRotate -44.8 1.0 0.0 0.0
+glCallList lower_arm
+glPopMatrix 
+glPushMatrix 
+glRotate 0.1 0.0 1.0 0.0
+glCallList lower_torso
+glPushMatrix 
+glTranslate 00001.10 -0000.630 0.0
+glRotate -20.5 1.0 0.0 0.0
+glCallList upper_leg
+glTranslate 0.0 -3.40 0.0
+glRotate 55.6 1.0 0.0 0.0
+glCallList lower_leg
+glTranslate 0.0 -3.00 0.0
+glRotate -15.6 1.0 0.0 0.0
+glCallList foot
+glPopMatrix 
+glPushMatrix 
+glTranslate -00001.10 -0000.630 0.0
+glRotate 7.6 1.0 0.0 0.0
+glCallList upper_leg
+glTranslate 0.0 -3.40 0.0
+glRotate 8.1 1.0 0.0 0.0
+glCallList lower_leg
+glTranslate 0.0 -3.00 0.0
+glRotate -4.7 1.0 0.0 0.0
+glCallList foot
+glPopMatrix 
+glPopMatrix 
+glFlush 
+glutSwapBuffers 
