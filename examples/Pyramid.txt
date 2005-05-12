@@ -1,0 +1,33 @@
+glLoadIdentity
+glShadeModel GL_SMOOTH
+glEnable GL_COLOR_MATERIAL
+glLight GL_LIGHT1 GL_AMBIENT 0.4 0.4 0.4 1
+glLight GL_LIGHT1 GL_DIFFUSE 0.5 0.5 1.0 1
+glLight GL_LIGHT1 GL_SPECULAR 0.5 0.9 0.5 1
+glLight GL_LIGHT1 GL_POSITION 1 2 0 1
+glEnable GL_LIGHT1
+glEnable GL_LIGHTING
+glEnable GL_NORMALIZE
+glEnable GL_DEPTH_TEST
+glClear GL_COLOR_BUFFER_BIT
+glClear GL_DEPTH_BUFFER_BIT
+glLoadIdentity
+glTranslate 0 0 -5
+glColor 0.5 0.5 0.5
+glBegin GL_TRIANGLE_FAN
+glNormal 0 0 1
+glVertex 0 0 1
+glNormal 3 -1.7 0
+glVertex 3 -1.7 -1
+glNormal -3 -1.7 0
+glVertex -3 -1.7 -1
+glNormal 0 3 0
+glVertex 0 3 -1
+glNormal 3 -1.7 0
+glVertex 3 -1.7 -1
+glEnd
+glFlush
+glutSwapBuffers
+cglSleep 1000
+
+
