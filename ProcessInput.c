@@ -89,7 +89,6 @@ char* ReadLine(int fd) {
 	if (LineStart != ReadBuffer && DataPos - LineStart < 16)
 		ShiftBuffer();
 	do {
-//		DEBUGMSG(("LineStart = %d, Pos = %d, DataPos = %d, StopPos = %d\n", LineStart-ReadBuffer, Pos-ReadBuffer, DataPos-ReadBuffer, StopPos-ReadBuffer));
 		// do we need more?
 		if (Pos == DataPos) {
 			// do we need to shift?
@@ -110,7 +109,10 @@ char* ReadLine(int fd) {
 					DEBUGMSG(("Read 0 bytes.\n"));
 				else {
 #ifdef DEBUG
-					perror("read");
+					if (errno == EAGAIN)
+						fprintf(stderr, ".");
+					else
+						perror("read");
 #endif
 				}
 				return NULL;
@@ -119,6 +121,7 @@ char* ReadLine(int fd) {
 		}
 		while (Pos < DataPos && *Pos != '\n')
 			Pos++;
+//		DEBUGMSG(("LineStart = %d, Pos = %d, DataPos = %d, StopPos = %d\n", LineStart-ReadBuffer, Pos-ReadBuffer, DataPos-ReadBuffer, StopPos-ReadBuffer));
 	} while (*Pos != '\n');
 	*Pos++= '\0';
 	Result= LineStart;

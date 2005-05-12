@@ -187,10 +187,13 @@ void CheckInput() {
 	int TokenCount;
 	char *Line, *TokenPointers[MAX_GL_PARAMS+1];
 
+	errno= 0;
 	while (Line= ReadLine(InputFD)) {
 		DEBUGMSG(("%s\n", Line));
 		if (ParseLine(Line, &TokenCount, TokenPointers))
 			ProcessCommand(TokenPointers, TokenCount);
+		else
+			DEBUGMSG(("Empty line ignored\n"));
 	}
 	if (errno != EAGAIN) {
 		DEBUGMSG(("Received EOF.\n"));
