@@ -15,6 +15,8 @@
   #define false 0
 #endif
 
+#define MAX_COMMAND_BATCH 8
+
 #define MAX_GL_PARAMS 32
 
 #define PUBLISHED(name,fn) int fn(int argc, char** argv)

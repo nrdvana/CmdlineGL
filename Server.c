@@ -79,7 +79,6 @@ int main(int Argc, char**Args) {
 	glutInit(&Argc, Args);
 	glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGB | GLUT_DEPTH);
 	glutCreateWindow("CmdlineGL");
-	glutIgnoreKeyRepeat(GLUT_KEY_REPEAT_OFF);
 
 	DEBUGMSG(("Assigning functions\n"));
 	glutReshapeFunc(handleResize);
@@ -90,6 +89,7 @@ int main(int Argc, char**Args) {
 	glutSpecialFunc(specialKeyDown);
 	glutSpecialUpFunc(specialKeyUp);
 	glutDisplayFunc(display);
+	glutIgnoreKeyRepeat(GLUT_KEY_REPEAT_OFF);
 
 	DEBUGMSG(("Resizing window\n"));
 	glutInitWindowSize(500, 501);
@@ -203,19 +203,20 @@ PUBLISHED(cglEcho,DoEcho) {
 }
 
 void CheckInput() {
-	int result;
-	int TokenCount;
+	int result, TokenCount, CmdCount;
 	char *Line, *TokenPointers[MAX_GL_PARAMS+1];
 
 	errno= 0;
-	while (Line= ReadLine(InputFD)) {
+	CmdCount= 0;
+	while ((CmdCount < MAX_COMMAND_BATCH || IsGlBegun) && (Line= ReadLine(InputFD))) {
 		DEBUGMSG(("%s\n", Line));
 		if (ParseLine(Line, &TokenCount, TokenPointers))
 			ProcessCommand(TokenPointers, TokenCount);
 		else
 			DEBUGMSG(("Empty line ignored\n"));
+		CmdCount++;
 	}
-	if (errno != EAGAIN) {
+	if (CmdCount < MAX_COMMAND_BATCH && errno != EAGAIN) {
 		DEBUGMSG(("Received EOF.\n"));
  		if (Options.TerminateOnEOF)
 			Shutdown= 1;
@@ -302,22 +303,28 @@ void mouse(int btn, int state, int x, int y) {
 		default: BtnName= "MOUSE_UNDEFINED";
 	}
 	printf("%c%s\n", (state == GLUT_UP)? '-':'+', BtnName);
+	fflush(stdout);
 }
 void mouseMotion(int x, int y) {
 	printf("@%i,%i\n", x, y);
+	fflush(stdout);
 }
 void asciiKeyDown(unsigned char key, int x, int y) {
 	printf("+%c\n", key);
+	fflush(stdout);
 }
 void asciiKeyUp(unsigned char key, int x, int y) {
 	printf("-%c\n", key);
+	fflush(stdout);
 }
 const char* GetSpecialKeyName(int key);
 void specialKeyDown(int key, int x, int y) {
 	printf("+%s\n", GetSpecialKeyName(key));
+	fflush(stdout);
 }
 void specialKeyUp(int key, int x, int y) {
 	printf("-%s\n", GetSpecialKeyName(key));
+	fflush(stdout);
 }
 const char* GetSpecialKeyName(int key) {
 	switch (key) {
