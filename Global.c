@@ -1,5 +1,7 @@
 #include "Global.h"
 
+bool IsGlBegun= false;
+
 #ifdef DEBUG
 #include <stdarg.h>
 #include <stdio.h>

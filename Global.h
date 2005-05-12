@@ -31,5 +31,6 @@
   #define DEBUGMSG(a) do{}while(0)
 #endif
 
+extern bool IsGlBegun; // indicates status of glBegin/glEnd
 
 #endif

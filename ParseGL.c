@@ -4,6 +4,7 @@
 
 #include <ctype.h>
 #include <stdlib.h>
+#include <stdio.h>
 #include "ParseGL.h"
 #include "SymbolHash.h"
 	
@@ -74,12 +75,18 @@ PUBLISHED(glClearDepth, DoClearDepth) {
 PUBLISHED(glBegin, DoBegin) {
 	if (argc != 1) return ERR_PARAMCOUNT;
 	if (!ScanParams("i", argv)) return ERR_PARAMPARSE;
+	if (IsGlBegun)
+		fprintf(stderr, "Error: multiple calls to glBegin without glEnd\n");
 	glBegin(iParams[0]);
+	IsGlBegun= true;
 	return 0;
 }
 PUBLISHED(glEnd, DoEnd) {
 	if (argc != 0) return ERR_PARAMCOUNT;
+	if (!IsGlBegun)
+		fprintf(stderr, "Error: glEnd without glBegin\n");
 	glEnd();
+	IsGlBegun= false;
 	return 0;
 }
 PUBLISHED(glFlush, DoFlush) {

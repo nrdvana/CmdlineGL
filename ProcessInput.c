@@ -1,6 +1,7 @@
 #include <sys/un.h>
 #include <stdio.h>
 #include <GL/gl.h>
+#include <GL/glu.h>
 #include "ProcessInput.h"
 #include "Global.h"
 #include "SymbolHash.h"
@@ -42,16 +43,24 @@ int ProcessCommand(char **TokenPointers, int TokenCount) {
 		Result= Cmd->Value(TokenCount-1, TokenPointers+1); // run command
 		switch (Result) {
 		case 0:
-//			while (true) {
-//				Result= glGetError();
-//					if (Result == GL_NO_ERROR || Result == 0) break;
-//				fprintf(stderr, "GL error while executing %s: %d.\n", TokenPointers[0], Result);
-//			}
-			return P_SUCCESS;
+			if (IsGlBegun) // can't check command success
+				return 0;
+			Result= glGetError();
+			if (Result == GL_NO_ERROR || Result == 0) // command was successful
+				return 0;
+			else do {
+				fprintf(stderr, "GL error while executing %s: %s.\n", TokenPointers[0], gluErrorString(Result));
+				Result= glGetError();
+			} while (Result != GL_NO_ERROR && Result != 0);
+			break;
 		case ERR_PARAMCOUNT:
-			fprintf(stderr, "Wrong number of parameters for %s\n", TokenPointers[0]); break;
+			fprintf(stderr, "Wrong number of parameters for %s\n", TokenPointers[0]);
+			break;
 		case ERR_PARAMPARSE:
-			fprintf(stderr, "Cannot parse parameters for %s\n", TokenPointers[0]); break;
+			fprintf(stderr, "Cannot parse parameters for %s\n", TokenPointers[0]);
+			break;
+		default:
+			fprintf(stderr, "Unknown result code: %d\n", Result);
 		}
 		return P_CMD_ERR;
 	}
