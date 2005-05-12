@@ -6,6 +6,7 @@
 PUBLISHED(cglQuit,DoQuit);
 PUBLISHED(cglExit,DoQuit);
 PUBLISHED(cglSync,DoSync);
+PUBLISHED(cglSleep, DoSleep);
 PUBLISHED(cglEcho,DoEcho);
 
 #endif

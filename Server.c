@@ -152,6 +152,7 @@ long microseconds(struct timeval *time) {
 
 PUBLISHED(cglExit,DoQuit) {
 	Shutdown= true;
+	return 0;
 }
 
 PUBLISHED(cglSync,DoSync) {
@@ -160,13 +161,25 @@ PUBLISHED(cglSync,DoSync) {
 	char *endptr;
 	
 	if (argc != 1) return ERR_PARAMCOUNT;
-	target= strtol(argv[0], endptr, 10) * 1000;
-	if (endptr != '\0') return ERR_PARAMPARSE;
+	target= strtol(argv[0], &endptr, 10) * 1000;
+	if (*endptr != '\0') return ERR_PARAMPARSE;
 	
 	gettimeofday(&curtime, NULL);
 	t= microseconds(&curtime) - StartTime;
 	if (target - t > 0)
 		usleep(target - t);
+	return 0;
+}
+
+PUBLISHED(cglSleep, DoSleep) {
+	long t;
+	char *endptr;
+	
+	if (argc != 1) return ERR_PARAMCOUNT;
+	t= strtol(argv[0], &endptr, 10) * 1000;
+	if (*endptr != '\0' || t <= 0) return ERR_PARAMPARSE;
+	usleep(t);
+	return 0;
 }
 
 PUBLISHED(cglEcho,DoEcho) {
@@ -176,7 +189,7 @@ PUBLISHED(cglEcho,DoEcho) {
 	else {
 		for (i=0; i<argc-1; i++)
 			printf("%s ", argv[i]);
-		printf("%s\n", argv[i]);
+		printf("%s\n", argv[argc-1]);
 	}
 	fflush(stdout);
 	return 0;
