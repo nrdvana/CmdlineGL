@@ -1,11 +1,23 @@
 #!/bin/sh
-. ../bin/CmdlineGL_BashBindings
 
+# Thank you, FreeBSD, for making this &@^%ing kluge necessary.
+# We can all tell how dedicated you are to making things work out of the box.
+# Perhaps you'd like to relocate 'sh' to /posix/bin/sh ?  How about
+#  /usr/shells/bin/sh ?  or perhaps /sys/bin/sh ?
+if [ -z "$BASH" ]; then
+	exec bash $0
+fi
+
+die() { echo $1; exit -1; }
+
+if [ -f ../bin/CmdlineGL_BashBindings ]; then
+	source ../bin/CmdlineGL_BashBindings
+else
+	die "Please 'make' bin/CmdlineGL_BashBindings, and try again"
+fi
 export CMDLINEGL_PIPE='/tmp/foo';
 
 #export PATH=$PATH:bin/;
-
-die() { echo $1; exit -1; }
 
 #bin/CmdlineGL -f "$CMDLINEGL_PIPE" &
 #sleep 1
@@ -13,7 +25,7 @@ die() { echo $1; exit -1; }
 let x=0;
 
 ToInt() {
-	echo -n ${1/./};
+	echo -n "${1/./}"
 }
 ToFloat() {
 	let dec_pos=${#1}-$2;
