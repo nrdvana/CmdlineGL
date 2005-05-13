@@ -30,12 +30,11 @@ typedef struct TableEntry_t {
 } TableEntry;
 
 const char *DELIM=" \t\n\r";
-
+char buffer[1024];
 int main(int argc, char**argv) {
 	TableEntry *table, *bucket;
 	int tableSize, i, ent, red, lineNum;
 	char *line, *TableName, *BucketName, *EntryStruct, *name, *value;
-	size_t len;
 
 	if (argc != 5)
 		die("Usage: HashTableGenUtil BucketCount TableName BucketName EntryStruct < table_data > TableData.c");
@@ -54,10 +53,9 @@ int main(int argc, char**argv) {
 	BucketName= argv[3];
 	EntryStruct= argv[4];
 
-	len= 0;
 	line= NULL;
 	lineNum= 0;
-	while ((red= getline(&line, &len, stdin)) >= 0) {
+	while (line= fgets(buffer, sizeof(buffer), stdin)) {
 		lineNum++;
 
 		name= (char*) strtok(line, DELIM);
