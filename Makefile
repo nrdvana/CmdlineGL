@@ -15,11 +15,11 @@ bin/CmdlineGL: SymbolHash.o Server.o ProcessInput.o ParseGL.o Global.o bin Conta
 
 ShellBindings: bin CmdlineGLClient *.h
 	chmod a+rx CmdlineGLClient \
-	&& sed -En '/^PUBLISHED\(([^,]*),.*/s//\1/p' *.h \
+	&& sed -n '/^PUBLISHED(\([^,]*\),.*/s//\1/p' *.h \
 	 | while read fn; do ln -f CmdlineGLClient bin/$$fn; done
 
 bin/CmdlineGL_BashBindings: bin *.h
-	sed -En '/^PUBLISHED\(([^,]*),.*/s//\1/p' *.h \
+	sed -n '/^PUBLISHED(\([^,]*\),.*/s//\1/p' *.h \
 	 | while read fn; do echo "$$fn() { echo \"$$fn \$$@\"; }"; done > bin/CmdlineGL_BashBindings
 
 Server.o: Server.c Server.h Global.h
@@ -52,7 +52,7 @@ IntConstHash.autogen.c: HashTableGenUtil ConstList.txt SymbolHash.h Makefile
 	echo "#include <GL/glu.h>" >> IntConstHash.autogen.c
 	echo "#include <GL/glut.h>" >> IntConstHash.autogen.c
 	echo "#include \"SymbolHash.h\"" >> IntConstHash.autogen.c
-	sed -r 's/(GL([^ 	]+))/\2 (int)(\1)/' < ConstList.txt \
+	sed 's/GL\(.*\)/\1 (int)(GL\1)/' < ConstList.txt \
 	 | ./HashTableGenUtil 1024 IntConstLookup IB IntConstHashEntry >> IntConstHash.autogen.c \
 	 || rm IntConstHash.autogen.c
 
@@ -64,7 +64,7 @@ CmdHash.autogen.c: HashTableGenUtil Server.h ParseGL.h SymbolHash.h Makefile
 	echo "#include \"Server.h\"" >> CmdHash.autogen.c
 	echo "#include \"ParseGL.h\"" >> CmdHash.autogen.c
 	echo "#include \"SymbolHash.h\"" >> CmdHash.autogen.c
-	sed -En '/^PUBLISHED\(([^,]*),([^)]*)\).*/s//\1 \2/p' *.h \
+	sed -n '/^PUBLISHED(\([^,]*\),\([^)]*\)).*/s//\1 \2/p' *.h \
  	 | ./HashTableGenUtil 64 CmdLookup CB CmdHashEntry >> CmdHash.autogen.c \
 	 || rm CmdHash.autogen.c
 
