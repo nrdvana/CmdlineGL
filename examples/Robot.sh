@@ -2,7 +2,7 @@
 
 # Thank you, FreeBSD, for making this &@^%ing kluge necessary.
 # We can all tell how dedicated you are to making things work out of the box.
-# Perhaps you'd like to relocate 'sh' to /posix/bin/sh ?  How about
+# Perhaps you'd like to relocate 'sh' as well?  How about
 #  /usr/shells/bin/sh ?  or perhaps /sys/bin/sh ?
 if [ -z "$BASH" ]; then
 	exec bash $0
@@ -51,45 +51,36 @@ export CMDLINEGL_PIPE='/tmp/foo';
 #              ------ ------
 #
 
-ToInt() {
-	echo ${1/./} | sed -r 's/(-?)0*([1-9]*[0-9])/\1\2/'
-}
-ToFloat() {
-	if [ "${1:0:1}" = "-" ]; then ival=-0000${1#-}; else ival=0000$1; fi
-	let dec_pos=${#ival}-$2;
-	echo -n ${ival:0:$dec_pos}.${ival:$dec_pos};
-}
-
-HEAD_RADIUS=1.00;
-TORSO_LENGTH=4.80;
-TORSO_RADIUS=0.90;
-HIP_WIDTH=2.20;
-HIP_SPACING=0.20;
-HIP_RADIUS=0.35;
-SHOULDER_WIDTH=5.00;
-SHOULDER_RADIUS=0.70;
-UPPER_ARM_LENGTH=3.00;
-UPPER_ARM_RADIUS=0.40;
-LOWER_ARM_LENGTH=2.80;
-LOWER_ARM_RADIUS=0.30;
-UPPER_LEG_LENGTH=3.40;
-UPPER_LEG_RADIUS=0.55;
-LOWER_LEG_LENGTH=3.00;
-LOWER_LEG_RADIUS=0.45;
-FOOT_LENGTH=1.60;
-FOOT_HEIGHT=0.30;
-HEAD_HEIGHT=`ToFloat $((\`ToInt $TORSO_LENGTH\`+\`ToInt $HEAD_RADIUS\`)) 2`;
-PELVIC_HEIGHT=`ToFloat $((-\`ToInt $HIP_RADIUS\` * 18)) 3`;
-SHOULDER_HEIGHT=`ToFloat $((\`ToInt $TORSO_LENGTH\` * 84)) 4`;
-SHOULDER_OFFSET=`ToFloat $((\`ToInt $SHOULDER_WIDTH\`/2 - \`ToInt $UPPER_ARM_RADIUS\` )) 2`;
-ELBOW_RADIUS=`ToFloat $((\`ToInt $LOWER_ARM_RADIUS\`*12)) 3`;
-ELBOW_WIDTH=`ToFloat $((\`ToInt $LOWER_ARM_RADIUS\`*24)) 3`;
-LEG_OFFSET=`ToFloat $((\`ToInt $HIP_WIDTH\`/2 )) 2`;
-UPPER_LEG_PIPE_LENGTH=`ToFloat $((\`ToInt $UPPER_LEG_LENGTH\`+\`ToInt $UPPER_LEG_RADIUS\`)) 2`;
-HIP_SUPPORT_WIDTH=`ToFloat $((\`ToInt $HIP_WIDTH\` - \`ToInt $HIP_SPACING\` * 2 - \`ToInt $UPPER_LEG_RADIUS\` * 2)) 2`;
-HIP_SUPPORT_HALF_WIDTH=`ToFloat $((\`ToInt $HIP_SUPPORT_WIDTH\`/2)) 2`;
-KNEE_RADIUS=`ToFloat $((\`ToInt $LOWER_LEG_RADIUS\`*12)) 3`;
-KNEE_WIDTH=`ToFloat $((\`ToInt $LOWER_LEG_RADIUS\`*24)) 3`;
+HEAD_RADIUS=100;
+TORSO_LENGTH=480;
+TORSO_RADIUS=90;
+HIP_WIDTH=220;
+HIP_SPACING=20;
+HIP_RADIUS=35;
+SHOULDER_WIDTH=500;
+SHOULDER_RADIUS=70;
+UPPER_ARM_LENGTH=300;
+UPPER_ARM_RADIUS=40;
+LOWER_ARM_LENGTH=280;
+LOWER_ARM_RADIUS=30;
+UPPER_LEG_LENGTH=340;
+UPPER_LEG_RADIUS=55;
+LOWER_LEG_LENGTH=300;
+LOWER_LEG_RADIUS=45;
+FOOT_LENGTH=160;
+FOOT_HEIGHT=30;
+HEAD_HEIGHT=$(($TORSO_LENGTH+$HEAD_RADIUS));
+PELVIC_HEIGHT=$((-$HIP_RADIUS*18/10));
+SHOULDER_HEIGHT=$(($TORSO_LENGTH*84/100));
+SHOULDER_OFFSET=$(($SHOULDER_WIDTH/2 - $UPPER_ARM_RADIUS));
+ELBOW_RADIUS=$(($LOWER_ARM_RADIUS*12/10));
+ELBOW_WIDTH=$(($LOWER_ARM_RADIUS*24/10));
+LEG_OFFSET=$(($HIP_WIDTH/2 ));
+UPPER_LEG_PIPE_LENGTH=$(($UPPER_LEG_LENGTH+$UPPER_LEG_RADIUS));
+HIP_SUPPORT_WIDTH=$(($HIP_WIDTH - $HIP_SPACING*2 - $UPPER_LEG_RADIUS*2));
+HIP_SUPPORT_HALF_WIDTH=$(($HIP_SUPPORT_WIDTH/2));
+KNEE_RADIUS=$(($LOWER_LEG_RADIUS*12/10));
+KNEE_WIDTH=$(($LOWER_LEG_RADIUS*24/10));
 
 # Indicies of important angles
 #
@@ -100,11 +91,11 @@ LHip=7; RHip=8; LKnee=9; RKnee=10; LFoot=11; RFoot=12;
 
 # Joint records for the motionless robot and the four stage animation
 #
-Standing=(    000  000    010  010 -020 -020    000    000  000  000  000  010  010 );
-WalkScript0=( 000  000    020  020 -055 -055    000   -025  010  070  010 -020 -005 );
-WalkScript1=( 000  000    040  000 -040 -070   -007   -030  025  020  030  020  030 );
-WalkScript2=( 000  000    020  020 -055 -055    000    010 -025  010  070 -005 -020 );
-WalkScript3=( 000  000    000  040 -070 -040    007    025 -030  030  020  030  020 );
+Standing=(    0  0  1000  1000 -2000 -2000      0       0     0     0     0  1000  1000 );
+WalkScript0=( 0  0  2000  2000 -5500 -5500      0   -2500  1000  7000  1000 -2000  -500 );
+WalkScript1=( 0  0  4000     0 -4000 -7000   -700   -3000  2500  2000  3000  2000  3000 );
+WalkScript2=( 0  0  2000  2000 -5500 -5500      0    1000 -2500  1000  7000  -500 -2000 );
+WalkScript3=( 0  0     0  4000 -7000 -4000    700    2500 -3000  3000  2000  3000  2000 );
 
 
 # Variables that describe the current robot
@@ -117,6 +108,7 @@ Robot_Animate=true;
 #
 View_Direction=0;
 View_Pitch=0;
+View_Distance=1000;
 View_Mode=0;
 
 # Variables related to the user interface
@@ -131,7 +123,7 @@ build_head() {
 	glNewList head GL_COMPILE
 	glPushMatrix
 	glScale $HEAD_RADIUS $HEAD_RADIUS $HEAD_RADIUS
-	gluSphere quadric 1.0 10.0 10.0
+	gluSphere quadric 100 1000 1000
 	glPopMatrix
 	glEndList
 }
@@ -144,11 +136,11 @@ head() {
 #
 closedCylinder() { # GLUquadricObj *qobj GLdouble baseRadius GLdouble topRadius GLdouble height GLint slices GLint stacks
 	baseRadius=$2; topRadius=$3; height=$4; slices=$5; stacks=$6;
-	gluCylinder $1 0.0 $baseRadius 0.0 $slices 1.0
+	gluCylinder $1 0 $baseRadius 0 $slices 1
 	gluCylinder $1 $baseRadius $topRadius $height $slices $stacks
-	glTranslate 0.0 0.0 $height
-	gluCylinder $1 $topRadius 0.0 0.0 $slices 1.0
-	glTranslate 0.0 0.0 -$height
+	glTranslate 0 0 $height
+	gluCylinder $1 $topRadius 0 0 $slices 1
+	glTranslate 0 0 -$height
 }
 
 # Draw the torso of the robot.
@@ -159,18 +151,18 @@ closedCylinder() { # GLUquadricObj *qobj GLdouble baseRadius GLdouble topRadius 
 build_torso() {
 	glNewList torso GL_COMPILE
 	glPushMatrix
-	glTranslate 0.0 $TORSO_LENGTH 0.0
-	glRotate 90.0 1.0 0.0 0.0
-	local TorsoZ=$((`ToInt $TORSO_LENGTH` * 8));
-	closedCylinder quadric $TORSO_RADIUS $TORSO_RADIUS `ToFloat $TorsoZ 3` 20.0 1.0
-	glTranslate 0.0 0.0 `ToFloat $TorsoZ 3`
-	closedCylinder quadric $TORSO_RADIUS `ToFloat $((\`ToInt $HIP_SUPPORT_WIDTH\`/2)) 2` `ToFloat $((\`ToInt $TORSO_LENGTH\`*2)) 3` 20.0 1.0
+	glTranslate 0 $TORSO_LENGTH 0
+	glRotate 9000 100 0 0
+	local TorsoZ=$(($TORSO_LENGTH*8/10));
+	closedCylinder quadric $TORSO_RADIUS $TORSO_RADIUS $TorsoZ 20 1
+	glTranslate 0 0 $TorsoZ
+	closedCylinder quadric $TORSO_RADIUS $(($HIP_SUPPORT_WIDTH/2)) $(($TORSO_LENGTH*2/10)) 20 1
 	glPopMatrix
 
 	glPushMatrix
-	glTranslate -`ToFloat $((\`ToInt $SHOULDER_WIDTH\`/2)) 2` $SHOULDER_HEIGHT 0.0
-	glRotate 90.0 0.0 1.0 0.0
-	closedCylinder quadric $SHOULDER_RADIUS $SHOULDER_RADIUS $SHOULDER_WIDTH 20.0 1.0
+	glTranslate -$(($SHOULDER_WIDTH/2)) $SHOULDER_HEIGHT 0.0
+	glRotate 9000 0 100 0
+	closedCylinder quadric $SHOULDER_RADIUS $SHOULDER_RADIUS $SHOULDER_WIDTH 20 1
 	glPopMatrix
 	glEndList
 }
@@ -185,13 +177,13 @@ torso() {
 build_lower_torso() {
 	glNewList lower_torso GL_COMPILE
 	glPushMatrix
-	glTranslate 0.0 $PELVIC_HEIGHT 0.0
-	glRotate 90.0 0.0 1.0 0.0
-	glTranslate 0.0 0.0 -$HIP_SUPPORT_HALF_WIDTH
-	closedCylinder quadric $TORSO_RADIUS $TORSO_RADIUS $HIP_SUPPORT_WIDTH 20.0 1.0
+	glTranslate 0 $PELVIC_HEIGHT 0
+	glRotate 9000 0 100 0
+	glTranslate 0 0 -$HIP_SUPPORT_HALF_WIDTH
+	closedCylinder quadric $TORSO_RADIUS $TORSO_RADIUS $HIP_SUPPORT_WIDTH 20 1
 
-	glTranslate 0.0 0.0 -`ToFloat $((\`ToInt $HIP_SPACING\` + \`ToInt $UPPER_LEG_RADIUS\`)) 2`
-	gluCylinder quadric $HIP_RADIUS $HIP_RADIUS $HIP_WIDTH 10.0 1.0
+	glTranslate 0 0 -$(($HIP_SPACING + $UPPER_LEG_RADIUS))
+	gluCylinder quadric $HIP_RADIUS $HIP_RADIUS $HIP_WIDTH 10 1
 	glPopMatrix
 	glEndList
 }
@@ -206,8 +198,8 @@ lower_torso() {
 build_upper_arm() {
 	glNewList upper_arm GL_COMPILE
 	glPushMatrix
-	glRotate 90.0 1.0 0.0 0.0
-	gluCylinder quadric $UPPER_ARM_RADIUS $LOWER_ARM_RADIUS $UPPER_ARM_LENGTH 20.0 1.0
+	glRotate 9000 100 0 0
+	gluCylinder quadric $UPPER_ARM_RADIUS $LOWER_ARM_RADIUS $UPPER_ARM_LENGTH 20 1
 	glPopMatrix
 	glEndList
 }
@@ -222,14 +214,14 @@ upper_arm() {
 build_lower_arm() {
 	glNewList lower_arm GL_COMPILE
 	glPushMatrix
-	glRotate 90.0 0.0 1.0 0.0
-	glTranslate 0.0 0.0 -$ELBOW_RADIUS # this is actually ELBOW_WIDTH/2
-	closedCylinder quadric $ELBOW_RADIUS $ELBOW_RADIUS $ELBOW_WIDTH 20.0 1.0
+	glRotate 9000 0 100 0
+	glTranslate 0 0 -$(($ELBOW_WIDTH/2))
+	closedCylinder quadric $ELBOW_RADIUS $ELBOW_RADIUS $ELBOW_WIDTH 20 1
 	glPopMatrix
 
 	glPushMatrix
-	glRotate 90.0 1.0 0.0 0.0
-	closedCylinder quadric $LOWER_ARM_RADIUS $LOWER_ARM_RADIUS $LOWER_ARM_LENGTH 20.0 1.0
+	glRotate 9000 100 0 0
+	closedCylinder quadric $LOWER_ARM_RADIUS $LOWER_ARM_RADIUS $LOWER_ARM_LENGTH 20 1
 	glPopMatrix
 	glEndList
 }
@@ -244,9 +236,9 @@ lower_arm() {
 build_upper_leg() {
 	glNewList upper_leg GL_COMPILE
 	glPushMatrix
-	glTranslate 0.0 $UPPER_LEG_RADIUS 0.0
-	glRotate 90.0 1.0 0.0 0.0
-	closedCylinder quadric $UPPER_LEG_RADIUS $LOWER_LEG_RADIUS $UPPER_LEG_PIPE_LENGTH 20.0 1.0
+	glTranslate 0 $UPPER_LEG_RADIUS 0
+	glRotate 9000 100 0 0
+	closedCylinder quadric $UPPER_LEG_RADIUS $LOWER_LEG_RADIUS $UPPER_LEG_PIPE_LENGTH 20 1
 	glPopMatrix
 	glEndList
 }
@@ -261,14 +253,14 @@ upper_leg() {
 build_lower_leg() {
 	glNewList lower_leg GL_COMPILE
 	glPushMatrix
-	glRotate 90.0 0.0 1.0 0.0
-	glTranslate 0.0 0.0 -$KNEE_RADIUS # this is actually knee_width/2
-	closedCylinder quadric $KNEE_RADIUS $KNEE_RADIUS $KNEE_WIDTH 20.0 1.0
+	glRotate 9000 0 100 0
+	glTranslate 0 0 -$(($KNEE_WIDTH/2))
+	closedCylinder quadric $KNEE_RADIUS $KNEE_RADIUS $KNEE_WIDTH 20 1
 	glPopMatrix
 
 	glPushMatrix
-	glRotate 90.0 1.0 0.0 0.0
-	gluCylinder quadric $LOWER_LEG_RADIUS $LOWER_LEG_RADIUS $LOWER_LEG_LENGTH 20.0 1.0
+	glRotate 9000 1 0 0
+	gluCylinder quadric $LOWER_LEG_RADIUS $LOWER_LEG_RADIUS $LOWER_LEG_LENGTH 20 1
 	glPopMatrix
 	glEndList
 }
@@ -283,14 +275,14 @@ lower_leg() {
 build_foot() {
 	glNewList foot GL_COMPILE
 	glPushMatrix
-	glRotate 90.0 0.0 1.0 0.0
-	glTranslate 0.0 0.0 -$LOWER_LEG_RADIUS
-	closedCylinder quadric $LOWER_LEG_RADIUS $LOWER_LEG_RADIUS `ToFloat $((\`ToInt $LOWER_LEG_RADIUS\`*2 )) 2` 20.0 1.0
+	glRotate 9000 0 100 0
+	glTranslate 0 0 -$LOWER_LEG_RADIUS
+	closedCylinder quadric $LOWER_LEG_RADIUS $LOWER_LEG_RADIUS $(($LOWER_LEG_RADIUS*2)) 20 1
 	glPopMatrix
 	glPushMatrix
-	glTranslate 0.0 -`ToFloat $((\`ToInt $LOWER_LEG_RADIUS\` * 3)) 3` 0.0
-	glScale 1.0 0.3 1.0
-	closedCylinder quadric `ToFloat $((\`ToInt $LOWER_LEG_RADIUS\`*8)) 3` `ToFloat $((\`ToInt $LOWER_LEG_RADIUS\`*12)) 3` $FOOT_LENGTH 20.0 1.0
+	glTranslate 0 -$(($LOWER_LEG_RADIUS*3/10)) 0
+	glScale 100 30 100
+	closedCylinder quadric $(($LOWER_LEG_RADIUS*8/10)) $(($LOWER_LEG_RADIUS*12/10)) $FOOT_LENGTH 20 1
 	glPopMatrix
 	glEndList
 }
@@ -315,15 +307,15 @@ Repaint() {
 	glLoadIdentity
 
 	# Alter the model matrix to give the effect of having a movable camera.
-	glTranslate 0.0 0.0 -11.0
-	glRotate $View_Pitch 1.0 0.0 0.0
-	glRotate $View_Direction 0.0 1.0 0.0
+	glTranslate 0 0 -$View_Distance
+	glRotate $View_Pitch 100 0 0
+	glRotate $View_Direction 0 100 0
 
 	glPushMatrix
 	# Move to the center of the head rotate by the neck angles and draw.
-	glTranslate 0.0 $HEAD_HEIGHT 0.0
-	glRotate ${Robot_Joints[$NeckX]} 1.0 0.0 0.0
-	glRotate ${Robot_Joints[$NeckY]} 0.0 1.0 0.0
+	glTranslate 0 $HEAD_HEIGHT 0
+	glRotate ${Robot_Joints[$NeckX]} 100 0 0
+	glRotate ${Robot_Joints[$NeckY]} 0 100 0
 		head
 	glPopMatrix
 
@@ -333,54 +325,54 @@ Repaint() {
 	glPushMatrix
 	# Draw the left arm.  Start at the left shoulder draw the uper arm
 	#  then translate down to the elbow rotate and draw the lower arm.
-	glTranslate $SHOULDER_OFFSET $SHOULDER_HEIGHT 0.0
-	glRotate ${Robot_Joints[$LShoulder]} 1.0 0.0 0.0
+	glTranslate $SHOULDER_OFFSET $SHOULDER_HEIGHT 0
+	glRotate ${Robot_Joints[$LShoulder]} 100 0 0
 		upper_arm
-		glTranslate 0.0 -$UPPER_ARM_LENGTH 0.0
-		glRotate ${Robot_Joints[$LElbow]} 1.0 0.0 0.0
+		glTranslate 0 -$UPPER_ARM_LENGTH 0
+		glRotate ${Robot_Joints[$LElbow]} 100 0 0
 			lower_arm
 	glPopMatrix
 
 	glPushMatrix
 	# Same for the right arm.
-	glTranslate  -$SHOULDER_OFFSET $SHOULDER_HEIGHT 0.0
-	glRotate ${Robot_Joints[$RShoulder]} 1.0 0.0 0.0
+	glTranslate -$SHOULDER_OFFSET $SHOULDER_HEIGHT 0
+	glRotate ${Robot_Joints[$RShoulder]} 100 0 0
 		upper_arm
-		glTranslate 0.0 -$UPPER_ARM_LENGTH 0.0
-		glRotate ${Robot_Joints[$RElbow]} 1.0 0.0 0.0
+		glTranslate 0 -$UPPER_ARM_LENGTH 0
+		glRotate ${Robot_Joints[$RElbow]} 100 0 0
 			lower_arm
 	glPopMatrix
 
 	glPushMatrix
 	# Rotate for the hips draw them then draw the left and right leg.
-	glRotate ${Robot_Joints[$Torso]} 0.0 1.0 0.0
+	glRotate ${Robot_Joints[$Torso]} 0 100 0
 		lower_torso
 
 		glPushMatrix
 		# First move to the left draw the upper leg and then translate down
 		#  to the knee draw the lower leg then translate down to the foot
 		#  then rotate and draw it.
-		glTranslate $LEG_OFFSET $PELVIC_HEIGHT 0.0
-		glRotate ${Robot_Joints[$LHip]} 1.0 0.0 0.0
+		glTranslate $LEG_OFFSET $PELVIC_HEIGHT 0
+		glRotate ${Robot_Joints[$LHip]} 100 0 0
 			upper_leg
-			glTranslate 0.0 -$UPPER_LEG_LENGTH 0.0
-			glRotate ${Robot_Joints[$LKnee]} 1.0 0.0 0.0
+			glTranslate 0 -$UPPER_LEG_LENGTH 0
+			glRotate ${Robot_Joints[$LKnee]} 100 0 0
 				lower_leg
-				glTranslate 0.0 -$LOWER_LEG_LENGTH 0.0
-				glRotate ${Robot_Joints[$LFoot]} 1.0 0.0 0.0
+				glTranslate 0 -$LOWER_LEG_LENGTH 0
+				glRotate ${Robot_Joints[$LFoot]} 100 0 0
 				foot
 		glPopMatrix
 
 		glPushMatrix
 		# Same for the right leg.
-		glTranslate -$LEG_OFFSET $PELVIC_HEIGHT 0.0
-		glRotate ${Robot_Joints[$RHip]} 1.0 0.0 0.0
+		glTranslate -$LEG_OFFSET $PELVIC_HEIGHT 0
+		glRotate ${Robot_Joints[$RHip]} 100 0 0
 			upper_leg
-			glTranslate 0.0 -$UPPER_LEG_LENGTH 0.0
-			glRotate ${Robot_Joints[$RKnee]} 1.0 0.0 0.0
+			glTranslate 0 -$UPPER_LEG_LENGTH 0
+			glRotate ${Robot_Joints[$RKnee]} 100 0 0
 				lower_leg
-				glTranslate 0.0 -$LOWER_LEG_LENGTH 0.0
-				glRotate ${Robot_Joints[$RFoot]} 1.0 0.0 0.0
+				glTranslate 0 -$LOWER_LEG_LENGTH 0
+				glRotate ${Robot_Joints[$RFoot]} 100 0 0
 				foot
 		glPopMatrix
 	glPopMatrix
@@ -400,12 +392,8 @@ SetJoints() {
 	local FromAng=$1;
 	local ToAng=$2;
 	local Progress=$3;
-	local Angle;
 	for i in 0 1 2 3 4 5 6 7 8 9 10 11 12; do
-		eval "Angle=\$(( \${$FromAng[$i]}*10 + ( \${$ToAng[$i]} - \${$FromAng[$i]} ) * $Progress/10))";
-		if [ "${#Angle}" -lt 2 ]; then Angle=0$Angle; fi
-		let dec_pos=${#Angle}-1;
-		Robot_Joints[$i]=${Angle:0:$dec_pos}.${Angle:$dec_pos:1};
+		eval "Robot_Joints[$i]=\$((\${$FromAng[$i]}+(\${$ToAng[$i]}-\${$FromAng[$i]})*$Progress/100))";
 	done
 }
 
@@ -468,6 +456,9 @@ Animate() {
 # Initialize the globals and set up OpenGL.
 #
 Init() {
+	# Use fixed point numbers for all floating-point GL parameters
+	cglUseFixedPt 100
+
 	# Turn on normalization of surface vectors and enable Z-buffering.
 	glEnable GL_NORMALIZE
 	glEnable GL_DEPTH_TEST
@@ -476,10 +467,10 @@ Init() {
 	# For each light in the array enable that number light in OpenGl and
 	#  set the colors for it.
 	glEnable GL_LIGHTING
-	glLight GL_LIGHT0 GL_AMBIENT 0.8 0.8 0.8 1.0
-	glLight GL_LIGHT0 GL_DIFFUSE 0.8 0.8 0.8 1.0
-	glLight GL_LIGHT0 GL_SPECULAR 0.8 0.8 0.8 1.0
-	glLight GL_LIGHT0 GL_POSITION 10 10 10 1
+	glLight GL_LIGHT0 GL_AMBIENT 80 80 80 100
+	glLight GL_LIGHT0 GL_DIFFUSE 80 80 80 100
+	glLight GL_LIGHT0 GL_SPECULAR 80 80 80 100
+	glLight GL_LIGHT0 GL_POSITION 1000 1000 1000 100
 	glEnable GL_LIGHT0
 
 	# Setup material properties.
@@ -499,27 +490,68 @@ Init() {
 	# Initialize runtime variables.
 	Robot_MoveProgress=0;
 	SetJoints "WalkScript0" "WalkScript0" 0
-	View_Direction=0.0;
-	View_Pitch=0.0;
-	View_Mode=0;
 	Robot_Animate=true;
 }
 
-ProcessInput() {
-	return 0;
+ReadInput() {
+	while read -r -t 1 Action; do
+		case "$Action" in
+		+LEFT)  K_Left=true;;
+		-LEFT)  K_Left='';;
+		+RIGHT) K_Right=true;;
+		-RIGHT) K_Right='';;
+		+UP)	K_Up=true;;
+		-UP)    K_Up='';;
+		+DOWN)  K_Down=true;;
+		-DOWN)  K_Down='';;		
+		+=)     K_In=true;;
+		-=)     K_In='';;
+		+-)     K_Out=true;;
+		--)     K_Out='';;
+		+q)     terminate=1;;
+		"_____")
+			return;
+			;;
+		-*)
+			;;
+		*)
+			echo "Unhandled IO: $Action" >&2
+			;;
+		esac
+	done
 }
 
-# Start up and initialize various GLut things.
-# Then turn control over to GLut for the remainder of the program.
-#
+ProcessInput() {
+	if [[ -n "$K_Left"  ]]; then let View_Direction+=200; fi
+	if [[ -n "$K_Right" ]]; then let View_Direction-=200; fi
+	if [[ -n "$K_Up"    ]]; then let View_Pitch-=200; fi
+	if [[ -n "$K_Down"  ]]; then let View_Pitch+=200; fi
+	if [[ -n "$K_In"    ]]; then let View_Distance-=50; fi
+	if [[ -n "$K_Out"   ]]; then let View_Distance+=50; fi
+}
+
 main() {
 	# Initialize our own stuff (and OpenGL lighting).
 	Init;
 
 	# repaint robot forever
-	while ProcessInput; do
+#	[ -z "$NonInteractive" ] &&
+#	cglEcho "_____";
+	while [[ -z "$terminate" ]]; do
+#		if [ -z "$NonInteractive" ]; then
+#			ReadInput;
+#			cglEcho "_____";
+#		fi
+#		ProcessInput;
 		Animate;
 	done
 }
 
-main
+if [ "$1" = "--dump" ]; then
+	NonInteractive=true;
+	main
+else
+	rm -f /tmp/cgl_fifo
+	mkfifo /tmp/cgl_fifo
+	main < /tmp/cgl_fifo | ../bin/CmdlineGL >> /tmp/cgl_fifo
+fi
