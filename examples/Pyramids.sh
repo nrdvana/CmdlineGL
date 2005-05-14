@@ -123,7 +123,7 @@ DrawIt() {
 	Swap;
 }
 
-CheckInput() {
+ReadInput() {
 	while read -r -t 1 Action; do
 		case "$Action" in
 		+LEFT)  K_Left=true;;
@@ -152,8 +152,6 @@ CheckInput() {
 }
 
 ProcessInput() {
-	CheckInput;
-	cglEcho "_____";
 	if [ -n "$K_Left"  ]; then let direction+=2; fi
 	if [ -n "$K_Right" ]; then let direction-=2; fi
 	if [ -n "$K_Up"    ]; then let pitch-=2; fi
@@ -178,7 +176,9 @@ mkfifo /tmp/bar
 	distance=10;
 	terminate='';
 	pitch=0;
-	while [ -z "$terminate" ]; do
+	while [[ -z "$terminate" ]]; do
+		ReadInput;
+		cglEcho "_____";
 		ProcessInput
 		DrawIt
 		let x++;
