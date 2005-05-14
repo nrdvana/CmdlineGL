@@ -1,0 +1,30 @@
+#!/bin/sh
+
+die() {
+	echo $1
+	exit -1
+}
+
+if [ -e /usr/X11R6/include ]; then
+    GL_INC=/usr/X11R6/include
+    CFLAGS_AMEND="-I/usr/X11R6/include -L/usr/X11R6/lib"
+else
+    GL_INC=/usr/include
+fi
+
+if [ ! -f $GL_INC/GL/gl.h ]; then
+	die "$GL_INC/GL/gl.h doesn't exist.  Make sure GL headers are installed."
+fi
+if [ ! -f $GL_INC/GL/glu.h ]; then
+	die "$GL_INC/GL/glu.h doesn't exist.  Make sure GL headers are installed."
+fi
+if [ ! -f $GL_INC/GL/glut.h ]; then
+	die "$GL_INC/GL/glut.h doesn't exist.  Make sure glut is installed."
+fi
+
+echo "GL_INC=$GL_INC" > Makefile
+[ -n "$CFLAGS_AMEND" ] && echo "CFLAGS+=$CFLAGS_AMEND" >> Makefile
+cat Makefile.body >> Makefile
+
+echo Done.
+

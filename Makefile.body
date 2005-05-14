@@ -1,10 +1,7 @@
-.if exists(/usr/X11R6/include)
-    GL_INC=/usr/X11R6/include
-    CFLAGS+= -I/usr/X11R6/include -L/usr/X11R6/lib
-.else
-    GL_INC=/usr/include
-.endif
+
 CC="gcc"
+
+.PHONY: all build ShellBindings
 
 all: build
 
