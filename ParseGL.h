@@ -4,6 +4,11 @@
 #include "Global.h"
 
 //----------------------------------------------------------------------------
+// CmdlineGL Functions
+//
+PUBLISHED(cglUseFixedPt, DoSetFixedPoint);
+
+//----------------------------------------------------------------------------
 // Setup Functions
 //
 PUBLISHED(glMatrixMode, DoMatrixMode);

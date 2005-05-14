@@ -26,12 +26,24 @@ GLdouble dParams[MAX_GL_PARAMS];
 int dlistParams[MAX_GL_PARAMS];
 GLUquadric* quadricParams[MAX_GL_PARAMS];
 
+double FixedPtMultiplier= 1.0;
+
 bool ScanParams(const char* ParamType, char** Args);
 bool ParseInt(const char* Text, GLint *Result);
 bool ParseFloat(const char* Text, GLfloat *Result);
 bool ParseDouble(const char* Text, GLdouble *Result);
 bool ParseNamedDList(const char* Text, int *Result, bool AutoCreate);
 bool ParseNamedQuadric(const char* Text, GLUquadric **Result, bool AutoCreate);
+
+//----------------------------------------------------------------------------
+// CmdlineGL Functions
+//
+PUBLISHED(cglUseFixedPt, DoSetFixedPoint) {
+	if (argc != 1) return ERR_PARAMCOUNT;
+	if (!ScanParams("d", argv)) return ERR_PARAMPARSE;
+	FixedPtMultiplier= 1.0 / dParams[0];
+	return 0;
+}
 
 //----------------------------------------------------------------------------
 // Setup Functions
@@ -406,13 +418,13 @@ bool ParseSymbol(const char* Text, int *Result) {
 
 bool ParseFloat(const char* Text, GLfloat *Result) {
 	char *EndPtr;
-	*Result= strtod(Text, &EndPtr);
+	*Result= FixedPtMultiplier * strtod(Text, &EndPtr);
 	return (EndPtr != Text);
 }
 
 bool ParseDouble(const char* Text, GLdouble *Result) {
 	char *EndPtr;
-	*Result= strtod(Text, &EndPtr);
+	*Result= FixedPtMultiplier * strtod(Text, &EndPtr);
 	return (EndPtr != Text);
 }
 
