@@ -123,7 +123,7 @@ build_head() {
 	glNewList head GL_COMPILE
 	glPushMatrix
 	glScale $HEAD_RADIUS $HEAD_RADIUS $HEAD_RADIUS
-	gluSphere quadric 100 1000 1000
+	gluSphere quadric 100 10 10
 	glPopMatrix
 	glEndList
 }
@@ -404,9 +404,9 @@ SetJoints() {
 # The parameter is ignored.
 #
 Animate() {
-	if [ -n "$Robot_Animate" ]; then
-		let Robot_MoveProgress+=3;
-		if [ $Robot_MoveProgress -gt 400 ]; then
+	if [[ -n "$Robot_Animate" ]]; then
+		let Robot_MoveProgress+=5;
+		if [[ $Robot_MoveProgress -ge 400 ]]; then
  			let Robot_MoveProgress-=400;
 		fi
 		let idx1=$Robot_MoveProgress/100;
@@ -531,18 +531,18 @@ ProcessInput() {
 }
 
 main() {
+	[[ -z "$NonInteractive" ]] && cglEcho "_____";
+
 	# Initialize our own stuff (and OpenGL lighting).
 	Init;
 
 	# repaint robot forever
-#	[ -z "$NonInteractive" ] &&
-#	cglEcho "_____";
 	while [[ -z "$terminate" ]]; do
-#		if [ -z "$NonInteractive" ]; then
-#			ReadInput;
-#			cglEcho "_____";
-#		fi
-#		ProcessInput;
+		if [[ -z "$NonInteractive" ]]; then
+			ReadInput;
+			cglEcho "_____";
+		fi
+		ProcessInput;
 		Animate;
 	done
 }
