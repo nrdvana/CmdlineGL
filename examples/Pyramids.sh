@@ -43,24 +43,33 @@ Triangle() {
 Pyramid() {
 	glBegin GL_TRIANGLES
 	glColor 0.5 0.5 0.2
+	glNormal 0 2 4.4
 	glVertex 1 -1 1
 	glVertex -1 -1 1
 	glVertex 0 1.2 0
+
 	glColor 0.5 0.2 0.5
+	glNormal -4.4 2 0
 	glVertex -1 -1 1
 	glVertex -1 -1 -1
 	glVertex 0 1.2 0
+
 	glColor 0.2 0.5 0.5
+	glNormal 0 2 -4.4
 	glVertex -1 -1 -1
 	glVertex 1 -1 -1
 	glVertex 0 1.2 0
+
 	glColor 0.2 0.7 0.5
+	glNormal 4.4 2 0
 	glVertex 1 -1 -1
 	glVertex 1 -1 1
 	glVertex 0 1.2 0
 	glEnd
-	glColor 0.2 0.7 0.5
+
+	glColor 0.2 0.2 0.5
 	glBegin GL_QUADS
+	glNormal 0 -1 0
 	glVertex 1 -1 -1
 	glVertex -1 -1 -1
 	glVertex -1 -1 1
