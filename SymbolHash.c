@@ -1,8 +1,6 @@
 #include "Global.h"
 #include "SymbolHash.h"
 
-#include "HashFunc.c"
-
 const CmdHashEntry *GetCmd(const char *Key) {
 	int code, i;
 

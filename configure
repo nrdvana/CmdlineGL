@@ -21,10 +21,22 @@ fi
 if [ ! -f $GL_INC/GL/glut.h ]; then
 	die "$GL_INC/GL/glut.h doesn't exist.  Make sure glut is installed."
 fi
+echo "Found GL headers at $GL_INC/GL/"
+
+if echo "" | sed -r 'd' 1>&2 2>/dev/null; then
+	SED_FLAG=r;
+elif echo "" | sed -E 'd' 1>&2 2>/dev/null; then
+	SED_FLAG=E;
+else
+	die "Can't find the flag for the sed command that enables extended regexes."
+fi
+echo "sed -$SED_FLAG" does extended regexes"
 
 echo "GL_INC=$GL_INC" > Makefile
 [ -n "$CFLAGS_AMEND" ] && echo "CFLAGS+=$CFLAGS_AMEND" >> Makefile
+echo "SED_CMD=sed -$SED_FLAG" >> Makefile
 cat Makefile.body >> Makefile
+echo "Makefile created"
 
-echo Done.
+echo Done
 

@@ -3,12 +3,15 @@ CC="gcc"
 
 .PHONY: all build ShellBindings
 
+OBJ_FILES=SymbolHash.o Server.o ProcessInput.o ParseGL.o Global.o Contained_RBTree.o IntConstHash.autogen.o CmdHash.autogen.o HashFunc.o
+
 all: build
 
 build: bin/CmdlineGL ShellBindings bin/CmdlineGL_BashBindings
 
-bin/CmdlineGL: SymbolHash.o Server.o ProcessInput.o ParseGL.o Global.o bin Contained_RBTree.o IntConstHash.autogen.o CmdHash.autogen.o
-	${CC} ${CFLAGS} -o bin/CmdlineGL -l${GL_DIR}GL -l${GL_DIR}GLU -l${GL_DIR}glut SymbolHash.o Server.o ProcessInput.o Global.o ParseGL.o Contained_RBTree.o IntConstHash.autogen.o CmdHash.autogen.o
+bin/CmdlineGL: ${OBJ_FILES}
+	@if [ ! -d bin ]; then mkdir bin; fi
+	${CC} ${CFLAGS} -o bin/CmdlineGL -l${GL_DIR}GL -l${GL_DIR}GLU -l${GL_DIR}glut ${OBJ_FILES}
 
 ShellBindings: CmdlineGLClient *.h
 	@echo "-> Remaking all the hardlinks from the CmdlineGLClient script to the command names in bin/"
@@ -37,9 +40,9 @@ ProcessInput.o: ProcessInput.c ProcessInput.h Global.h ParseGL.h
 	${CC} ${CFLAGS} -c ProcessInput.c
 
 HashFunc.o: HashFunc.c
-	${CC} ${CFLAGS} -c -O2 HashFunc.c
+	${CC} ${CFLAGS} -c -O4 HashFunc.c
 
-SymbolHash.o: SymbolHash.h SymbolHash.c HashFunc.o Global.h
+SymbolHash.o: SymbolHash.h SymbolHash.c Global.h
 	${CC} ${CFLAGS} -c SymbolHash.c
 
 Contained_RBTree.o: Contained_RBTree.c Contained_RBTree.h Global.h
