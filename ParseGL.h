@@ -7,6 +7,7 @@
 // CmdlineGL Functions
 //
 PUBLISHED(cglUseFixedPt, DoSetFixedPoint);
+PUBLISHED(cglLoadImage2D, DoLoadImage2D);
 
 //----------------------------------------------------------------------------
 // Setup Functions
@@ -46,6 +47,8 @@ PUBLISHED(glColorMaterial, DoColorMaterial);
 //----------------------------------------------------------------------------
 // Texture Functions
 //
+PUBLISHED(glBindTexture, DoBindTexture);
+PUBLISHED(glTexParameter, DoTexParameter);
 PUBLISHED(glTexCoord, DoTexCoord);
 
 //----------------------------------------------------------------------------

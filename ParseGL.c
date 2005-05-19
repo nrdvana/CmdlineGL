@@ -7,6 +7,7 @@
 #include <stdio.h>
 #include "ParseGL.h"
 #include "SymbolHash.h"
+#include "ImageLoader.h"
 	
 const char* VAR_INT="iiiiiiiiiiiiiiiiiiiiiiiiiiiiiiii";
 #define VAR_INT_LEN 32
@@ -41,6 +42,27 @@ PUBLISHED(cglUseFixedPt, DoSetFixedPoint) {
 	if (!ScanParams("d", argv)) return ERR_PARAMPARSE;
 	FixedPtMultiplier= 1.0 / dParams[0];
 	return 0;
+}
+PUBLISHED(cglLoadImage2D, DoLoadImage2D) {
+	int i, j;
+	Image Img;
+	if (argc < 1) return ERR_PARAMCOUNT;
+	// if more than 2 params, assume its a filename with spaces in it.
+	if (argc > 1) {
+		// XXX WARNING!! DANGEROUS AND SINISTER (but fun) KLUGE FOLLOWS! XXX
+		// We know that all the arg strings came from a single string which is
+		//   still in our global read-buffer, so to reconstruct the filename
+		//   with spaces in it, we can simply replace a few NULs with spaces.
+		// (I should enter the IOCCC someday...)
+		for (i=1; i<argc; i++)
+			for (j=-1; !argv[i][j]; j--)
+				argv[i][j]= ' ';
+	}
+	// Now load the image
+	LoadImage(argv[0], &Img);
+	// Then, load the image data into OpenGL
+    glTexImage2D(GL_TEXTURE_2D, 0, 3, Img.Width, Img.Height, 0, GL_BGR, GL_UNSIGNED_BYTE, Img.Data);
+	free(Img.Data);
 }
 
 //----------------------------------------------------------------------------
@@ -217,6 +239,27 @@ PUBLISHED(glColorMaterial, DoColorMaterial) {
 //----------------------------------------------------------------------------
 // Texture Functions
 //
+PUBLISHED(glBindTexture, DoBindTexture) {
+	if (argc != 2) return ERR_PARAMCOUNT;
+	if (!ScanParams("iT", argv)) return ERR_PARAMPARSE;
+	glBindTexture(iParams[0], sParams[0]->Value);
+	return 0;
+}
+PUBLISHED(glTexParameter, DoTexParameter) {
+	const int FIXED_PARAMS= 2;
+	if (argc <= FIXED_PARAMS || argc >= MAX_GL_PARAMS) return ERR_PARAMCOUNT;
+	if (argc == 3)
+		if (ScanParams("iii", argv)) {
+			glTexParameteri(iParams[0], iParams[1], iParams[2]);
+			return 0;
+		}
+	// 3-integer conversion failed, so maybe it's an array of floats
+	if (ScanParams("ii", argv) && ScanParams(VAR_FLOAT+(VAR_FLOAT_LEN+FIXED_PARAMS-argc), argv+FIXED_PARAMS))
+		glTexParameterfv(iParams[0], iParams[1], fParams);
+	else
+		return ERR_PARAMPARSE;
+	return 0;
+}
 PUBLISHED(glTexCoord, DoTexCoord) {
 	if (argc >= 1 && argc <= 4) {
 		if (!ScanParams(VAR_DBL+(VAR_DBL_LEN-argc), argv)) return ERR_PARAMPARSE;
