@@ -1,27 +1,44 @@
 <html>
+<head>
+	<style>
+	BODY { background-color:black; color:#55FF55; font-family:"Courier New", monospace, sans-serif; }
+	H1,H2 { color:white; font-weight:bold; }
+	H4 { color:white; font-weight:normal; }
+	A { color:#AAFFAA; text-decoration:underline; }
+	A.hover { color:white; }
+	DIV.code { color:white; background-color:#555555; border:1px solid blue; margin:0.5em; padding:0.5em; }
+	</style>
+</head>
 <body>
 	<center>
 	<h2>Introducing</h2>
  	<h1>OpenGL Bindings for BASH</h1>
 	</center>
-	<h3>"Oh, God!, Please say it isn't true!"</h3>
-	<p>But it is! Mua-ha-ha! All the normal languages have OpenGL,
-	and some scripting languages have OpenGL bindings like Perl and Python,
- 	and now Bash does too!</p>
-	<h3>"But how?  Bash doesn't support modules..."</h3>
-	<p>Right.  So I gave it an interface just like all the others it uses:
-	a simple command that can be given parameters or fed commands on standatd input.</p>
-	When invoked, CmdlineGL will either start a server which creates an OpenGL window,
-	or act as a client that sends commands to the server.  When started as a server,
-	it creates a unix socket as specified on the command line, and then listens for
-	commands.  When a client instance is executed, it connects to the socket
-	(also specified on its command line) and then sends binary codes to the server that
-	tell it to execute any of the OpenGL, GLU, or GLUT API calls.
-	The client itself takes the text of an OpenGL command either in the command line arguments
-	or one-per-line on standard input, or both.
+	<h2>"What???"</h2>
+	<p>A while back, I came accross a game called <a href="http://www.frozen-bubble.org">Frozen Bubble</a>, which is a <a href="http://www.snood.com">Snood</a>
+	clone written in Perl using the OpenGL bindings.  I was rather offended by the
+	whole concept, and said something like "Arg! Thats almost as bad as writing a 3D
+	game in Bash!".  So, this December during winter break, when I was trying to think
+	of something to do for <i>TheSilverDirk's Abuse of Technology</i> #6....
 	</p>
-	<h3>"But isn't that incredibly slow?"</h3>
-	<p>Yes! and thats what makes it so wrong.  But, it might not be as slow as you think:
+	<table border="0" cellspacing="0" cellpadding="0"><tr><td><h2>"Oh, God!&nbsp;&nbsp;No!!"</h2></td><td><i>&nbsp;&nbsp;&lt;-- (common actual quote, not my profanity)</i></td></tr></table>
+	<p>But here it is!  Bwa-Ha-Ha! All the normal languages have OpenGL support,
+	and some scripting languages like Perl and Python and PHP have OpenGL bindings,
+ 	and now Bash does too!
+	</p>
+	<h2>"But how?  Bash doesn't support modules..."</h2>
+	<p>Right.  So I gave it an interface just like all the others it uses:
+	a simple command that can be given parameters and fed commands on standatd input.</p>
+	When invoked, CmdlineGL starts a server which creates an OpenGL window, and then either
+	reads input from a file or from standard-in.  To deliver commands to it, a script can
+	pipe standard-out to the program, or write to a fifo, or other creative methods.
+	The script sends lines of text to the server that tell it to execute any of the
+	supported OpenGL, GLU, or GLUT API calls.  CmdlineGL supports textures, display lists,
+	quadrics, and just about all of the usual gl calls.
+	</p>
+	<h2>"But isn't that an incredibly bad design?"</h2>
+	<p>Yes! and thats what makes it so wrong.  (Recall: The Silver Dirk's Abuse of Technology)
+	But, it might not be as slow as you think:
 	CmdlineGL is written in straight C with as little overhead as possible.
 	It also uses a statically defined hash table to interpret the names of the commands.
 	And, in a 3D application, most of the time is spent drawing pixels and texturing them,
@@ -31,5 +48,96 @@
  	and repeatedly forking thousands of times per frame per second,
 	Especially with the speed of today's computers ;-)
 	</p>
+	<h2>"And you actually wrote a game using this kluge?"</h2>
+	<p>Well, that part was a bit more tricky, but yes.  Lets review some of the obstacles
+	involved with a realtime game, and our old friend/nemesis Bash:
+	<ul>
+	<li><h4>Bash needs to receive key/mouse activity from the server.  There are no RPCs</h4>
+		<p>The only natural way bash has to receive feedback from the user is a text stream.
+		One other possibility is for it to call a special program which would contact the
+		server, get some information, and give it back to bash in the form of a integer result
+		code, but this seemed particularly slow.  So, I came up with the idea that the server
+		could simply write user actions to stdout, and this could be piped to the stdin of the
+		script.
+		</p>
+		<p>I formed this cyclic stream using a fifo:</p>
+<div class="code">
+$ mkfifo /tmp/CmdlineGL_fifo<br/>
+$ Script.sh &lt; /tmp/CmdlineGL_fifo | CmdlineGL &gt; /tmp/CmdlineGL_fifo
+</div>
+		<p>And then the rest was simple:  script reads user input from stdin, script generates
+		frame of output commands to stdout, script reads use input from stdin....
+		</p>
+	</li>
+	<li><h4>Bash does not support asynchronous IO</h4>
+		<p>The next problem of course, was that if the user doesn't type anything, a call
+ 		to "read" will block.
+		Read actually does have a timeout feature, but in granularity of seconds,
+		and a timeout of 0 doesn't seem to work.  So, I just changed my design a little
+		to ensure that there is always a line to read from stdin. Thus the existance of the
+		"cglEcho" command.  At the beginning of the script, and after reading user input on
+		each frame, I write "cglEcho&nbsp;_____".  CmdlineGL sees the echo command, and echoes
+		the argument back to me.  Then, next time I read through stdin I stop after seeing
+		"_____" because it means I've processed a whole frame's worth of user input.
+		</p>
+		<p>The cglEcho command actually became obsolete, with the arrival of cglGetTime, as you
+		will see in my next point.  I left cglEcho as it was, though.
+		</p>
+	</li>
+	<li><h4>Keeping pace with the processor</h4>
+		<p>One of the more classic video game problems is making sure that the game runs the
+		same speed on all machines.  When playing a video, you need to keep the frame rate
+		steady, and when running a game engine you need to make sure that the framerate
+		doesn't affect the speed of the gameplay.
+		</p>
+	</li>
+	<li><h4>Math.. or lack thereof</h4>
+		<p>So, one of the first major obstacles I hit when porting my walking robot demo from C
+		to bash was the lack of floating point support.
+		It seemed obvious that calling bc for all my math operations would be a bit slow.
+		At first, I tried writing functions that would string-manipulate a floating point number
+		to fixed point, perform the calculation, and then string-manipulate back.  This involved
+		a lot of back-quote substitutions, and was slow.  So, I needed a way to use integers.
+		Why not just use glScale?  Well, mainly because that won't scale the angles of the
+		glRotate command, and the robot was looking a little jerky with whole degree rotations.
+		</p>
+		<p>So... against my instincts for good design, I added a 'feature' to CmdlineGl that
+		causes it to look for fixed-point numbers any place it would normally expect floating point.
+		Implementing this was rather simple, though: I made a "cglFixedPt <x>" function that
+		takes a parameter X, calculates 1/X, and multiplies all future floating point numbers
+		by this amount.  The fact that the script is sending integers is then irrelevant.
+		</p>
+		<p>
+	</li>
+	</ul>
+	<h2>"So, what can I do to... 'Repay' you for this?"</h2>
+	<p>If you were thinking along the lines of thanks: bug fixes, implementing more of
+	the OpenGL commands, bug reports, money, pizza coupons, sending Morrowgrain to Zellin
+	on Earthen Ring (if you don't know what that means, don't worry about it), etc.
+	</p>
+	<p>If you were thinking more along the lines of revenge, you could try using CmdlineGL
+ 	to write a multiplayer racing game (like a Mario Cart clone or something) in Prolog.
+	</p>
+	<h2>"Where's the Windows version?"</h2>
+	<p>The Windows version is the same as the Linux version.
+	You'll just need to edit the source code a little before you can run it.  ;-)
+	</p>
+	<p>At the moment, the unix-specific things in this code are the asynchronous IO,
+	the fifo's, and the timing.  If you replace all the 'open' and 'read' with CreateFile and
+	ReadFile, comment out the fifo stuff, and replace gettimeofday and usleep with GetCurrentTime
+	and Sleep (remember that it'll change microseconds to milliseconds), it just might work on
+	Windows.  Then all you need is bash, which can be gotten from Cygwin.  You will still need
+	some way of creating the stdin/stdout loop between the script and CmdlineGL, and I'm not
+	going to even investigate that.
+	</p>
+	<p>I really can't see any reason why you'd want to do this on Windows (unless
+	perhaps your graphics card isn't accelerated under X).  Anyway, it's your time.
+	(and if you get a windows version working, I'll gladly host it)
+	</p>
+	<h2>Credits</h2>
+	<ul><li>Bob Zimbinski, for <a href="http://webpages.mr.net/bobz/ttyquake/">inspiring the format</a> of this page.</li>
+	<li>Jeff Molofee, of <a href="http://nehe.gamedev.net/">nehe.gamedev.net</a>, for providing an excellent OpenGL resource to the community.</li>
+	<li>All the fellow nerds at <a href="http://pohl.ececs.uc.edu/larc/">LaRC</a> (UC's Labratory for Recreational Computing) who's looks of pure horror and disgust inspired me to finish the project.</li>
+	</ul>
 </body>
 </html>
