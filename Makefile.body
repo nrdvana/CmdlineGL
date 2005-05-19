@@ -3,7 +3,7 @@ CC="gcc"
 
 .PHONY: all build ShellBindings
 
-OBJ_FILES=SymbolHash.o Server.o ProcessInput.o ParseGL.o Global.o Contained_RBTree.o IntConstHash.autogen.o CmdHash.autogen.o HashFunc.o
+OBJ_FILES=SymbolHash.o Server.o ProcessInput.o ParseGL.o Global.o Contained_RBTree.o IntConstHash.autogen.o CmdHash.autogen.o HashFunc.o ImageLoader.o
 
 all: build
 
@@ -32,6 +32,9 @@ Server.o: Server.c Server.h Global.h
 
 ParseGL.o: ParseGL.c ParseGL.h Global.h
 	${CC} ${CFLAGS} -c ParseGL.c
+
+ImageLoader.o: ImageLoader.h ImageLoader.c
+	${CC} ${CFLAGS} -c ImageLoader.c
 
 Global.o: Global.c Global.h
 	${CC} ${CFLAGS} -c Global.c
