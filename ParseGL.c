@@ -23,8 +23,7 @@ const char* VAR_DBL="dddddddddddddddddddddddddddddddd";
 GLint iParams[MAX_GL_PARAMS];
 GLfloat fParams[MAX_GL_PARAMS];
 GLdouble dParams[MAX_GL_PARAMS];
-int dlistParams[MAX_GL_PARAMS];
-GLUquadric* quadricParams[MAX_GL_PARAMS];
+const SymbVarEntry* sParams[MAX_GL_PARAMS];
 
 double FixedPtMultiplier= 1.0;
 
@@ -32,8 +31,7 @@ bool ScanParams(const char* ParamType, char** Args);
 bool ParseInt(const char* Text, GLint *Result);
 bool ParseFloat(const char* Text, GLfloat *Result);
 bool ParseDouble(const char* Text, GLdouble *Result);
-bool ParseNamedDList(const char* Text, int *Result, bool AutoCreate);
-bool ParseNamedQuadric(const char* Text, GLUquadric **Result, bool AutoCreate);
+bool ParseSymbVar(const char* Text, const SymbVarEntry **Result, bool AutoCreate, int Type);
 
 //----------------------------------------------------------------------------
 // CmdlineGL Functions
@@ -299,7 +297,7 @@ PUBLISHED(glFrustum, DoFrustum) {
 PUBLISHED(glNewList, DoNewList) {
 	if (argc != 2) return ERR_PARAMCOUNT;
 	if (!ScanParams("Li", argv)) return ERR_PARAMPARSE;
-	glNewList(dlistParams[0], iParams[0]);
+	glNewList(sParams[0]->Value, iParams[0]);
 	return 0;
 }
 PUBLISHED(glEndList, DoEndList) {
@@ -310,7 +308,7 @@ PUBLISHED(glEndList, DoEndList) {
 PUBLISHED(glCallList, DoCallList) {
 	if (argc != 1) return ERR_PARAMCOUNT;
 	if (!ScanParams("l", argv)) return ERR_PARAMPARSE;
-	glCallList(dlistParams[0]);
+	glCallList(sParams[0]->Value);
 	return 0;
 }
 
@@ -320,25 +318,25 @@ PUBLISHED(glCallList, DoCallList) {
 PUBLISHED(gluNewQuadric, DoNewQuadric) {
 	if (argc != 1) return ERR_PARAMCOUNT;
 	if (!ScanParams("Q", argv)) return ERR_PARAMPARSE;
-	// nothing to do- scan params already created it.
+	// nothing to do- ScanParams already created it.
 	return 0;
 }
 PUBLISHED(gluQuadricDrawStyle, DoQuadricDrawStyle) {
 	if (argc != 2) return ERR_PARAMCOUNT;
 	if (!ScanParams("qi", argv)) return ERR_PARAMPARSE;
-	gluQuadricDrawStyle(quadricParams[0], iParams[0]);
+	gluQuadricDrawStyle((GLUquadric*)sParams[0]->Data, iParams[0]);
 	return 0;
 }
 PUBLISHED(gluCylinder, DoCylinder) {
 	if (argc != 6) return ERR_PARAMCOUNT;
 	if (!ScanParams("qdddii", argv)) return ERR_PARAMPARSE;
-	gluCylinder(quadricParams[0], dParams[0], dParams[1], dParams[2], iParams[0], iParams[1]);
+	gluCylinder((GLUquadric*)sParams[0]->Data, dParams[0], dParams[1], dParams[2], iParams[0], iParams[1]);
 	return 0;
 }
 PUBLISHED(gluSphere, DoSphere) {
 	if (argc != 4) return ERR_PARAMCOUNT;
 	if (!ScanParams("qdii", argv)) return ERR_PARAMPARSE;
-	gluSphere(quadricParams[0], dParams[0], iParams[0], iParams[1]);
+	gluSphere((GLUquadric*)sParams[0]->Data, dParams[0], iParams[0], iParams[1]);
 	return 0;
 }
 
@@ -364,18 +362,19 @@ bool ScanParams(const char* ParamType, char** Args) {
 	GLint *iParam= iParams;
 	GLfloat *fParam= fParams;
 	GLdouble *dParam= dParams;
-	int *dlistParam= dlistParams;
-	GLUquadric **quadricParam= quadricParams;
+	const SymbVarEntry **sParam= sParams;
 	bool Success= true;
 	while (Success && *ParamType != '\0') {
 		switch (*ParamType) {
 		case 'i': Success= ParseInt(*Args, iParam++); break;
 		case 'f': Success= ParseFloat(*Args, fParam++); break;
 		case 'd': Success= ParseDouble(*Args, dParam++); break;
-		case 'l': Success= ParseNamedDList(*Args, dlistParam++, false); break;
-		case 'L': Success= ParseNamedDList(*Args, dlistParam++, true); break;
-		case 'q': Success= ParseNamedQuadric(*Args, quadricParam++, false); break;
-		case 'Q': Success= ParseNamedQuadric(*Args, quadricParam++, true); break;
+		case 'l': Success= ParseSymbVar(*Args, sParam++, false, NAMED_LIST); break;
+		case 'L': Success= ParseSymbVar(*Args, sParam++, true, NAMED_LIST); break;
+		case 'q': Success= ParseSymbVar(*Args, sParam++, false, NAMED_QUADRIC); break;
+		case 'Q': Success= ParseSymbVar(*Args, sParam++, true, NAMED_QUADRIC); break;
+		case 't': Success= ParseSymbVar(*Args, sParam++, false, NAMED_TEXTURE); break;
+		case 'T': Success= ParseSymbVar(*Args, sParam++, true, NAMED_TEXTURE); break;
 		default: Success= false;
 		}
 		Args++;
@@ -428,39 +427,32 @@ bool ParseDouble(const char* Text, GLdouble *Result) {
 	return (EndPtr != Text);
 }
 
-bool ParseNamedDList(const char* Text, int *Result, bool AutoCreate) {
+bool ParseSymbVar(const char* Text, const SymbVarEntry **Result, bool AutoCreate, int Type) {
 	const SymbVarEntry *Entry= GetSymbVar(Text);
 	SymbVarEntry *NewEntry; // this exists to avoid the "const pointer" warning.
 	
-	if (!Entry && AutoCreate) {
-		NewEntry= CreateSymbVar(Text);
-		NewEntry->Value= glGenLists(1);
-		NewEntry->Type= NAMED_LIST;
-		DEBUGMSG(("Created named list %s = %d\n", Text, NewEntry->Value));
-		Entry= NewEntry;
+	if (!Entry) {
+		if (AutoCreate) {
+			NewEntry= CreateSymbVar(Text);
+			NewEntry->Type= Type;
+			switch (Type) {
+			case NAMED_LIST: NewEntry->Value= glGenLists(1); break;
+			case NAMED_QUADRIC: NewEntry->Data= gluNewQuadric(); break;
+			case NAMED_TEXTURE: glGenTextures(1, &(NewEntry->Value)); break;
+			}
+			DEBUGMSG(("Created named object %s = %d\n", Text, NewEntry->Value));
+			Entry= NewEntry;
+		}
+		else {
+			fprintf(stdout, "Symbolic constant: \"%s\" has not been created.\n", Text);
+			return false;
+		}
 	}
-	if (Entry && Entry->Type == NAMED_LIST) {
-		*Result= Entry->Value;
-		return true;
+	else if (Entry->Type != Type) {
+		fprintf(stdout, "Symbolic constant \"%s\" is not of type %s (it's a %s)\n", Text, SymbVarTypeName[Type], SymbVarTypeName[Entry->Type]);
+		return false;
 	}
-	else return false;
-}
-
-bool ParseNamedQuadric(const char* Text, GLUquadric **Result, bool AutoCreate) {
-	const SymbVarEntry *Entry= GetSymbVar(Text);
-	SymbVarEntry *NewEntry; // this exists to avoid the "const pointer" warning.
-
-	if (!Entry && AutoCreate) {
-		NewEntry= CreateSymbVar(Text);
-		NewEntry->Value= (int) gluNewQuadric();
-		NewEntry->Type= NAMED_QUADRIC;
-		DEBUGMSG(("Created quadric %s = %d\n", Text, NewEntry->Value));
-		Entry= NewEntry;
-	}
-	if (Entry && Entry->Type == NAMED_QUADRIC) {
-		*Result= (GLUquadric*) Entry->Value;
-		return true;
-	}
-	else return false;
+	*Result= Entry;
+	return true;
 }
 

@@ -1,6 +1,8 @@
 #include "Global.h"
 #include "SymbolHash.h"
 
+const char *SymbVarTypeName[]= { "Display List", "Quadric", "Texture", "Font" };
+
 const CmdHashEntry *GetCmd(const char *Key) {
 	int code, i;
 

@@ -16,13 +16,20 @@ typedef struct {
 typedef struct SymbVarEntry_t {
 	int Hash;
 	char Name[SYMB_VAR_MAX_LEN];
-	int Value;
+	union {
+		int Value;
+		void *Data;
+	};
 	int Type;
 	RBTreeNode node;
 } SymbVarEntry;
 
 #define NAMED_LIST 0
 #define NAMED_QUADRIC 1
+#define NAMED_TEXTURE 2
+#define NAMED_FONT 3
+
+extern const char *SymbVarTypeName[];
 
 const CmdHashEntry *GetCmd(const char *Key);
 
