@@ -30,7 +30,7 @@ elif echo "" | sed -E 'd' 1>&2 2>/dev/null; then
 else
 	die "Can't find the flag for the sed command that enables extended regexes."
 fi
-echo "sed -$SED_FLAG" does extended regexes"
+echo "sed -$SED_FLAG does extended regexes"
 
 echo "GL_INC=$GL_INC" > Makefile
 [ -n "$CFLAGS_AMEND" ] && echo "CFLAGS+=$CFLAGS_AMEND" >> Makefile

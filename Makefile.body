@@ -1,5 +1,4 @@
-
-CC="gcc"
+CC=gcc
 
 .PHONY: all build ShellBindings
 
