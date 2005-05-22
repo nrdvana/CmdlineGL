@@ -5,6 +5,7 @@
 
 PUBLISHED(cglQuit,DoQuit);
 PUBLISHED(cglExit,DoQuit);
+PUBLISHED(cglGetTime,DoGetTime);
 PUBLISHED(cglSync,DoSync);
 PUBLISHED(cglSleep, DoSleep);
 PUBLISHED(cglEcho,DoEcho);

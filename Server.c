@@ -162,6 +162,14 @@ PUBLISHED(cglExit,DoQuit) {
 	return 0;
 }
 
+PUBLISHED(cglGetTime,DoGetTime) {
+	struct timeval curtime;
+	if (argc != 0) return ERR_PARAMCOUNT;
+	gettimeofday(&curtime, NULL);
+	printf("t=%d\n", microseconds(&curtime)/1000);
+	return 0;
+}
+
 PUBLISHED(cglSync,DoSync) {
 	struct timeval curtime;
 	long target, t;
