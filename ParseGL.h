@@ -34,6 +34,7 @@ PUBLISHED(glNormal, DoNormal);
 //
 PUBLISHED(glColorub, DoColorub);
 PUBLISHED(glColor, DoColor);
+PUBLISHED(glFog, DoFog);
 
 //----------------------------------------------------------------------------
 // Lighting Functions

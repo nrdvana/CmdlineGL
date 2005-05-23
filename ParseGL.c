@@ -186,6 +186,20 @@ PUBLISHED(glColor, DoColor) {
 	else return ERR_PARAMCOUNT;
 	return 0;
 }
+PUBLISHED(glFog, DoFog) {
+	const int FIXED_PARAMS= 2;
+	if (argc == 2 && ScanParams("ii", argv)) {
+		glFogi(iParams[0], iParams[1]);
+	}
+	else if (argc > FIXED_PARAMS && argc < MAX_GL_PARAMS) {
+		if (ScanParams("i", argv) && ScanParams(VAR_FLOAT+(VAR_FLOAT_LEN+FIXED_PARAMS-argc), argv+FIXED_PARAMS)) {
+			glFogfv(iParams[0], fParams);
+		}
+		else return ERR_PARAMPARSE;
+	}
+	else return ERR_PARAMCOUNT;
+	return 0;
+}
 
 //----------------------------------------------------------------------------
 // Lighting Functions
