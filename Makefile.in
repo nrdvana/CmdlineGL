@@ -90,14 +90,20 @@ ConstList.txt:
 	@false
 
 install: output/CmdlineGL output/BashBindings
-	install -d output/CmdlineGL @bindir@
-	install -d output/BashBindings @datadir@/CmdlineGL
-	@if [ -n "${InstallShellBindings}" ]; then \
+	if [ ! -d @bindir@ ]; then install -d @bindir@; fi
+	if [ ! -d @datadir@/CmdlineGL ]; then install -d @datadir@/CmdlineGL; fi
+	
+	install output/CmdlineGL @bindir@
+	install output/BashBindings @datadir@/CmdlineGL
+	@if [ -n "${INSTALL_SHELL_BINDINGS}" ]; then \
 		echo "-> Making all the symlinks from the CmdlineGLClient script to the command names in bin" \
-		&& echo install -d CmdlineGLClient @bindir@ \
-		&& install -d CmdlineGLClient @bindir@ \
+		&& echo install CmdlineGLClient @bindir@ \
+		&& install CmdlineGLClient @bindir@ \
 		&& sed -n '/^PUBLISHED(\([^,]*\),.*/s//\1/p' *.h \
-		 | while read fn; do ln -s CmdlineGLClient $$fn; done \
+		 | while read fn; do \
+		 	echo "ln -sf CmdlineGLClient @bindir@/$$fn";\
+		 	ln -s CmdlineGLClient @bindir@/$$fn;\
+ 		   done \
 	fi
 
 clean:

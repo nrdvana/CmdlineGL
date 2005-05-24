@@ -1,7 +1,6 @@
-#                                               -*- Autoconf -*-
 # Process this file with autoconf to produce a configure script.
-
-# I hearby declare that I have no clue what I'm doing when it comes
+#
+# I hereby declare that I have no clue what I'm doing when it comes
 # to autoconf.  All suggestions (and patches!) are welcome.
 #
 AC_PREREQ(2.59)
