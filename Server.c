@@ -3,12 +3,11 @@
 #include <fcntl.h>
 #include <stdio.h>
 #include <errno.h>
-#include <GL/gl.h>
-#include <GL/glut.h>
 #include <sys/time.h>
 #include <unistd.h>
 
 #include "Global.h"
+#include "GlHeaders.h"
 #include "Server.h"
 #include "ProcessInput.h"
 

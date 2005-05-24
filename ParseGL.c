@@ -1,10 +1,7 @@
-#include <GL/gl.h>
-#include <GL/glu.h>
-#include <GL/glut.h>
-
 #include <ctype.h>
 #include <stdlib.h>
 #include <stdio.h>
+#include "GlHeaders.h"
 #include "ParseGL.h"
 #include "SymbolHash.h"
 #include "ImageLoader.h"

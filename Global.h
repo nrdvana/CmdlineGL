@@ -1,6 +1,8 @@
 #ifndef GLOBAL_H
 #define GLOBAL_H
 
+#include "config.h"
+
 #ifndef NULL
   #define NULL ((void*)0)
 #endif

@@ -1,9 +1,8 @@
 #include <sys/un.h>
 #include <stdio.h>
-#include <GL/gl.h>
-#include <GL/glu.h>
-#include "ProcessInput.h"
 #include "Global.h"
+#include "GlHeaders.h"
+#include "ProcessInput.h"
 #include "SymbolHash.h"
 
 #define CMD_LEN_MAX 256

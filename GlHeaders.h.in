@@ -1,0 +1,9 @@
+/* This header file simply pulls in the GL header files from
+wherever configure found them.  I  could have done this in
+Global.h, but then it would get sucked into every single file.
+*/
+
+#include <@gl_header@>
+#include <@glu_header@>
+#include <@glut_header@>
+
