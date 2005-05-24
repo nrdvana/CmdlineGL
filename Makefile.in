@@ -2,6 +2,9 @@
 
 DEF_CC_CMD=${CC} ${CFLAGS} ${CPPFLAGS}
 
+prefix=/usr/local
+exec_prefix=${prefix}
+
 INSTALL_SHELL_BINDINGS=@INST_SHELL_BIND@
 
 OBJ_FILES=SymbolHash.o Server.o ProcessInput.o ParseGL.o Global.o Contained_RBTree.o IntConstHash.autogen.o CmdHash.autogen.o HashFunc.o ImageLoader.o
