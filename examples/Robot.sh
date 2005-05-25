@@ -6,11 +6,10 @@ if [ -z "$BASH" ]; then
 	exec bash $0 || die "Can't exec bash"
 fi
 
-if [ -f ../bin/CmdlineGL_BashBindings ]; then
-	source ../bin/CmdlineGL_BashBindings
-else
-	die "Please 'make' bin/CmdlineGL_BashBindings, and try again"
-fi
+# build functions for each available command
+for cmd in `CmdlineGL --showcmds`; do
+	eval "$cmd() { echo \"$cmd \$@\"; }"
+done
 
 export CMDLINEGL_PIPE='/tmp/foo';
 
