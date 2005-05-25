@@ -1,7 +1,10 @@
+#include <stdio.h>
 #include "Global.h"
 #include "SymbolHash.h"
 
 const char *SymbVarTypeName[]= { "Display List", "Quadric", "Texture", "Font" };
+bool SymbVarTreeInit= false;
+RBTree SymbVarTree;
 
 const CmdHashEntry *GetCmd(const char *Key) {
 	int code, i;
@@ -27,14 +30,6 @@ const IntConstHashEntry *GetIntConst(const char *Key) {
 	return (IntConstHashEntry *) 0;
 }
 
-bool SymbVarTreeInit= false;
-RBTree SymbVarTree;
-
-typedef struct {
-	int Hash;
-	const char *Name;
-} SymbVarSearchKey;
-
 void InitSymbVarEntry(SymbVarEntry *Entry, const char* Name) {
 	Entry->Hash= CalcHash(Name);
 	strncpy(Entry->Name, Name, SYMB_VAR_MAX_LEN-1);
@@ -51,6 +46,13 @@ bool SymbVar_inorder_func(const void* ObjA, const void* ObjB) {
 	else
 		return (EntryA->Hash <= EntryB->Hash);
 }
+
+/** Structure used to pass the key to the compare function */
+typedef struct {
+	int Hash;
+	const char *Name;
+} SymbVarSearchKey;
+
 int SymbVar_compare_func(const void* SearchKey, const void* Object) {
 	SymbVarSearchKey *Key= (SymbVarSearchKey*) SearchKey;
 	SymbVarEntry *Node= (SymbVarEntry*) Object;
@@ -70,7 +72,7 @@ const SymbVarEntry *GetSymbVar(const char *Name) {
 	Key.Hash= CalcHash(Name);
 	Key.Name= Name;
 	RBTreeNode *Node= RBTree_Find(&SymbVarTree.RootSentinel, &Key, SymbVar_compare_func);
-	if (Node) return Node->Object;
+	if (Node) return (SymbVarEntry*) Node->Object;
 	else return NULL;
 }
 
@@ -84,5 +86,25 @@ SymbVarEntry *CreateSymbVar(const char *Name) {
 	InitSymbVarEntry(Entry, Name);
 	RBTree_Add(&SymbVarTree.RootSentinel, &(Entry->node), SymbVar_inorder_func);
 	return Entry;
+}
+
+void DumpCommandList(FILE* DestStream) {
+	int i, j;
+	for (i=0; i<CmdLookupSize; i++)
+		for (j=0; j<CmdLookup[i].EntryCount; j++)
+			fprintf(DestStream, "%s\n", CmdLookup[i].Entries[j].Key);
+}
+void DumpConstList(FILE* DestStream) {
+	int i, j;
+	for (i=0; i<IntConstLookupSize; i++)
+		for (j=0; j<IntConstLookup[i].EntryCount; j++)
+			fprintf(DestStream, "GL%s %d\n", IntConstLookup[i].Entries[j].Key, IntConstLookup[i].Entries[j].Value);
+}
+void DumpVarList(FILE* DestStream) {
+	RBTreeNode *Current= RBTree_GetLeftmost(SymbVarTree.RootSentinel.Left);
+	while (Current != &Sentinel) {
+		fprintf(DestStream, "%s %s\n", ((SymbVarEntry*)Current->Object)->Name, SymbVarTypeName[((SymbVarEntry*)Current->Object)->Type]);
+		Current= RBTree_GetNext(Current);
+	}
 }
 

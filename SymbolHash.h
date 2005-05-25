@@ -1,6 +1,8 @@
 #ifndef SYMBOL_HASH_H
 #define SYMBOL_HASH_H
 
+#include <stdio.h>
+
 typedef struct {
 	const char* Key;
 	int (*Value)(int,char**);
@@ -32,11 +34,14 @@ typedef struct SymbVarEntry_t {
 extern const char *SymbVarTypeName[];
 
 const CmdHashEntry *GetCmd(const char *Key);
+void DumpCommandList(FILE* DestStream);
 
 const IntConstHashEntry *GetIntConst(const char *Key);
+void DumpConstList(FILE* DestStream);
 
 SymbVarEntry *CreateSymbVar(const char *Name);
 const SymbVarEntry *GetSymbVar(const char *Name);
+void DumpVarList(FILE* DestStream);
 
 #define CmdLookupSize 64
 struct CmdLookupBucket { int EntryCount; CmdHashEntry *Entries; };
