@@ -1,17 +1,33 @@
-#!/bin/sh
+#! /bin/sh
+if [ -z "$BASH" ]; then
+	exec bash $0
+fi
 
+# Define our handy die function
 die() { echo $1; exit -1; }
 
-if [ -z "$BASH" ]; then
-	exec bash $0 || die "Can't exec bash"
+# Make sure we have CmdlineGL
+which CmdlineGL >/dev/null || die "Make sure CmdlineGL is in the PATH"
+
+# Initialize the pipe location, if not already set
+if [ -z "$CMDLINEGL_PIPE" ]; then
+	CMDLINEGL_PIPE="/tmp/${USER}_CGL/fifo";
 fi
+
+# Create the fifo for attaching CmdlineGL to the script
+if [ -e "$CMDLINEGL_PIPE" ]; then
+ 	rm -f "$CMDLINEGL_PIPE" || die "Cannot remove $CMDLINEGL_PIPE";
+else
+	# cheap trick to get the parent directories created, if any
+	install -d -m 0700 $CMDLINEGL_PIPE
+	rmdir $CMDLINEGL_PIPE
+fi
+mkfifo $CMDLINEGL_PIPE
 
 # build functions for each available command
 for cmd in `CmdlineGL --showcmds`; do
 	eval "$cmd() { echo \"$cmd \$@\"; }"
 done
-
-export CMDLINEGL_PIPE='/tmp/foo';
 
 #*****************************************************************************\
 # Project: Computer Graphics Final Exam                                       *
@@ -540,13 +556,12 @@ main() {
 		ProcessInput;
 		Animate;
 	done
+	cglQuit
 }
 
 if [ "$1" = "--dump" ]; then
 	NonInteractive=true;
 	main
 else
-	rm -f /tmp/cgl_fifo
-	mkfifo /tmp/cgl_fifo
-	main < /tmp/cgl_fifo | ../bin/CmdlineGL >> /tmp/cgl_fifo
+	main < $CMDLINEGL_PIPE | CmdlineGL > $CMDLINEGL_PIPE
 fi

@@ -1,21 +1,33 @@
-#!/bin/sh
+#! /bin/sh
 if [ -z "$BASH" ]; then
 	exec bash $0
 fi
 
+# Define our handy die function
 die() { echo $1; exit -1; }
 
-if [ -f ../bin/CmdlineGL_BashBindings ]; then
-	source ../bin/CmdlineGL_BashBindings
-else
-	die "Please 'make' bin/CmdlineGL_BashBindings, and try again"
+# Make sure we have CmdlineGL
+which CmdlineGL >/dev/null || die "Make sure CmdlineGL is in the PATH"
+
+# Initialize the pipe location, if not already set
+if [ -z "$CMDLINEGL_PIPE" ]; then
+	CMDLINEGL_PIPE="/tmp/${USER}_CGL/fifo";
 fi
-export CMDLINEGL_PIPE='/tmp/foo';
 
-#export PATH=$PATH:bin/;
+# Create the fifo for attaching CmdlineGL to the script
+if [ -e "$CMDLINEGL_PIPE" ]; then
+ 	rm -f "$CMDLINEGL_PIPE" || die "Cannot remove $CMDLINEGL_PIPE";
+else
+	# cheap trick to get the parent directories created, if any
+	install -d -m 0700 $CMDLINEGL_PIPE
+	rmdir $CMDLINEGL_PIPE
+fi
+mkfifo $CMDLINEGL_PIPE
 
-#bin/CmdlineGL -f "$CMDLINEGL_PIPE" &
-#sleep 1
+# build functions for each available command
+for cmd in `CmdlineGL --showcmds`; do
+	eval "$cmd() { echo \"$cmd \$@\"; }"
+done
 
 let x=0;
 
@@ -164,12 +176,7 @@ ProcessInput() {
 	if [ -n "$K_Out"   ]; then let distance++; fi
 }
 
-[ -e "$CMDLINEGL_PIPE" ] && { rm -f "$CMDLINEGL_PIPE" || die "Cannot remove $CMDLINEGL_PIPE"; }
-[ -e "/tmp/bar" ] && { rm -f "/tmp/bar" || die "Cannot remove /tmp/bar"; }
-
-mkfifo /tmp/bar
-
-(
+main () {
 	cglEcho "_____";
 	Init
 	BuildList
@@ -190,5 +197,7 @@ mkfifo /tmp/bar
 		let frametime=$frametime+33;
 	done
 	cglQuit
-) < /tmp/bar | ../bin/CmdlineGL > /tmp/bar
+}
+
+main < $CMDLINEGL_PIPE | CmdlineGL > $CMDLINEGL_PIPE
 
