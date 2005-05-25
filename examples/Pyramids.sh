@@ -1,6 +1,7 @@
 #!/bin/sh
-
-source BashInterpKluge.sh
+if [ -z "$BASH" ]; then
+	exec bash $0
+fi
 
 die() { echo $1; exit -1; }
 

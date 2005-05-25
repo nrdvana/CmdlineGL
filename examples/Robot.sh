@@ -1,8 +1,10 @@
 #!/bin/sh
 
-source BashInterpKluge.sh
-
 die() { echo $1; exit -1; }
+
+if [ -z "$BASH" ]; then
+	exec bash $0 || die "Can't exec bash"
+fi
 
 if [ -f ../bin/CmdlineGL_BashBindings ]; then
 	source ../bin/CmdlineGL_BashBindings
