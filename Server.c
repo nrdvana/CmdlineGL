@@ -5,6 +5,7 @@
 #include <errno.h>
 #include <sys/time.h>
 #include <unistd.h>
+#include <string.h>
 
 #include "Global.h"
 #include "GlHeaders.h"
@@ -16,6 +17,7 @@ bool Shutdown= false;
 typedef struct {
 	char *FifoName;
 	bool TerminateOnEOF;
+	bool ShowCmds, ShowConsts;
 	bool WantHelp;
 	bool NeedHelp;
 } CmdlineOptions;
@@ -41,17 +43,27 @@ int InputFD= 0;
 
 long StartTime;
 
-CmdlineOptions Options= { NULL, false, false, false };
+CmdlineOptions Options;
 
 int main(int Argc, char**Args) {
 	struct timeval curtime;
-	
+
+	memset(&Options, 0, sizeof(Options));
 	ReadParams(Args, &Options);
 	
 	if (Options.WantHelp || Options.NeedHelp) {
 		PrintUsage();
 		return Options.WantHelp? 0 : -1;
 	}
+	if (Options.ShowCmds) {
+		DumpCommandList(stdout);
+		return 0;
+	}
+	if (Options.ShowConsts) {
+		DumpConstList(stdout);
+		return 0;
+	}
+
 	if (Options.FifoName) {
 //		if (CreateListenSocket(Options.SocketName, &InputFD))
 		if (mkfifo(Options.FifoName, 0x1FF) < 0) {
@@ -122,6 +134,8 @@ void ReadParams(char **Args, CmdlineOptions *Options) {
 		case '\0': ReadingArgs= false; break; // "-" = end of arguments
 		case '-': // "--" => long-option
 			if (strcmp(*NextArg, "--help") == 0) { Options->WantHelp= true; break; }
+			if (strcmp(*NextArg, "--showcmds") == 0) { Options->ShowCmds= true; break; }
+			if (strcmp(*NextArg, "--showconsts") == 0) { Options->ShowConsts= true; break; }
 		default:
 			fprintf(stderr, "Unrecognized argument: %s", *NextArg);
 			Options->NeedHelp= true;
@@ -134,18 +148,15 @@ void ReadParams(char **Args, CmdlineOptions *Options) {
 void PrintUsage() {
 	fprintf(stderr, "%s",
 	"Usage:\n"
-	"  CmdlineGL -f <fifoname> [-t] | <input-processor>\n"
-	"     Read commands from the named fifo, and write user input to stdout.\n"
+	"  <command-source> | CmdlineGL [options] | <user-input-reader>\n"
+	"     Reads commands from stdin, and writes user input to stdout.\n"
 	"\n"
-	"  <command-stream> | CmdlineGL [-t] | <input-processor>\n"
-	"     Read commands from stdin, and write user input to stdout.\n"
-	"\n"
-	"  CmdlineGL -h\n"
-	"     Display this help message.\n"
-	"\n"
-	"socketname : a path/filename for a unix socket, which the server creates\n"
-	"-t         : terminate after receiving EOF\n"
-	"\n"
+	"Options:\n"
+	"  -h            Display this help message.\n"
+	"  -t            Terminate after receiving EOF\n"
+	"  -f <fifo>     Create the named fifo (file path+name) and read from it.\n"
+	"  --showcmds    List all the available commands in this version of CmdlineGL.\n"
+	"  --showconsts  List all the constants (GL_xxxx) that are available.\n"
 	"\n"
 	"Note: Each line of input is broken on space characters and treated as a\n"
  	"      command.  There is currently no escaping mechanism, although I'm not\n"
