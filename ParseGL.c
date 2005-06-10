@@ -96,9 +96,13 @@ PUBLISHED(glHint, DoHint) {
 	return 0;
 }
 PUBLISHED(glClear, DoClear) {
-	if (argc != 1) return ERR_PARAMCOUNT;
-	if (!ScanParams("i", argv)) return ERR_PARAMPARSE;
-	glClear(iParams[0]);
+	int flags;
+	if (argc < 1 || argc >= MAX_GL_PARAMS) return ERR_PARAMCOUNT;
+	if (!ScanParams(VAR_INT+(VAR_INT_LEN-argc), argv)) return ERR_PARAMPARSE;
+	flags= 0;
+	while (argc--)
+		flags|= iParams[argc];
+	glClear(flags);
 	return 0;
 }
 PUBLISHED(glClearColor, DoClearColor) {
