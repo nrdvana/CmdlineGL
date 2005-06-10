@@ -83,6 +83,8 @@ PUBLISHED(gluNewQuadric, DoNewQuadric);
 PUBLISHED(gluQuadricDrawStyle, DoQuadricDrawStyle);
 PUBLISHED(gluCylinder, DoCylinder);
 PUBLISHED(gluSphere, DoSphere);
+PUBLISHED(gluDisk, DoDisk);
+PUBLISHED(gluPartialDisk, DoPartialDisk);
 
 //----------------------------------------------------------------------------
 // Glut Functions

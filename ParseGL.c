@@ -403,6 +403,19 @@ PUBLISHED(gluSphere, DoSphere) {
 	gluSphere((GLUquadric*)sParams[0]->Data, dParams[0], iParams[0], iParams[1]);
 	return 0;
 }
+PUBLISHED(gluDisk, DoDisk) {
+	if (argc != 5) return ERR_PARAMCOUNT;
+	if (!ScanParams("qddii", argv)) return ERR_PARAMPARSE;
+	gluDisk((GLUquadric*)sParams[0]->Data, dParams[0], dParams[1], iParams[0], iParams[1]);
+	return 0;
+}
+PUBLISHED(gluPartialDisk, DoPartialDisk) {
+	if (argc != 7) return ERR_PARAMCOUNT;
+	if (!ScanParams("qddiidd", argv)) return ERR_PARAMPARSE;
+	gluPartialDisk((GLUquadric*)sParams[0]->Data, dParams[0], dParams[1], iParams[0], iParams[1], dParams[2], dParams[3]);
+	return 0;
+}
+
 
 //----------------------------------------------------------------------------
 // Glut Functions
