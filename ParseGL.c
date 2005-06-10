@@ -29,6 +29,7 @@ bool ScanParams(const char* ParamType, char** Args);
 bool ParseInt(const char* Text, GLint *Result);
 bool ParseFloat(const char* Text, GLfloat *Result);
 bool ParseDouble(const char* Text, GLdouble *Result);
+bool ParseColor(const char* Text, GLubyte *Result);
 bool ParseSymbVar(const char* Text, const SymbVarEntry **Result, bool AutoCreate, int Type);
 
 //----------------------------------------------------------------------------
@@ -182,6 +183,11 @@ PUBLISHED(glColorub, DoColorub) {
 	return 0;
 }
 PUBLISHED(glColor, DoColor) {
+	GLubyte colorVals[4];
+	if (argc == 1 && argv[0][0] == '#') { // little bit of script-friendlyness
+		if (!ParseColor(argv[0]+1, colorVals)) return ERR_PARAMPARSE;
+		glColor4ubv(colorVals);
+	}
 	if (argc == 3) {
 		if (!ScanParams("ddd", argv)) return ERR_PARAMPARSE;
 		glColor3dv(dParams);
@@ -502,6 +508,23 @@ bool ParseDouble(const char* Text, GLdouble *Result) {
 	char *EndPtr;
 	*Result= FixedPtMultiplier * strtod(Text, &EndPtr);
 	return (EndPtr != Text);
+}
+
+bool ParseColor(const char* Text, GLubyte *Result) {
+	int i, hexval;
+	char *StopPos;
+	hexval= strtol(Text, &StopPos, 16);
+	if (StopPos-Text != 6) {
+ 		if (StopPos-Text != 8) return false;
+		Result[3]= hexval & 0xFF;
+		hexval>>= 8;
+	}
+	else
+		Result[3]= 0xFF;
+	Result[2]= hexval & 0xFF;
+	Result[1]= (hexval>>8) & 0xFF;
+	Result[0]= (hexval>>16) & 0xFF;
+	return true;
 }
 
 bool ParseSymbVar(const char* Text, const SymbVarEntry **Result, bool AutoCreate, int Type) {
