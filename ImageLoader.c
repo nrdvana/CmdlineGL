@@ -28,7 +28,7 @@ bool LoadImage(const char *filename, Image *image) {
     // make sure the file is there.
     if ((file = fopen(filename, "rb"))==NULL)
     {
-		fprintf(stderr, stderr, "File Not Found : %s\n",filename);
+		fprintf(stderr, "File Not Found : %s\n",filename);
 		return 0;
     }
     
