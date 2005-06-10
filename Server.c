@@ -20,6 +20,8 @@ typedef struct {
 	bool ShowCmds, ShowConsts;
 	bool WantHelp;
 	bool NeedHelp;
+	char *WndTitle;
+	bool NoUIMessages;
 } CmdlineOptions;
 
 void ReadParams(char **args, CmdlineOptions *Options);
@@ -89,18 +91,20 @@ int main(int Argc, char**Args) {
 
 	glutInit(&Argc, Args);
 	glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGB | GLUT_DEPTH);
-	glutCreateWindow("CmdlineGL");
+	glutCreateWindow(Options.WndTitle? Options.WndTitle : "CmdlineGL");
 
 	DEBUGMSG(("Assigning functions\n"));
 	glutReshapeFunc(handleResize);
-	glutMouseFunc(mouse);
-	glutMotionFunc(mouseMotion);
-	glutKeyboardFunc(asciiKeyDown);
-	glutKeyboardUpFunc(asciiKeyUp);
-	glutSpecialFunc(specialKeyDown);
-	glutSpecialUpFunc(specialKeyUp);
+	if (!Options.NoUIMessages) {
+		glutMouseFunc(mouse);
+		glutMotionFunc(mouseMotion);
+		glutKeyboardFunc(asciiKeyDown);
+		glutKeyboardUpFunc(asciiKeyUp);
+		glutSpecialFunc(specialKeyDown);
+		glutSpecialUpFunc(specialKeyUp);
+		glutIgnoreKeyRepeat(GLUT_KEY_REPEAT_OFF);
+	}
 	glutDisplayFunc(display);
-	glutIgnoreKeyRepeat(GLUT_KEY_REPEAT_OFF);
 
 	DEBUGMSG(("Resizing window\n"));
 	glutInitWindowSize(500, 501);
@@ -120,6 +124,11 @@ void DelayedInit(int value) {
 	glutIdleFunc(CheckInput);
 }
 
+void PrintMissingParamMessage(char* ArgName, CmdlineOptions *Options) {
+	fprintf(stderr, "Option %s requires a parameter\n", ArgName);
+	Options->NeedHelp= true;
+}
+
 void ReadParams(char **Args, CmdlineOptions *Options) {
 	char **NextArg= Args+1;
 	bool ReadingArgs= true;
@@ -127,7 +136,13 @@ void ReadParams(char **Args, CmdlineOptions *Options) {
 	//   that says all argv lists must end with a NULL pointer.
 	while (ReadingArgs && *NextArg && (*NextArg)[0] == '-') {
 		switch ((*NextArg)[1]) {
-		case 'f': Options->FifoName= *++NextArg; break; // '-f <blah>' = read from FIFO "blah"
+		case 'f':
+			Options->FifoName= *++NextArg;
+			if (!Options->FifoName) {
+				PrintMissingParamMessage("-f", Options);
+				return;
+			}
+			break; // '-f <blah>' = read from FIFO "blah"
 		case 't': Options->TerminateOnEOF= true; break;
 		case 'h':
 		case '?': Options->WantHelp= true; break;
@@ -136,6 +151,15 @@ void ReadParams(char **Args, CmdlineOptions *Options) {
 			if (strcmp(*NextArg, "--help") == 0) { Options->WantHelp= true; break; }
 			if (strcmp(*NextArg, "--showcmds") == 0) { Options->ShowCmds= true; break; }
 			if (strcmp(*NextArg, "--showconsts") == 0) { Options->ShowConsts= true; break; }
+			if (strcmp(*NextArg, "--nouimsg") == 0) { Options->NoUIMessages= true; break; }
+			if (strcmp(*NextArg, "--title") == 0) {
+				Options->WndTitle= *++NextArg;
+				if (!Options->WndTitle) {
+					PrintMissingParamMessage("--title", Options);
+					return;
+				}
+				break;
+			}
 		default:
 			fprintf(stderr, "Unrecognized argument: %s", *NextArg);
 			Options->NeedHelp= true;
@@ -152,11 +176,13 @@ void PrintUsage() {
 	"     Reads commands from stdin, and writes user input to stdout.\n"
 	"\n"
 	"Options:\n"
-	"  -h            Display this help message.\n"
-	"  -t            Terminate after receiving EOF\n"
-	"  -f <fifo>     Create the named fifo (file path+name) and read from it.\n"
-	"  --showcmds    List all the available commands in this version of CmdlineGL.\n"
-	"  --showconsts  List all the constants (GL_xxxx) that are available.\n"
+	"  -h              Display this help message.\n"
+	"  -t              Terminate after receiving EOF\n"
+	"  -f <fifo>       Create the named fifo (file path+name) and read from it.\n"
+	"  --showcmds      List all the available commands in this version of CmdlineGL.\n"
+	"  --showconsts    List all the constants (GL_xxxx) that are available.\n"
+	"  --title <text>  Set the title of the window to \"text\".\n"
+	"  --nouimsg       Don't print any user activity messages to stdout.\n"
 	"\n"
 	"Note: Each line of input is broken on space characters and treated as a\n"
  	"      command.  There is currently no escaping mechanism, although I'm not\n"
