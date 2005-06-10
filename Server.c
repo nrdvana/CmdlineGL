@@ -200,9 +200,12 @@ PUBLISHED(cglExit,DoQuit) {
 
 PUBLISHED(cglGetTime,DoGetTime) {
 	struct timeval curtime;
+	long t;
 	if (argc != 0) return ERR_PARAMCOUNT;
 	gettimeofday(&curtime, NULL);
-	printf("t=%d\n", microseconds(&curtime)/1000);
+	t= microseconds(&curtime) - StartTime;
+	printf("t=%d\n", t/1000);
+	fflush(stdout);
 	return 0;
 }
 
