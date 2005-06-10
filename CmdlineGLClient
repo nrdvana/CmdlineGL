@@ -9,7 +9,7 @@ CGL_DIR=/tmp/${USER}_CGL
 spawn_cgl() {
 	[ ! -d $CGL_DIR ] && { mkdir $CGL_DIR; chmod 700 $CGL_DIR; }
 	[ ! -e $CGL_DIR/fifo ] && mkfifo $CGL_DIR/fifo
-	( ( touch $CGL_DIR/running && CmdlineGL <$CGL_DIR/fifo >/dev/null; rm -f $CGL_DIR/running ) & ) &
+	( ( touch $CGL_DIR/running && CmdlineGL --nouimsg <$CGL_DIR/fifo; rm -f $CGL_DIR/running ) & ) &
 }
 
 # If CMDLINEGL_PIPE is defined, use that.
