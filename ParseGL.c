@@ -54,6 +54,12 @@ PUBLISHED(cglLoadImage2D, DoLoadImage2D) {
 		for (i=1; i<argc; i++)
 			for (j=-1; !argv[i][j]; j--)
 				argv[i][j]= ' ';
+		// Note: if someone feels like fixing this someday, the best thing would be
+		// not to have broken up the original string.  In other words, let each one
+		// of these 'Do' functions parse its own stuff out of one single string.  It
+		// would even be more efficient since the string would then only get scanned
+		// once.  This, however, would require a lot of rewriting...  wish I'd
+		// thought of it sooner.
 	}
 	// Now load the image
 	LoadImage(argv[0], &Img);
