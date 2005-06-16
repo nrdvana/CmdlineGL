@@ -525,13 +525,15 @@ bool ParseSymbol(const char* Text, int *Result) {
 }
 
 bool ParseFloat(const char* Text, GLfloat *Result) {
-	char *EndPtr;
-	*Result= FixedPtMultiplier * strtod(Text, &EndPtr);
-	return (EndPtr != Text);
+	double val;
+	bool status= ParseDouble(Text, &val);
+	if (status) *Result= val;
+	return status;
 }
 
 bool ParseDouble(const char* Text, GLdouble *Result) {
 	char *EndPtr;
+	if (Text[0] == '-' && Text[1] == '-') Text+= 2; // be nice about double negatives
 	*Result= FixedPtMultiplier * strtod(Text, &EndPtr);
 	return (EndPtr != Text);
 }
