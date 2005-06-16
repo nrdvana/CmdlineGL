@@ -79,8 +79,12 @@ PUBLISHED(glCallList, DoCallList);
 //----------------------------------------------------------------------------
 // glu Functions
 //
+PUBLISHED(gluLookAt, DoLookAt);
 PUBLISHED(gluNewQuadric, DoNewQuadric);
 PUBLISHED(gluQuadricDrawStyle, DoQuadricDrawStyle);
+PUBLISHED(gluQuadricNormals, DoQuadricNormals);
+PUBLISHED(gluQuadricOrientation, DoQuadricOrientation);
+PUBLISHED(gluQuadricTexture, DoQuadricTexture);
 PUBLISHED(gluCylinder, DoCylinder);
 PUBLISHED(gluSphere, DoSphere);
 PUBLISHED(gluDisk, DoDisk);

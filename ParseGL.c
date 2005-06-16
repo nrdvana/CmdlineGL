@@ -385,6 +385,14 @@ PUBLISHED(glCallList, DoCallList) {
 //----------------------------------------------------------------------------
 // Glu Functions
 //
+PUBLISHED(gluLookAt, DoLookAt) {
+	if (argc != 9) return ERR_PARAMCOUNT;
+	if (!ScanParams("ddddddddd", argv)) return ERR_PARAMPARSE;
+	gluLookAt(dParams[0], dParams[1], dParams[2],
+		dParams[3], dParams[4], dParams[5],
+		dParams[6], dParams[7], dParams[8]);
+	return 0;
+}
 PUBLISHED(gluNewQuadric, DoNewQuadric) {
 	if (argc != 1) return ERR_PARAMCOUNT;
 	if (!ScanParams("Q", argv)) return ERR_PARAMPARSE;
@@ -395,6 +403,24 @@ PUBLISHED(gluQuadricDrawStyle, DoQuadricDrawStyle) {
 	if (argc != 2) return ERR_PARAMCOUNT;
 	if (!ScanParams("qi", argv)) return ERR_PARAMPARSE;
 	gluQuadricDrawStyle((GLUquadric*)sParams[0]->Data, iParams[0]);
+	return 0;
+}
+PUBLISHED(gluQuadricNormals, DoQuadricNormals) {
+	if (argc != 2) return ERR_PARAMCOUNT;
+	if (!ScanParams("qi", argv)) return ERR_PARAMPARSE;
+	gluQuadricNormals((GLUquadric*)sParams[0]->Data, iParams[0]);
+	return 0;
+}
+PUBLISHED(gluQuadricOrientation, DoQuadricOrientation) {
+	if (argc != 2) return ERR_PARAMCOUNT;
+	if (!ScanParams("qi", argv)) return ERR_PARAMPARSE;
+	gluQuadricOrientation((GLUquadric*)sParams[0]->Data, iParams[0]);
+	return 0;
+}
+PUBLISHED(gluQuadricTexture, DoQuadricTexture) {
+	if (argc != 2) return ERR_PARAMCOUNT;
+	if (!ScanParams("qi", argv)) return ERR_PARAMPARSE;
+	gluQuadricTexture((GLUquadric*)sParams[0]->Data, iParams[0]);
 	return 0;
 }
 PUBLISHED(gluCylinder, DoCylinder) {
