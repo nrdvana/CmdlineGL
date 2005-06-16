@@ -32,7 +32,6 @@ PUBLISHED(glNormal, DoNormal);
 //----------------------------------------------------------------------------
 // Color Functions
 //
-PUBLISHED(glColorub, DoColorub);
 PUBLISHED(glColor, DoColor);
 PUBLISHED(glFog, DoFog);
 

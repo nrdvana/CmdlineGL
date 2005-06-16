@@ -170,18 +170,6 @@ PUBLISHED(glNormal, DoNormal) {
 //----------------------------------------------------------------------------
 // Color Functions
 //
-PUBLISHED(glColorub, DoColorub) {
-	if (argc == 3) {
-		if (!ScanParams("iii", argv)) return ERR_PARAMPARSE;
-		glColor3ub((GLbyte)iParams[0], (GLbyte)iParams[1], (GLbyte)iParams[2]);
-	}
-	else if (argc == 4) {
-		if (!ScanParams("iiii", argv)) return ERR_PARAMPARSE;
-		glColor4ub((GLbyte)iParams[0], (GLbyte)iParams[1], (GLbyte)iParams[2], (GLbyte)iParams[3]);
-	}
-	else return ERR_PARAMCOUNT;
-	return 0;
-}
 PUBLISHED(glColor, DoColor) {
 	GLubyte colorVals[4];
 	if (argc == 1 && argv[0][0] == '#') { // little bit of script-friendlyness
