@@ -172,11 +172,12 @@ PUBLISHED(glNormal, DoNormal) {
 //
 PUBLISHED(glColor, DoColor) {
 	GLubyte colorVals[4];
-	if (argc == 1 && argv[0][0] == '#') { // little bit of script-friendlyness
-		if (!ParseColor(argv[0]+1, colorVals)) return ERR_PARAMPARSE;
+	if (argc == 1) { // little bit of script-friendlyness
+ 		if (argv[0][0] != '#') return ERR_PARAMPARSE;
+		if (!ParseColor(&argv[0][1], colorVals)) return ERR_PARAMPARSE;
 		glColor4ubv(colorVals);
 	}
-	if (argc == 3) {
+	else if (argc == 3) {
 		if (!ScanParams("ddd", argv)) return ERR_PARAMPARSE;
 		glColor3dv(dParams);
 	}
