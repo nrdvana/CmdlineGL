@@ -52,11 +52,13 @@ PUBLISHED(glTexParameter, DoTexParameter);
 PUBLISHED(glTexCoord, DoTexCoord);
 
 //----------------------------------------------------------------------------
-// Modelview Matrix Functions
+// Matrix Functions
 //
 PUBLISHED(glLoadIdentity, DoLoadIdentity);
+PUBLISHED(glLoadMatrix, DoLoadMatrix);
 PUBLISHED(glPushMatrix, DoPushMatrix);
 PUBLISHED(glPopMatrix, DoPopMatrix);
+PUBLISHED(glMultMatrix, DoMultMatrix);
 PUBLISHED(glScale, DoScale);
 PUBLISHED(glTranslate, DoTranslate);
 PUBLISHED(glRotate, DoRotate);

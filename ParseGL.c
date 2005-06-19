@@ -292,11 +292,17 @@ PUBLISHED(glTexCoord, DoTexCoord) {
 }
 
 //----------------------------------------------------------------------------
-// Modelview Matrix Functions
+// Matrix Functions
 //
 PUBLISHED(glLoadIdentity, DoLoadIdentity) {
 	if (argc != 0) return ERR_PARAMCOUNT;
 	glLoadIdentity();
+	return 0;
+}
+PUBLISHED(glLoadMatrix, DoLoadMatrix) {
+	if (argc != 16) return ERR_PARAMCOUNT;
+	if (!ScanParams(VAR_DBL+VAR_DBL_LEN-16, argv)) return ERR_PARAMPARSE;
+	glLoadMatrixd(dParams);
 	return 0;
 }
 PUBLISHED(glPushMatrix, DoPushMatrix) {
@@ -307,6 +313,12 @@ PUBLISHED(glPushMatrix, DoPushMatrix) {
 PUBLISHED(glPopMatrix, DoPopMatrix) {
 	if (argc != 0) return ERR_PARAMCOUNT;
 	glPopMatrix();
+	return 0;
+}
+PUBLISHED(glMultMatrix, DoMultMatrix) {
+	if (argc != 16) return ERR_PARAMCOUNT;
+	if (!ScanParams(VAR_DBL+VAR_DBL_LEN-16, argv)) return ERR_PARAMPARSE;
+	glMultMatrixd(dParams);
 	return 0;
 }
 PUBLISHED(glScale, DoScale) {
