@@ -27,6 +27,7 @@ bool ParseLine(char *Line, int *ArgCountResult, char **ArgResult) {
 		LastArgPos= temp;
 		temp= strtok(NULL, " \t");
 	}
+	ArgResult[*ArgCountResult]= NULL;
 	return *ArgCountResult > 0;
 }
 

@@ -112,8 +112,8 @@ PUBLISHED(glClear, DoClear) {
 	return 0;
 }
 PUBLISHED(glClearColor, DoClearColor) {
-	if (argc != 4) return ERR_PARAMCOUNT;
-	if (!ScanParams("ffff", argv)) return ERR_PARAMPARSE;
+	if (argc != 1 && argc != 3 && argc != 4) return ERR_PARAMCOUNT;
+	if (!ScanParams("c", argv)) return ERR_PARAMPARSE;
 	glClearColor(fParams[0], fParams[1], fParams[2], fParams[3]);
 	return 0;
 }
@@ -176,61 +176,71 @@ PUBLISHED(glNormal, DoNormal) {
 // Color Functions
 //
 PUBLISHED(glColor, DoColor) {
-	GLubyte colorVals[4];
-	if (argc == 1) { // little bit of script-friendlyness
- 		if (argv[0][0] != '#') return ERR_PARAMPARSE;
-		if (!ParseColor(&argv[0][1], colorVals)) return ERR_PARAMPARSE;
-		glColor4ubv(colorVals);
-	}
-	else if (argc == 3) {
-		if (!ScanParams("ddd", argv)) return ERR_PARAMPARSE;
-		glColor3dv(dParams);
-	}
-	else if (argc == 4) {
-		if (!ScanParams("dddd", argv)) return ERR_PARAMPARSE;
-		glColor4dv(dParams);
-	}
-	else return ERR_PARAMCOUNT;
+	if (argc != 1 && argc != 3 && argc != 4) return ERR_PARAMCOUNT;
+	if (!ScanParams("c", argv)) return ERR_PARAMPARSE;
+	glColor4fv(fParams);
 	return 0;
 }
 PUBLISHED(glFog, DoFog) {
-	const int FIXED_PARAMS= 2;
-	if (argc == 2 && ScanParams("ii", argv)) {
-		glFogi(iParams[0], iParams[1]);
+	int mode;
+	if (argc < 2) return ERR_PARAMCOUNT;
+	// The parameter to this one really matters, since floats get fixed-point
+	//  multiplied, and colors need special treatment.
+	if (!ParseInt(argv[0], &mode)) return ERR_PARAMPARSE;
+	switch (mode) {
+	case GL_FOG_MODE:
+	case GL_FOG_INDEX:
+		if (!ParseInt(argv[1], &iParams[0])) return ERR_PARAMPARSE;
+		glFogi(mode, iParams[0]);
+		break;
+	case GL_FOG_DENSITY:
+	case GL_FOG_START:
+	case GL_FOG_END:
+		if (!ParseFloat(argv[1], &fParams[0])) return ERR_PARAMPARSE;
+		glFogf(mode, fParams[0]);
+		break;
+	case GL_FOG_COLOR:
+		if (argc != 2 && argc != 4 && argc != 5) return ERR_PARAMCOUNT;
+		if (!ScanParams("c", argv+1)) return ERR_PARAMPARSE;
+		glFogfv(mode, fParams);
+		break;
 	}
-	else if (argc > FIXED_PARAMS && argc < MAX_GL_PARAMS) {
-		if (ScanParams("i", argv) && ScanParams(VAR_FLOAT+(VAR_FLOAT_LEN+FIXED_PARAMS-argc), argv+FIXED_PARAMS)) {
-			glFogfv(iParams[0], fParams);
-		}
-		else return ERR_PARAMPARSE;
-	}
-	else return ERR_PARAMCOUNT;
 	return 0;
 }
-
-//----------------------------------------------------------------------------
-// Lighting Functions
-//
 PUBLISHED(glLight, DoLight) {
-	const int FIXED_PARAMS= 2;
-	if (argc > FIXED_PARAMS && argc < MAX_GL_PARAMS) {
-		if (ScanParams("ii", argv) && ScanParams(VAR_FLOAT+(VAR_FLOAT_LEN+FIXED_PARAMS-argc), argv+FIXED_PARAMS))
-			glLightfv(iParams[0], iParams[1], fParams);
-		else
-			return ERR_PARAMPARSE;
+	int mode, light;
+	if (argc < 3) return ERR_PARAMCOUNT;
+	if (!ParseInt(argv[0], &light)) return ERR_PARAMPARSE;
+	if (!ParseInt(argv[1], &mode)) return ERR_PARAMPARSE;
+	argc-=2;
+	switch (mode) {
+	case GL_AMBIENT:
+	case GL_DIFFUSE:
+	case GL_SPECULAR:
+		if (argc != 1 && argc != 3 && argc != 4) return ERR_PARAMCOUNT;
+		if (!ScanParams("c", argv+2)) return ERR_PARAMPARSE;
+		glLightfv(light, mode, fParams);
+		break;
+	case GL_POSITION:
+		// take care of the situation where the user only passes 3 params for the point
+		// if they screw it up any worse than that, its their own fault.
+		fParams[3]= 0.0f;
+	default:
+		// the next line takes into account the earlier "argc-= 2;"
+		if (!ScanParams(VAR_FLOAT+(VAR_FLOAT_LEN-argc), argv+2)) return ERR_PARAMPARSE;
+		glLightfv(light, mode, fParams);
 	}
-	else return ERR_PARAMCOUNT;
 	return 0;
 }
 PUBLISHED(glLightModel, DoLightModel) {
-	const int FIXED_PARAMS= 1;
-	if (argc > FIXED_PARAMS && argc < MAX_GL_PARAMS) {
-		if (ScanParams("i", argv) && ScanParams(VAR_FLOAT+(VAR_FLOAT_LEN+FIXED_PARAMS-argc), argv+FIXED_PARAMS))
-			glLightModelfv(iParams[0], fParams);
-		else
-			return ERR_PARAMPARSE;
+	if (argc < 1) return ERR_PARAMCOUNT;
+	if (!ScanParams("i", argv)) return ERR_PARAMPARSE;
+	if (iParams[0] == GL_LIGHT_MODEL_AMBIENT) {
+		if (!ScanParams("c", argv+1)) return ERR_PARAMPARSE;
 	}
-	else return ERR_PARAMCOUNT;
+	else
+		if (!ScanParams(VAR_FLOAT+(VAR_FLOAT_LEN+1-argc), argv+1)) return ERR_PARAMPARSE;
+	glLightModelfv(iParams[0], fParams);
 	return 0;
 }
 PUBLISHED(glShadeModel, DoShadeModel) {
@@ -240,14 +250,22 @@ PUBLISHED(glShadeModel, DoShadeModel) {
 	return 0;
 }
 PUBLISHED(glMaterial, DoMaterial) {
-	const int FIXED_PARAMS= 2;
-	if (argc > FIXED_PARAMS && argc < MAX_GL_PARAMS) {
-		if (ScanParams("ii", argv) && ScanParams(VAR_FLOAT+(VAR_FLOAT_LEN+FIXED_PARAMS-argc), argv+FIXED_PARAMS))
-			glMaterialfv(iParams[0], iParams[1], fParams);
-		else
-			return ERR_PARAMPARSE;
+	int face;
+	if (argc <= 2) return ERR_PARAMCOUNT;
+	if (!ScanParams("ii", argv)) return ERR_PARAMPARSE;
+	if (iParams[1] == GL_COLOR_INDEXES) {
+		// Handle color indicies as 3 mandatory integers
+		face= iParams[0];
+		if (argc != 5) return ERR_PARAMCOUNT;
+		if (!ScanParams("iii", argv+2)) return ERR_PARAMPARSE;
+		glMaterialiv(face, GL_COLOR_INDEXES, iParams);
 	}
-	else return ERR_PARAMCOUNT;
+	else {
+		// Handle everything else as a color.
+		if (argc != 3 && argc != 5 && argc != 6) return ERR_PARAMCOUNT;
+		if (!ScanParams("c", argv+2)) return ERR_PARAMPARSE;
+		glMaterialfv(iParams[0], iParams[1], fParams);
+	}
 	return 0;
 }
 PUBLISHED(glColorMaterial, DoColorMaterial) {
@@ -474,23 +492,55 @@ PUBLISHED(glutSwapBuffers, DoSwapBuffers) {
 // Parsing Functions
 //
 bool ScanParams(const char* ParamType, char** Args) {
+	GLubyte colorVals[4];
 	GLint *iParam= iParams;
 	GLfloat *fParam= fParams;
 	GLdouble *dParam= dParams;
 	const SymbVarEntry **sParam= sParams;
+	int i;
 	bool Success= true;
 	while (Success && *ParamType != '\0') {
 		switch (*ParamType) {
+		// Integer value
 		case 'i': Success= ParseInt(*Args, iParam++); break;
+		// Float value
 		case 'f': Success= ParseFloat(*Args, fParam++); break;
+		// Double value
 		case 'd': Success= ParseDouble(*Args, dParam++); break;
+		// Display list, don't autocreate
 		case 'l': Success= ParseSymbVar(*Args, sParam++, false, NAMED_LIST); break;
+		// Display list, do autocreate
 		case 'L': Success= ParseSymbVar(*Args, sParam++, true, NAMED_LIST); break;
+		// Quadric, don't autocreate
 		case 'q': Success= ParseSymbVar(*Args, sParam++, false, NAMED_QUADRIC); break;
+		// Quadric, do autocreate
 		case 'Q': Success= ParseSymbVar(*Args, sParam++, true, NAMED_QUADRIC); break;
+		// Texture, don't autocreate
 		case 't': Success= ParseSymbVar(*Args, sParam++, false, NAMED_TEXTURE); break;
+		// Texture, do autocreate
 		case 'T': Success= ParseSymbVar(*Args, sParam++, true, NAMED_TEXTURE); break;
-		default: Success= false;
+		// Color, either "#xxxxxx" or 3xFloat or 4xFloat
+		case 'c':
+			if (**Args == '#' && ParseColor(&Args[0][1], colorVals)) {
+				for (i=0; i<4; i++)
+					*fParam++ = ((float)colorVals[i])*(1.0/255);
+			}
+			else {
+				Success= ParseFloat(Args[0], fParam++);
+				for (i=1; i<4 && Success && Args[i]; i++)
+					Success= ParseFloat(Args[i], fParam++);
+				if (i < 3)
+					Success= false;
+				else {
+					if (i==3) *fParam++ = 1.0;
+					Args+= (i-1);
+				}
+			}
+			break;
+		// Catch programming errors
+		default:
+			fprintf(stderr, "ScanParams: Unknown param type '%c'!  (bug)\n", *ParamType);
+			Success= false;
 		}
 		Args++;
 		ParamType++;
