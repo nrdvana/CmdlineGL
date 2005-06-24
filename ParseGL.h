@@ -6,7 +6,7 @@
 //----------------------------------------------------------------------------
 // CmdlineGL Functions
 //
-PUBLISHED(cglUseFixedPt, DoSetFixedPoint);
+PUBLISHED(cglFixedPt, DoSetFixedPoint);
 PUBLISHED(cglLoadImage2D, DoLoadImage2D);
 
 //----------------------------------------------------------------------------

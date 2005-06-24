@@ -35,10 +35,15 @@ bool ParseSymbVar(const char* Text, const SymbVarEntry **Result, bool AutoCreate
 //----------------------------------------------------------------------------
 // CmdlineGL Functions
 //
-PUBLISHED(cglUseFixedPt, DoSetFixedPoint) {
+PUBLISHED(cglFixedPt, DoSetFixedPoint) {
+	char *EndPtr;
+	double newval;
 	if (argc != 1) return ERR_PARAMCOUNT;
-	if (!ScanParams("d", argv)) return ERR_PARAMPARSE;
-	FixedPtMultiplier= 1.0 / dParams[0];
+	// LOL, we don't want to scale the new scale... so don't use ScanParams("d")
+	newval= strtod(argv[0], &EndPtr);
+	if (*EndPtr != '\0') return ERR_PARAMPARSE;
+
+	FixedPtMultiplier= 1.0 / newval;
 	return 0;
 }
 PUBLISHED(cglLoadImage2D, DoLoadImage2D) {
