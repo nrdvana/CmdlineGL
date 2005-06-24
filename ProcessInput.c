@@ -123,9 +123,12 @@ char* ReadLine(int fd) {
 			Pos++;
 //		DEBUGMSG(("LineStart = %d, Pos = %d, DataPos = %d, StopPos = %d\n", LineStart-ReadBuffer, Pos-ReadBuffer, DataPos-ReadBuffer, StopPos-ReadBuffer));
 	} while (*Pos != '\n');
-	*Pos++= '\0';
+	*Pos= '\0';
+	if (Pos > LineStart)
+		if (Pos[-1] == '\r')
+			Pos[-1]= 0;
 	Result= LineStart;
-	LineStart= Pos;
+	LineStart= ++Pos;
 	return Result;
 }
 
