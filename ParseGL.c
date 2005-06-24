@@ -562,11 +562,11 @@ bool ParseInt(const char* Text, GLint *Result) {
 	}
 	else if (Text[0] == '0' && Text[1] == 'x') {
 		*Result= strtol(Text, &EndPtr, 16);
-		return (EndPtr != Text);
+		return (*EndPtr == '\0');
 	}
 	else {
 		*Result= strtol(Text, &EndPtr, 10);
-		return (EndPtr != Text);
+		return (*EndPtr == '\0');
 	}
 }
 
@@ -591,7 +591,7 @@ bool ParseDouble(const char* Text, GLdouble *Result) {
 	char *EndPtr;
 	if (Text[0] == '-' && Text[1] == '-') Text+= 2; // be nice about double negatives
 	*Result= FixedPtMultiplier * strtod(Text, &EndPtr);
-	return (EndPtr != Text);
+	return (*EndPtr == '\0');
 }
 
 bool ParseColor(const char* Text, GLubyte *Result) {
