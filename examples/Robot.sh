@@ -29,6 +29,13 @@ for cmd in `CmdlineGL --showcmds`; do
 	eval "$cmd() { echo \"$cmd \$@\"; }"
 done
 
+#------------------------------------------------------------------------------
+# This is an almost line-by-line conversion from C to bash
+# The conversion process was rather fun in a strange morbid way...
+#
+# Actually, the program is somewhat improved, since it uses display lists now
+#
+
 #*****************************************************************************\
 # Project: Computer Graphics Final Exam                                       *
 # Title:   Robot.cpp                                                          *
@@ -400,11 +407,9 @@ Repaint() {
 # This function stores the results directly into the Robot global variable.
 #
 SetJoints() {
-	local FromAng=$1;
-	local ToAng=$2;
-	local Progress=$3;
-	for i in 0 1 2 3 4 5 6 7 8 9 10 11 12; do
-		eval "Robot_Joints[$i]=\$((\${$FromAng[$i]}+(\${$ToAng[$i]}-\${$FromAng[$i]})*$Progress/100))";
+	local FromAng=$1 ToAng=$2 Progress=$3;
+	for ((i=0; i<13; i++)); do
+		(( Robot_Joints[i]=$FromAng[i]+($ToAng[i]-$FromAng[i])*Progress/100 ));
 	done
 }
 
@@ -417,13 +422,13 @@ SetJoints() {
 Animate() {
 	if [[ -n "$Robot_Animate" ]]; then
 		let Robot_MoveProgress+=5;
-		if [[ $Robot_MoveProgress -ge 400 ]]; then
+		if (( Robot_MoveProgress >= 400 )); then
  			let Robot_MoveProgress-=400;
 		fi
-		let idx1=$Robot_MoveProgress/100;
-		let idx2=$idx1+1;
-		if [ $idx2 -gt 3 ]; then idx2=0; fi
-		SetJoints "WalkScript$idx1" "WalkScript$idx2" $(($Robot_MoveProgress - ($idx1 * 100) ))
+		(( idx1=Robot_MoveProgress/100 ))
+		(( idx2=idx1+1 ))
+		if (( idx2 > 3 )); then idx2=0; fi
+		SetJoints "WalkScript$idx1" "WalkScript$idx2" $((Robot_MoveProgress - (idx1 * 100) ))
 		Repaint
 	else
 		SetJoints "Standing" "Standing" 0
@@ -468,7 +473,7 @@ Animate() {
 #
 Init() {
 	# Use fixed point numbers for all floating-point GL parameters
-	cglUseFixedPt 100
+	cglFixedPt 100
 
 	# Turn on normalization of surface vectors and enable Z-buffering.
 	glEnable GL_NORMALIZE
