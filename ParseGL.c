@@ -1,6 +1,7 @@
 #include <ctype.h>
 #include <stdlib.h>
 #include <stdio.h>
+#include <SDL/SDL.h>
 #include "GlHeaders.h"
 #include "ParseGL.h"
 #include "SymbolHash.h"
@@ -72,6 +73,14 @@ PUBLISHED(cglLoadImage2D, DoLoadImage2D) {
 	// Then, load the image data into OpenGL
     glTexImage2D(GL_TEXTURE_2D, 0, 3, Img.Width, Img.Height, 0, GL_BGR, GL_UNSIGNED_BYTE, Img.Data);
 	free(Img.Data);
+	return 0;
+}
+
+//----------------------------------------------------------------------------
+PUBLISHED(cglSwapBuffers,DoSwapBuffers) {
+	if (argc != 0) return ERR_PARAMCOUNT;
+	SDL_GL_SwapBuffers();
+	return 0;
 }
 
 //----------------------------------------------------------------------------
@@ -469,22 +478,6 @@ PUBLISHED(gluPartialDisk, DoPartialDisk) {
 	if (argc != 7) return ERR_PARAMCOUNT;
 	if (!ScanParams("qddiidd", argv)) return ERR_PARAMPARSE;
 	gluPartialDisk((GLUquadric*)sParams[0]->Data, dParams[0], dParams[1], iParams[0], iParams[1], dParams[2], dParams[3]);
-	return 0;
-}
-
-
-//----------------------------------------------------------------------------
-// Glut Functions
-//
-PUBLISHED(glutIgnoreKeyRepeat, DoIgnoreKeyRepeat) {
-	if (argc != 1) return ERR_PARAMCOUNT;
-	if (!ScanParams("i", argv)) return ERR_PARAMPARSE;
-	glutIgnoreKeyRepeat(iParams[0]);
-	return 0;
-}
-PUBLISHED(glutSwapBuffers, DoSwapBuffers) {
-	if (argc != 0) return ERR_PARAMCOUNT;
-	glutSwapBuffers();
 	return 0;
 }
 

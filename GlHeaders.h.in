@@ -5,5 +5,5 @@ Global.h, but then it would get sucked into every single file.
 
 #include <@gl_header@>
 #include <@glu_header@>
-#include <@glut_header@>
+
 

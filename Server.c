@@ -3,9 +3,9 @@
 #include <fcntl.h>
 #include <stdio.h>
 #include <errno.h>
-#include <sys/time.h>
 #include <unistd.h>
 #include <string.h>
+#include <SDL/SDL.h>
 
 #include "Global.h"
 #include "GlHeaders.h"
@@ -22,35 +22,40 @@ typedef struct {
 	bool NeedHelp;
 	char *WndTitle;
 	bool NoUIMessages;
+	bool ManualSDLSetup;
+	bool ManualGLSetup;
+	bool ManualResizeCode;
+	int Width;
+	int Height;
+	int Bpp;
 } CmdlineOptions;
 
+void SetParamDefaults(CmdlineOptions *Options);
 void ReadParams(char **args, CmdlineOptions *Options);
 void PrintUsage();
 void CheckInput();
-void DelayedInit(int value);
+void CheckSDLEvents();
 
-long microseconds(struct timeval *time);
-
-void handleResize(int w, int h);
-void display() {}
-void mouse(int btn, int state, int x, int y);
-void mouseMotion(int x, int y);
-void asciiKeyDown(unsigned char key, int x, int y);
-void asciiKeyUp(unsigned char key, int x, int y);
-void specialKeyDown(int key, int x, int y);
-void specialKeyUp(int key, int x, int y);
+void InitGL();
+void HandleResize(int w, int h);
+void EmitMouseMotion(const SDL_MouseMotionEvent *E);
+void EmitMouseButton(const SDL_MouseButtonEvent *E);
+void EmitKey(const SDL_KeyboardEvent *E);
 
 char Buffer[1024];
 int InputFD= 0;
+SDL_Surface *MainWnd= NULL;
 
 long StartTime;
+int DefaultSDLFlags= SDL_OPENGL | SDL_ANYFORMAT | SDL_RESIZABLE;
 
 CmdlineOptions Options;
 
 int main(int Argc, char**Args) {
-	struct timeval curtime;
+    const SDL_VideoInfo* SdlVid;
+	int bpp;
 
-	memset(&Options, 0, sizeof(Options));
+	SetParamDefaults(&Options);
 	ReadParams(Args, &Options);
 	
 	if (Options.WantHelp || Options.NeedHelp) {
@@ -67,7 +72,6 @@ int main(int Argc, char**Args) {
 	}
 
 	if (Options.FifoName) {
-//		if (CreateListenSocket(Options.SocketName, &InputFD))
 		if (mkfifo(Options.FifoName, 0x1FF) < 0) {
 			perror("mkfifo");
 			return 2;
@@ -87,41 +91,55 @@ int main(int Argc, char**Args) {
 		}
 	}
 
-	DEBUGMSG(("Initializing glut\n"));
+	if (!Options.ManualSDLSetup) {
+		DEBUGMSG(("Initializing SDL\n"));
+	    if (SDL_Init(SDL_INIT_VIDEO) < 0) {
+	        fprintf(stderr, "CmdlineGL: SDL_Init: %s\n", SDL_GetError());
+	        return 4;
+	    }
+		atexit(SDL_Quit);
+		
+//		SdlVid= SDL_GetVideoInfo();
+		SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER, 1);
 
-	glutInit(&Argc, Args);
-	glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGB | GLUT_DEPTH);
-	glutCreateWindow(Options.WndTitle? Options.WndTitle : "CmdlineGL");
+		DEBUGMSG(("Setting video mode\n"));
+		MainWnd= SDL_SetVideoMode(Options.Width, Options.Height, Options.Bpp, DefaultSDLFlags);
+		if (!MainWnd) {
+	        fprintf(stderr, "Couldn't set video mode: %s\n", SDL_GetError());
+	        exit(5);
+	    }
 
-	DEBUGMSG(("Assigning functions\n"));
-	glutReshapeFunc(handleResize);
-	if (!Options.NoUIMessages) {
-		glutMouseFunc(mouse);
-		glutMotionFunc(mouseMotion);
-		glutKeyboardFunc(asciiKeyDown);
-		glutKeyboardUpFunc(asciiKeyUp);
-		glutSpecialFunc(specialKeyDown);
-		glutSpecialUpFunc(specialKeyUp);
-		glutIgnoreKeyRepeat(GLUT_KEY_REPEAT_OFF);
+		if (SDL_EnableKeyRepeat(0, 0) < 0)
+			fprintf(stderr, "Can't disable key repeat. %s\n", SDL_GetError());
+
+		if (!Options.ManualGLSetup)
+			InitGL(Options.Width, Options.Height);
 	}
-	glutDisplayFunc(display);
-
-	DEBUGMSG(("Resizing window\n"));
-	glutInitWindowSize(500, 501);
 
 	DEBUGMSG(("Recording time\n"));
-	gettimeofday(&curtime, NULL);
-	StartTime= microseconds(&curtime);
+	StartTime= SDL_GetTicks();
 
-	DEBUGMSG(("Scheduling delayed initialization (bug workaround)\n"));
-	glutTimerFunc(1, DelayedInit, 0);
+	DEBUGMSG(("Entering main loop\n"));
+	while (!Shutdown) {
+		CheckInput();
+		CheckSDLEvents();
+	}
+	DEBUGMSG(("Shutting down.\n"));
 	
-	DEBUGMSG(("Entering glut loop\n"));
-	glutMainLoop();
+	close(InputFD);
+	// this might be a socket
+	if (Options.FifoName) {
+		unlink(Options.FifoName);
+	}
+
+	return 0;
 }
 
-void DelayedInit(int value) {
-	glutIdleFunc(CheckInput);
+void SetParamDefaults(CmdlineOptions *Options) {
+	memset(Options, 0, sizeof(CmdlineOptions));
+	Options->Width= 640;
+	Options->Height= 480;
+	// Options->Bpp= 0; zero tells to use display default
 }
 
 void PrintMissingParamMessage(char* ArgName, CmdlineOptions *Options) {
@@ -189,10 +207,6 @@ void PrintUsage() {
  	"      opposed to the idea.\n\n");
 }
 
-long microseconds(struct timeval *time) {
-	return time->tv_usec + ((long) time->tv_sec)*1000000;
-}
-
 PUBLISHED(cglExit,DoQuit) {
 	Shutdown= true;
 	return 0;
@@ -202,9 +216,8 @@ PUBLISHED(cglGetTime,DoGetTime) {
 	struct timeval curtime;
 	long t;
 	if (argc != 0) return ERR_PARAMCOUNT;
-	gettimeofday(&curtime, NULL);
-	t= microseconds(&curtime) - StartTime;
-	printf("t=%d\n", t/1000);
+	t= SDL_GetTicks() - StartTime;
+	printf("t=%d\n", t);
 	fflush(stdout);
 	return 0;
 }
@@ -215,13 +228,12 @@ PUBLISHED(cglSync,DoSync) {
 	char *endptr;
 	
 	if (argc != 1) return ERR_PARAMCOUNT;
-	target= strtol(argv[0], &endptr, 10) * 1000;
+	target= strtol(argv[0], &endptr, 10);
 	if (*endptr != '\0') return ERR_PARAMPARSE;
 	
-	gettimeofday(&curtime, NULL);
-	t= microseconds(&curtime) - StartTime;
+	t= SDL_GetTicks() - StartTime;
 	if (target - t > 0)
-		usleep(target - t);
+		SDL_Delay(target - t);
 	return 0;
 }
 
@@ -230,9 +242,9 @@ PUBLISHED(cglSleep, DoSleep) {
 	char *endptr;
 	
 	if (argc != 1) return ERR_PARAMCOUNT;
-	t= strtol(argv[0], &endptr, 10) * 1000;
+	t= strtol(argv[0], &endptr, 10);
 	if (*endptr != '\0' || t <= 0) return ERR_PARAMPARSE;
-	usleep(t);
+	SDL_Delay(t);
 	return 0;
 }
 
@@ -268,52 +280,38 @@ void CheckInput() {
  		if (Options.TerminateOnEOF)
 			Shutdown= 1;
 	}
-
-	if (Shutdown) {
-		DEBUGMSG(("Shutting down.\n"));
-		close(InputFD);
-		// this might be a socket
-		if (Options.FifoName) {
-			unlink(Options.FifoName);
-		}
-		exit(0);
-	}
 }
 
-/*
-bool CreateListenSocket(char *SocketName, int *ListenSocket) {
-	int sock;
-	struct sockaddr_un Addr;
-
-	// build the address
-	Addr.sun_family= AF_UNIX;
-	if (strlen(SocketName) >= sizeof(Addr.sun_path)) {
-		fprintf(stderr, "Socket name too long.");
-		return false;
-	}
-	strcpy(Addr.sun_path, SocketName);
-
-	sock= socket(PF_UNIX, SOCK_DGRAM, 0);
-	if (sock < 0) {
-		perror("create socket");
-		return false;
-	}
-
-	if (bind(sock, (struct sockaddr*) &Addr, sizeof(Addr))) {
-		perror("bind socket");
-		return false;
-	}
-
-	*ListenSocket= sock;
+void CheckSDLEvents() {
+	SDL_Event Event;
+	while (SDL_PollEvent(&Event))
+		switch (Event.type) {
+            case SDL_KEYDOWN:
+			case SDL_KEYUP:
+				EmitKey(&Event.key);
+	            break;
+            case SDL_MOUSEMOTION:
+				EmitMouseMotion(&Event.motion);
+				break;
+			case SDL_MOUSEBUTTONDOWN:
+			case SDL_MOUSEBUTTONUP:
+				EmitMouseButton(&Event.button);
+				break;
+			case SDL_QUIT:
+				Shutdown= true;
+				break;
+        }
 }
-*/
-void handleResize(int w, int h) {
-	// Use the entire window for rendering.
+
+void InitGL(int w, int h) {
+	GLfloat top, bottom, left, right;
+
+	// Use the entire window
 	glViewport(0, 0, w, h);
-	// Recalculate the projection matrix.
+	// Recalculate the projection matrix
 	glMatrixMode(GL_PROJECTION);
 	glLoadIdentity();
-	GLfloat top, bottom, left, right;
+
 	if (w<h) {
 		// if the width is less than the height, make the viewable width
 		// 20 world units wide, and calculate the viewable height assuming
@@ -340,63 +338,28 @@ void handleResize(int w, int h) {
 	glMatrixMode(GL_MODELVIEW);
 }
 
-void mouse(int btn, int state, int x, int y) {
-	const char* BtnName;
-	mouseMotion(x,y);
-	switch (btn) {
-		case GLUT_LEFT_BUTTON: BtnName= "MOUSE_LEFT"; break;
- 		case GLUT_RIGHT_BUTTON: BtnName= "MOUSE_RIGHT"; break;
-		case GLUT_MIDDLE_BUTTON: BtnName= "MOUSE_MIDDLE"; break;
-		default: BtnName= "MOUSE_UNDEFINED";
+void HandleResize(int w, int h) {
+	printf("SDL_VIDEORESIZE %d %d\n", w, h);
+	fflush(stdout);
+
+	if (!Options.ManualResizeCode) {
+		MainWnd= SDL_SetVideoMode(w, h, Options.Bpp, SDL_OPENGL | SDL_ANYFORMAT);
+		InitGL(w, h);
 	}
-	printf("%c%s\n", (state == GLUT_UP)? '-':'+', BtnName);
+}
+
+void EmitMouseMotion(const SDL_MouseMotionEvent *E) {
+	printf("SDL_MOUSEMOTION %i %i %i %i\n", E->x, E->y, E->xrel, E->yrel);
 	fflush(stdout);
 }
-void mouseMotion(int x, int y) {
-	printf("@%i,%i\n", x, y);
+
+void EmitMouseButton(const SDL_MouseButtonEvent *E) {
+	printf("SDL_MOUSEBUTTON%s %d %d %d\n", (E->state == SDL_PRESSED)? "DOWN":"UP", E->button, E->x, E->y);
 	fflush(stdout);
 }
-void asciiKeyDown(unsigned char key, int x, int y) {
-	printf("+%c\n", key);
+
+void EmitKey(const SDL_KeyboardEvent *E) {
+	printf("SDL_KEY%s %s\n", (E->state == SDL_PRESSED)? "DOWN":"UP", SDL_GetKeyName(E->keysym.sym));
 	fflush(stdout);
-}
-void asciiKeyUp(unsigned char key, int x, int y) {
-	printf("-%c\n", key);
-	fflush(stdout);
-}
-const char* GetSpecialKeyName(int key);
-void specialKeyDown(int key, int x, int y) {
-	printf("+%s\n", GetSpecialKeyName(key));
-	fflush(stdout);
-}
-void specialKeyUp(int key, int x, int y) {
-	printf("-%s\n", GetSpecialKeyName(key));
-	fflush(stdout);
-}
-const char* GetSpecialKeyName(int key) {
-	switch (key) {
-	case GLUT_KEY_F1 : return "F1";
-	case GLUT_KEY_F2 : return "F2";
-	case GLUT_KEY_F3 : return "F3";
-	case GLUT_KEY_F4 : return "F4";
-	case GLUT_KEY_F5 : return "F5";
-	case GLUT_KEY_F6 : return "F6";
-	case GLUT_KEY_F7 : return "F7";
-	case GLUT_KEY_F8 : return "F8";
-	case GLUT_KEY_F9 : return "F9";
-	case GLUT_KEY_F10: return "F10";
-	case GLUT_KEY_F11: return "F11";
-	case GLUT_KEY_F12: return "F12";
-	case GLUT_KEY_LEFT     : return "LEFT";
-	case GLUT_KEY_RIGHT    : return "RIGHT";
-	case GLUT_KEY_UP       : return "UP";
-	case GLUT_KEY_DOWN     : return "DOWN";
-	case GLUT_KEY_PAGE_UP  : return "PAGEUP";
-	case GLUT_KEY_PAGE_DOWN: return "PAGEDOWN";
-	case GLUT_KEY_HOME     : return "HOME";
-	case GLUT_KEY_END      : return "END";
-	case GLUT_KEY_INSERT   : return "INSERT";
-	default: return "KEY_UNKNOWN";
-	}
 }
 

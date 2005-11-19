@@ -8,6 +8,7 @@
 //
 PUBLISHED(cglFixedPt, DoSetFixedPoint);
 PUBLISHED(cglLoadImage2D, DoLoadImage2D);
+PUBLISHED(cglSwapBuffers,DoSwapBuffers);
 
 //----------------------------------------------------------------------------
 // Setup Functions
@@ -90,11 +91,5 @@ PUBLISHED(gluCylinder, DoCylinder);
 PUBLISHED(gluSphere, DoSphere);
 PUBLISHED(gluDisk, DoDisk);
 PUBLISHED(gluPartialDisk, DoPartialDisk);
-
-//----------------------------------------------------------------------------
-// Glut Functions
-//
-PUBLISHED(glutIgnoreKeyRepeat, DoIgnoreKeyRepeat);
-PUBLISHED(glutSwapBuffers, DoSwapBuffers);
 
 #endif

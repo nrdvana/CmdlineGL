@@ -1,6 +1,6 @@
 .PHONY: all build ShellBindings
 
-DEF_CC_CMD=${CC} ${CFLAGS} ${CPPFLAGS}
+DEF_CC_CMD=${CC} ${CFLAGS} ${CPPFLAGS} `sdl-config --cflags`
 
 prefix=/usr/local
 exec_prefix=${prefix}
@@ -15,7 +15,7 @@ build: output/CmdlineGL output/BashBindings
 
 output/CmdlineGL: ${OBJ_FILES}
 	@if [ ! -d output ]; then mkdir output; fi
-	${CC} ${CFLAGS} ${LDFLAGS} @LIBS@ -o output/CmdlineGL ${OBJ_FILES}
+	${CC} ${CFLAGS} ${LDFLAGS} @LIBS@ `sdl-config --libs` -o output/CmdlineGL ${OBJ_FILES}
 
 output/BashBindings: *.h
 	@echo "-> Rebuilding the BashBindings script-include, which defines a bash function for each available command"
@@ -79,7 +79,7 @@ HashTableGenUtil: HashTableGenUtil.c HashFunc.c
 
 ConstList.txt:
 	@echo "-> Scanning GL headers for #define'd constants..."
-	@grep "#define" @gl_header@ @glu_header@ @glut_header@ \
+	@grep "#define" /usr/include/@gl_header@ /usr/include/@glu_header@ \
 	 | sed -n 's/^.*#define[ 	][ 	]*\(GL[^ 	]*\).*/\1/p' \
 	 > ConstList.txt
 	@echo
