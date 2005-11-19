@@ -313,29 +313,29 @@ void handleResize(int w, int h) {
 	// Recalculate the projection matrix.
 	glMatrixMode(GL_PROJECTION);
 	glLoadIdentity();
-	// Assume the user wants the viewport to be 2x2 at the near clipping plane of 1,
-	// 200x200 at the distance 100, etc, with a maximum depth of 1000.
-	// The largest dimension receives the full measurement, and the smaller gets clipped.
-	if (Height < Width) {
-		// if the height is less than the width, make the viewable width
-		// 2 world units tall, and calculate the viewable height assuming
+	GLfloat top, bottom, left, right;
+	if (w<h) {
+		// if the width is less than the height, make the viewable width
+		// 20 world units wide, and calculate the viewable height assuming
 		// as aspect ratio of "1".
-		left= -1;
-		right= 1;
-		bottom= -((GLfloat)Height) / Width;
-		top= ((GLfloat)Height) / Width;
+		left= -10;
+		right= 10;
+		bottom= -10.0 * ((GLfloat)h) / w;
+		top= 10.0 * ((GLfloat)h) / w;
 	}
 	else {
-		// if the width is less than the height, make the viewable height
-		// 2 world units wide, and calculate the viewable width assuming
+		// if the height is less than the width, make the viewable height
+		// 20 world units tall, and calculate the viewable width assuming
 		// as aspect ratio of "1".
-		left= -((GLfloat)Width) / Height;
-		right= ((GLfloat)Width) / Height;
-		bottom= -1;
-		top= 1;
+		left= -10.0 * ((GLfloat)w) / h;
+		right= 10.0 * ((GLfloat)w) / h;
+		bottom= -10;
+		top= 10;
 	}
 
-	glFrustum(left, right, bottom, top, 1.0, 1000.0);
+	// In perspective mode, use 1/10 the world width|height at the near
+	//  clipping plane.
+	glFrustum(left/10, right/10, bottom/10, top/10, 1.0, 100.0);
 
 	glMatrixMode(GL_MODELVIEW);
 }
