@@ -19,13 +19,13 @@ AC_PROG_MAKE_SET
 # Checks for libraries.
 AC_CHECK_LIB(GL,glBegin)
 AC_CHECK_LIB(GLU,gluNewQuadric)
-AC_CHECK_LIB(glut,glutSwapBuffers)
+AC_CHECK_LIB(SDL,SDL_Init)
 
 # Checks for header files.
 AC_HEADER_STDC
-AC_CHECK_HEADERS([fcntl.h stdlib.h sys/time.h unistd.h])
+AC_CHECK_HEADERS([fcntl.h stdlib.h unistd.h])
 AC_CHECK_HEADERS([GL/gl.h GL/glu.h],[AC_SUBST(gl_header,GL/gl.h) AC_SUBST(glu_header,GL/glu.h)],[AC_CHECK_HEADERS([OpenGL/gl.h OpenGL/glu.h],[AC_SUBST(gl_header,OpenGL/gl.h) AC_SUBST(glu_header,OpenGL/glu.h)],[AC_MSG_ERROR([Can't find OpenGL headers])])])
-AC_CHECK_HEADERS([GL/glut.h],[AC_SUBST(glut_header,GL/glut.h)],[AC_CHECK_HEADERS([GLUT/glut.h],[AC_SUBST(glut_header,GLUT/glut.h)],[AC_MSG_ERROR([Can't find Glut header (is it installed?)])])])
+AC_CHECK_HEADERS([SDL/SDL.h],[AC_SUBST(sdl_header,SDL/SDL.h)],[AC_MSG_ERROR([Can't find Glut header (is it installed?)])])
 
 # Checks for typedefs, structures, and compiler characteristics.
 AC_HEADER_STDBOOL
@@ -38,7 +38,7 @@ AC_FUNC_MALLOC
 AC_FUNC_REALLOC
 AC_FUNC_STRTOD
 AC_FUNC_VPRINTF
-AC_CHECK_FUNCS([gettimeofday memmove mkfifo strdup strtol])
+AC_CHECK_FUNCS([memmove mkfifo strdup strtol])
 
 AC_CONFIG_FILES([Makefile GlHeaders.h])
 AC_OUTPUT
