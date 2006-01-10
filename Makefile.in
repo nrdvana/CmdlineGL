@@ -11,17 +11,11 @@ OBJ_FILES=SymbolHash.o Server.o ProcessInput.o ParseGL.o Global.o Contained_RBTr
 
 all: build
 
-build: output/CmdlineGL output/BashBindings
+build: output/CmdlineGL
 
 output/CmdlineGL: ${OBJ_FILES}
 	@if [ ! -d output ]; then mkdir output; fi
 	${CC} ${CFLAGS} ${LDFLAGS} @LIBS@ `sdl-config --libs` -o output/CmdlineGL ${OBJ_FILES}
-
-output/BashBindings: *.h
-	@echo "-> Rebuilding the BashBindings script-include, which defines a bash function for each available command"
-	@if [ ! -d output ]; then mkdir output; fi
-	@sed -n '/^PUBLISHED(\([^,]*\),.*/s//\1/p' *.h \
-	 | while read fn; do echo "$$fn() { echo \"$$fn \$$@\"; }"; done > output/BashBindings
 
 Server.o: Server.c Server.h Global.h
 	${DEF_CC_CMD} -c Server.c
@@ -89,12 +83,10 @@ ConstList.txt:
 	@echo
 	@false
 
-install: output/CmdlineGL output/BashBindings
+install: output/CmdlineGL
 	if [ ! -d @bindir@ ]; then install -d @bindir@; fi
-	if [ ! -d @datadir@/CmdlineGL ]; then install -d @datadir@/CmdlineGL; fi
 	
 	install output/CmdlineGL @bindir@
-	install output/BashBindings @datadir@/CmdlineGL
 	@if [ -n "${INSTALL_SHELL_BINDINGS}" ]; then \
 		echo "-> Making all the symlinks from the CmdlineGLClient script to the command names in bin" \
 		&& echo install CmdlineGLClient @bindir@ \
