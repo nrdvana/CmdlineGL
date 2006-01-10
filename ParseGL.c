@@ -301,6 +301,12 @@ PUBLISHED(glColorMaterial, DoColorMaterial) {
 	glLightModelf(iParams[0], iParams[1]);
 	return 0;
 }
+PUBLISHED(glBlendFunc, DoBlendFunc) {
+	if (argc != 2) return ERR_PARAMCOUNT;
+	if (!ScanParams("ii", argv)) return ERR_PARAMPARSE;
+	glBlendFunc(iParams[0], iParams[1]);
+	return 0;
+}
 
 //----------------------------------------------------------------------------
 // Texture Functions
