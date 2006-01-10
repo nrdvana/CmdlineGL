@@ -107,15 +107,19 @@ PUBLISHED(glMatrixMode, DoMatrixMode) {
 	return 0;
 }
 PUBLISHED(glEnable, DoEnable) {
-	if (argc != 1) return ERR_PARAMCOUNT;
-	if (!ScanParams("i", argv)) return ERR_PARAMPARSE;
-	glEnable(iParams[0]);
+	int i;
+	if (argc < 1 || argc >= MAX_GL_PARAMS) return ERR_PARAMCOUNT;
+	if (!ScanParams(VAR_INT+(VAR_INT_LEN-argc), argv)) return ERR_PARAMPARSE;
+	for (i=0; i<argc; i++)
+		glEnable(iParams[i]);
 	return 0;
 }
 PUBLISHED(glDisable, DoDisable) {
-	if (argc != 1) return ERR_PARAMCOUNT;
-	if (!ScanParams("i", argv)) return ERR_PARAMPARSE;
-	glDisable(iParams[0]);
+	int i;
+	if (argc < 1 || argc >= MAX_GL_PARAMS) return ERR_PARAMCOUNT;
+	if (!ScanParams(VAR_INT+(VAR_INT_LEN-argc), argv)) return ERR_PARAMPARSE;
+	for (i=0; i<argc; i++)
+		glDisable(iParams[i]);
 	return 0;
 }
 PUBLISHED(glHint, DoHint) {
