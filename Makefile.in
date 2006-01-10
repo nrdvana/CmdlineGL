@@ -106,6 +106,9 @@ install: output/CmdlineGL output/BashBindings
  		   done \
 	fi
 
+dist:
+	darcs dist -d CmdlineGL-1.0.0
+
 clean:
 	rm -f *.autogen.c
 	rm -f *.o
