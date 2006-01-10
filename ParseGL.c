@@ -6,7 +6,9 @@
 #include "ParseGL.h"
 #include "SymbolHash.h"
 #include "ImageLoader.h"
-	
+
+// You know there's some cheezy code coming up when you see
+//  constants like these, lol.
 const char* VAR_INT="iiiiiiiiiiiiiiiiiiiiiiiiiiiiiiii";
 #define VAR_INT_LEN 32
 const char* VAR_FLOAT="ffffffffffffffffffffffffffffffff";
@@ -18,12 +20,24 @@ const char* VAR_DBL="dddddddddddddddddddddddddddddddd";
   #error Edit the strings in ParseGL.h to match the value of MAX_GL_PARAMS
 #endif
 
-
+/* The following arrays are used to hold the values parsed from the input line
+ *   by the ScanParams function.
+ * Yes, this is one of the "bad ways" to use globals, but it's a small non-modular
+ *   program which does one simple and very very specific job.
+ * I *could* have used a variable argument list, or an array of a union of
+ *   the data types and passed a single array, but then I couldn't use the
+ *   vector-param gl funcs, like glVertex3dv
+ * For anyone who wants to reuse code from this file (heaven help you ;-) just
+ *   wrap these arrays into a "struct ScanParamsResult" and pass that.
+ */
 GLint iParams[MAX_GL_PARAMS];
 GLfloat fParams[MAX_GL_PARAMS];
 GLdouble dParams[MAX_GL_PARAMS];
 const SymbVarEntry* sParams[MAX_GL_PARAMS];
 
+/* CmdlineGL supports fixed-point numbers on stdin, by multiplying
+ * all float values by this multiplier.  Naturally, it defaults to 1.0
+ */
 double FixedPtMultiplier= 1.0;
 
 bool ScanParams(const char* ParamType, char** Args);
