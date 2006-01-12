@@ -353,17 +353,17 @@ void HandleResize(int w, int h) {
 }
 
 void EmitMouseMotion(const SDL_MouseMotionEvent *E) {
-	printf("SDL_MOUSEMOTION %i %i %i %i\n", E->x, E->y, E->xrel, E->yrel);
+	printf("M @ %d %d %d %d\n", E->x, E->y, E->xrel, E->yrel);
 	fflush(stdout);
 }
 
 void EmitMouseButton(const SDL_MouseButtonEvent *E) {
-	printf("SDL_MOUSEBUTTON%s %d %d %d\n", (E->state == SDL_PRESSED)? "DOWN":"UP", E->button, E->x, E->y);
+	printf("M %c %d %d %d\n", (E->state == SDL_PRESSED)? '+':'-', E->button, E->x, E->y);
 	fflush(stdout);
 }
 
 void EmitKey(const SDL_KeyboardEvent *E) {
-	printf("SDL_KEY%s %s\n", (E->state == SDL_PRESSED)? "DOWN":"UP", SDL_GetKeyName(E->keysym.sym));
+	printf("K %c %s\n", (E->state == SDL_PRESSED)? '+':'-', SDL_GetKeyName(E->keysym.sym));
 	fflush(stdout);
 }
 
