@@ -28,6 +28,12 @@ for cmd in `CmdlineGL --showcmds`; do
 	eval "$cmd() { echo \"$cmd \$@\"; }"
 done
 
+if [[ -f Timing.sh ]]; then
+	source Timing.sh
+else
+	die "Need the timing library, Timing.sh"
+fi
+
 #------------------------------------------------------------------------------
 # This is an almost line-by-line conversion from C to bash
 # The conversion process was rather fun in a strange morbid way...
@@ -497,56 +503,81 @@ Init() {
 }
 
 ReadInput() {
-	while read -r -t 1 Action; do
-		case "$Action" in
-		+LEFT)  K_Left=true;;
-		-LEFT)  K_Left='';;
-		+RIGHT) K_Right=true;;
-		-RIGHT) K_Right='';;
-		+UP)	K_Up=true;;
-		-UP)    K_Up='';;
-		+DOWN)  K_Down=true;;
-		-DOWN)  K_Down='';;		
-		+=)     K_In=true;;
-		-=)     K_In='';;
-		+-)     K_Out=true;;
-		--)     K_Out='';;
-		+q)     terminate=1;;
-		"_____")
-			return;
-			;;
-		-*)
-			;;
-		*)
-			echo "Unhandled IO: $Action" >&2
-			;;
-		esac
+	local ReadMore=1 ReadTimeout=0
+	while ((ReadMore)); do
+		if read -r Input; then
+			if [[ "${Input:0:2}" = "t=" ]]; then
+				# The time is the last thing we read for this frame's input
+				UpdateTime ${Input:2}
+				ReadMore=0
+			else
+				ProcessInput $Input
+			fi
+		else
+			let ReadTimeout++
+			if ((ReadTimeout>3)); then
+				terminate=1;
+				ReadMore=0;
+				die "Reading from pipe timed out...  shutting down."
+			fi
+		fi
 	done
+	cglGetTime
 }
 
 ProcessInput() {
-	if [[ -n "$K_Left"  ]]; then let View_Direction+=200; fi
-	if [[ -n "$K_Right" ]]; then let View_Direction-=200; fi
-	if [[ -n "$K_Up"    ]]; then let View_Pitch-=200; fi
-	if [[ -n "$K_Down"  ]]; then let View_Pitch+=200; fi
-	if [[ -n "$K_In"    ]]; then let View_Distance-=50; fi
-	if [[ -n "$K_Out"   ]]; then let View_Distance+=50; fi
+	local Press
+	case "$1" in
+	K)
+		if [[ "$2" = "+" ]]; then Press=1; else Press=0; fi
+		case "$3" in
+		right)	PanRight=$Press;;
+		left)	PanLeft=$Press;;
+		up)		PanUp=$Press;;
+		down)	PanDn=$Press;;
+		=)		ZoomIn=$Press;;
+		-)		ZoomOut=$Press;;
+		q)		terminate=1;;
+		esac
+		;;
+	M)
+		if [[ "$2" = "@" ]]; then
+			MouseMotion $3 $4 $5 $6
+		else
+			MouseClick $2 $3
+		fi
+		;;
+	esac
+}
+
+Update() {
+	if ((PanLeft)); then let View_Direction+=200; fi
+	if ((PanRight));then let View_Direction-=200; fi
+	if ((PanUp));   then let View_Pitch-=200; fi
+	if ((PanDn));   then let View_Pitch+=200; fi
+	if ((ZoomIn));  then let View_Distance-=50; fi
+	if ((ZoomOut)); then let View_Distance+=50; fi
 }
 
 main() {
-	[[ -z "$NonInteractive" ]] && cglEcho "_____";
+	cglGetTime;
 
 	# Initialize our own stuff (and OpenGL lighting).
 	Init;
+	LastFPSWrite=$Timing_T
+	Frame=0
 
 	# repaint robot forever
 	while [[ -z "$terminate" ]]; do
-		if [[ -z "$NonInteractive" ]]; then
-			ReadInput;
-			cglEcho "_____";
+		ReadInput
+		Update
+		Animate
+		((Frame++))
+		if ((Timing_T-LastFPSWrite >1000)); then
+			echo "FPS: $Timing_FPS  $Frame" >&2
+			((LastFPSWrite+=1000, Frame=0))
 		fi
-		ProcessInput;
-		Animate;
+		SyncNextFrame
 	done
 	cglQuit
 }
