@@ -297,6 +297,9 @@ void CheckSDLEvents() {
 			case SDL_MOUSEBUTTONUP:
 				EmitMouseButton(&Event.button);
 				break;
+			case SDL_VIDEORESIZE:
+				HandleResize(Event.resize.w, Event.resize.h);
+				break;
 			case SDL_QUIT:
 				Shutdown= true;
 				break;
@@ -339,12 +342,13 @@ void InitGL(int w, int h) {
 }
 
 void HandleResize(int w, int h) {
-	printf("SDL_VIDEORESIZE %d %d\n", w, h);
-	fflush(stdout);
-
 	if (!Options.ManualResizeCode) {
 		MainWnd= SDL_SetVideoMode(w, h, Options.Bpp, SDL_OPENGL | SDL_ANYFORMAT);
 		InitGL(w, h);
+	}
+	else {
+		printf("RESIZE %d %d\n", w, h);
+		fflush(stdout);
 	}
 }
 
