@@ -18,9 +18,8 @@ fi
 if [ -e "$CMDLINEGL_PIPE" ]; then
  	rm -f "$CMDLINEGL_PIPE" || die "Cannot remove $CMDLINEGL_PIPE";
 else
-	# cheap trick to get the parent directories created, if any
-	install -d -m 0700 $CMDLINEGL_PIPE
-	rmdir $CMDLINEGL_PIPE
+	local dir=${CMDLINEGL_PIPE%/*}
+	[[ -n "$dir" ]] && mkdir -p "$dir"
 fi
 mkfifo $CMDLINEGL_PIPE
 
@@ -87,18 +86,18 @@ LOWER_LEG_LENGTH=300;
 LOWER_LEG_RADIUS=45;
 FOOT_LENGTH=160;
 FOOT_HEIGHT=30;
-HEAD_HEIGHT=$(($TORSO_LENGTH+$HEAD_RADIUS));
-PELVIC_HEIGHT=$((-$HIP_RADIUS*18/10));
-SHOULDER_HEIGHT=$(($TORSO_LENGTH*84/100));
-SHOULDER_OFFSET=$(($SHOULDER_WIDTH/2 - $UPPER_ARM_RADIUS));
-ELBOW_RADIUS=$(($LOWER_ARM_RADIUS*12/10));
-ELBOW_WIDTH=$(($LOWER_ARM_RADIUS*24/10));
-LEG_OFFSET=$(($HIP_WIDTH/2 ));
-UPPER_LEG_PIPE_LENGTH=$(($UPPER_LEG_LENGTH+$UPPER_LEG_RADIUS));
-HIP_SUPPORT_WIDTH=$(($HIP_WIDTH - $HIP_SPACING*2 - $UPPER_LEG_RADIUS*2));
-HIP_SUPPORT_HALF_WIDTH=$(($HIP_SUPPORT_WIDTH/2));
-KNEE_RADIUS=$(($LOWER_LEG_RADIUS*12/10));
-KNEE_WIDTH=$(($LOWER_LEG_RADIUS*24/10));
+HEAD_HEIGHT=$((TORSO_LENGTH+$HEAD_RADIUS));
+PELVIC_HEIGHT=$((-HIP_RADIUS*18/10));
+SHOULDER_HEIGHT=$((TORSO_LENGTH*84/100));
+SHOULDER_OFFSET=$((SHOULDER_WIDTH/2 - $UPPER_ARM_RADIUS));
+ELBOW_RADIUS=$((LOWER_ARM_RADIUS*12/10));
+ELBOW_WIDTH=$((LOWER_ARM_RADIUS*24/10));
+LEG_OFFSET=$((HIP_WIDTH/2 ));
+UPPER_LEG_PIPE_LENGTH=$((UPPER_LEG_LENGTH+UPPER_LEG_RADIUS));
+HIP_SUPPORT_WIDTH=$((HIP_WIDTH - HIP_SPACING*2 - UPPER_LEG_RADIUS*2));
+HIP_SUPPORT_HALF_WIDTH=$((HIP_SUPPORT_WIDTH/2));
+KNEE_RADIUS=$((LOWER_LEG_RADIUS*12/10));
+KNEE_WIDTH=$((LOWER_LEG_RADIUS*24/10));
 
 # Indicies of important angles
 #
@@ -129,10 +128,7 @@ View_Pitch=0;
 View_Distance=1000;
 View_Mode=0;
 
-# Variables related to the user interface
-#
-Mouse_LastX=0;
-Mouse_LastY=0;
+Dragging=0;
 
 # Draw the head of the robot.
 # Draws a sphere with radius "HEAD_RADIUS" at the current origin.
@@ -171,14 +167,14 @@ build_torso() {
 	glPushMatrix
 	glTranslate 0 $TORSO_LENGTH 0
 	glRotate 9000 100 0 0
-	local TorsoZ=$(($TORSO_LENGTH*8/10));
+	local TorsoZ=$((TORSO_LENGTH*8/10));
 	closedCylinder quadric $TORSO_RADIUS $TORSO_RADIUS $TorsoZ 20 1
 	glTranslate 0 0 $TorsoZ
-	closedCylinder quadric $TORSO_RADIUS $(($HIP_SUPPORT_WIDTH/2)) $(($TORSO_LENGTH*2/10)) 20 1
+	closedCylinder quadric $TORSO_RADIUS $((HIP_SUPPORT_WIDTH/2)) $((TORSO_LENGTH*2/10)) 20 1
 	glPopMatrix
 
 	glPushMatrix
-	glTranslate -$(($SHOULDER_WIDTH/2)) $SHOULDER_HEIGHT 0.0
+	glTranslate $((-SHOULDER_WIDTH/2)) $SHOULDER_HEIGHT 0.0
 	glRotate 9000 0 100 0
 	closedCylinder quadric $SHOULDER_RADIUS $SHOULDER_RADIUS $SHOULDER_WIDTH 20 1
 	glPopMatrix
@@ -233,7 +229,7 @@ build_lower_arm() {
 	glNewList lower_arm GL_COMPILE
 	glPushMatrix
 	glRotate 9000 0 100 0
-	glTranslate 0 0 -$(($ELBOW_WIDTH/2))
+	glTranslate 0 0 $((-ELBOW_WIDTH/2))
 	closedCylinder quadric $ELBOW_RADIUS $ELBOW_RADIUS $ELBOW_WIDTH 20 1
 	glPopMatrix
 
@@ -272,7 +268,7 @@ build_lower_leg() {
 	glNewList lower_leg GL_COMPILE
 	glPushMatrix
 	glRotate 9000 0 100 0
-	glTranslate 0 0 -$(($KNEE_WIDTH/2))
+	glTranslate 0 0 $((-KNEE_WIDTH/2))
 	closedCylinder quadric $KNEE_RADIUS $KNEE_RADIUS $KNEE_WIDTH 20 1
 	glPopMatrix
 
@@ -294,13 +290,13 @@ build_foot() {
 	glNewList foot GL_COMPILE
 	glPushMatrix
 	glRotate 9000 0 100 0
-	glTranslate 0 0 -$LOWER_LEG_RADIUS
-	closedCylinder quadric $LOWER_LEG_RADIUS $LOWER_LEG_RADIUS $(($LOWER_LEG_RADIUS*2)) 20 1
+	glTranslate 0 0 $((-LOWER_LEG_RADIUS))
+	closedCylinder quadric $LOWER_LEG_RADIUS $LOWER_LEG_RADIUS $((LOWER_LEG_RADIUS*2)) 20 1
 	glPopMatrix
 	glPushMatrix
-	glTranslate 0 -$(($LOWER_LEG_RADIUS*3/10)) 0
+	glTranslate 0 $((-LOWER_LEG_RADIUS*3/10)) 0
 	glScale 100 30 100
-	closedCylinder quadric $(($LOWER_LEG_RADIUS*8/10)) $(($LOWER_LEG_RADIUS*12/10)) $FOOT_LENGTH 20 1
+	closedCylinder quadric $((LOWER_LEG_RADIUS*8/10)) $((LOWER_LEG_RADIUS*12/10)) $FOOT_LENGTH 20 1
 	glPopMatrix
 	glEndList
 }
@@ -397,7 +393,7 @@ Repaint() {
 
 	# Flush any remaining drawing commands and flip the buffers.
 	glFlush
-	glutSwapBuffers
+	cglSwapBuffers
 }
 
 
@@ -429,45 +425,36 @@ Animate() {
 		(( idx2=idx1+1 ))
 		if (( idx2 > 3 )); then idx2=0; fi
 		SetJoints "WalkScript$idx1" "WalkScript$idx2" $((Robot_MoveProgress - (idx1 * 100) ))
-		Repaint
 	else
 		SetJoints "Standing" "Standing" 0
 	fi
+	Repaint
 }
 
-
-# Handle mouse clicks.
-# If the left button is clicked increase the angle of the active joint
-# If the right button is clicked decrease the angle of the active joint
-# Repaint the image.
-# Also record the position of the mouse as the "last position".
-#
-#mouse(int btn int state int x int y) {
-#	Mouse_LastX= x;
-#	Mouse_LastY= y;
-#}
-
+MouseClick() {
+	local Press btn=$2
+	if [[ "$1" = "+" ]]; then Press=1; else Press=0; fi
+	if ((btn==1)); then
+		((Dragging=Press))
+	fi
+}
 
 # Handle mouse drag actions.
 # If the mouse has moved since last time change the pitch or direction
 # by the vertical or horizontal distance the mouse has moved.
 # Also repaint the robot and record the "last position" of the mouse.
 #
-#mouseMotion(int x int y) {
-#	int dx= Mouse_LastX - x;
-#	int dy= Mouse_LastY - y;
-#
-#	if (dy != 0) {
-#		View.Pitch-= dy;
-#	}
-#	if (dx != 0) {
-#		View.Direction+= dx;
-#	}
-#
-#	if (!Robot.Animate) display(
-#	Mouse_LastX= x;
-#	Mouse_LastY= y;
-#}
+MouseMotion() {
+	local dx=$3 dy=$4;
+	if ((Dragging)); then
+		if ((dy)); then
+			((View_Pitch+= dy*100))
+		fi
+		if ((dx)); then
+			((View_Direction+= dx*100));
+		fi
+	fi
+}
 
 # Initialize the globals and set up OpenGL.
 #
@@ -564,9 +551,22 @@ main() {
 	cglQuit
 }
 
-if [ "$1" = "--dump" ]; then
-	NonInteractive=true;
+if [[ "$1" == "--record" ]]; then
+	main <$CMDLINEGL_PIPE | tee replay | CmdlineGL >$CMDLINEGL_PIPE
+elif [[ "$1" == "--dump" ]]; then
+	cglGetTime() { return; }
+	ReadInput() { UpdateTime $((Timing_T+25)); }
 	main
+elif [[ -z "$1" ]]; then
+	main <$CMDLINEGL_PIPE | CmdlineGL >$CMDLINEGL_PIPE
 else
-	main < $CMDLINEGL_PIPE | CmdlineGL > $CMDLINEGL_PIPE
+	echo 'Usage: Robot.sh [ --record | --dump ]'
+	echo
+	echo '   --dump    Dump all output to stdout at a virtual 40fps'
+	echo '   --record  Run CmdlineGL, but duplicate all output to "./replay"'
+	echo
+	echo '   Recordings can be played by piping them into CmdlineGL.'
+	echo '   For instance:'
+	echo '         $ cat replay | CmdlineGL >/dev/null'
 fi
+
