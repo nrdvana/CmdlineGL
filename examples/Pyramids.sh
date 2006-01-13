@@ -18,9 +18,8 @@ fi
 if [ -e "$CMDLINEGL_PIPE" ]; then
  	rm -f "$CMDLINEGL_PIPE" || die "Cannot remove $CMDLINEGL_PIPE";
 else
-	# cheap trick to get the parent directories created, if any
-	install -d -m 0700 $CMDLINEGL_PIPE
-	rmdir $CMDLINEGL_PIPE
+	local dir=${CMDLINEGL_PIPE%/*}
+	[[ -n "$dir" ]] && mkdir -p "$dir"
 fi
 mkfifo $CMDLINEGL_PIPE
 
@@ -29,14 +28,20 @@ for cmd in `CmdlineGL --showcmds`; do
 	eval "$cmd() { echo \"$cmd \$@\"; }"
 done
 
+if [[ -f Timing.sh ]]; then
+	source Timing.sh
+else
+	die "Need the timing library, Timing.sh"
+fi
+
 let x=0;
 
 ToInt() {
-	echo -n "${1/./}"
+	Result=${1/./}
 }
 ToFloat() {
 	let dec_pos=${#1}-$2;
-	echo -n ${1:0:$dec_pos}.${1:$dec_pos};
+	Result=${1:0:dec_pos}.${1:dec_pos};
 }
 
 Triangle() {
@@ -104,20 +109,28 @@ SetLights() {
 }
 
 Init() {
+	BuildList
+	SetLights
+
 	glEnable GL_NORMALIZE
 	glEnable GL_DEPTH_TEST
-	glClear GL_COLOR_BUFFER_BIT
-	glClear GL_DEPTH_BUFFER_BIT
+	glClear GL_COLOR_BUFFER_BIT GL_DEPTH_BUFFER_BIT
+
+	frametime=0;
+	direction=0;
+	distance=10;
+	pitch=0;
 }
 
 Swap() {
 	glFlush
-	glutSwapBuffers
-	glClear GL_COLOR_BUFFER_BIT
-	glClear GL_DEPTH_BUFFER_BIT
+	cglSwapBuffers
+	glClear GL_COLOR_BUFFER_BIT GL_DEPTH_BUFFER_BIT
 }
 
 DrawIt() {
+	ToFloat 000$((Timing_T*8%36000)) 2
+	x=$Result
 	glLoadIdentity
 	glTranslate 0 0 -$distance
 	glRotate $pitch 1 0 0
@@ -132,72 +145,133 @@ DrawIt() {
 	glTranslate 3 0 -3
 	glCallList tri
 	glTranslate 0 0 3
+	
 	glRotate $x 0 0 1
 	glRotate $x 0 1 1
 	Pyramid
-	cglSync $frametime
 	Swap;
 }
 
+MouseClick() {
+	local Press btn=$2
+	if [[ "$1" = "+" ]]; then Press=1; else Press=0; fi
+	if ((btn==1)); then
+		((Dragging=Press))
+	fi
+}
+
+# Handle mouse drag actions.
+# If the mouse has moved since last time change the pitch or direction
+# by the vertical or horizontal distance the mouse has moved.
+# Also repaint the robot and record the "last position" of the mouse.
+#
+MouseMotion() {
+	local dx=$3 dy=$4;
+	if ((Dragging)); then
+		if ((dy)); then
+			((pitch+= dy))
+		fi
+		if ((dx)); then
+			((direction+= dx));
+		fi
+	fi
+}
+
 ReadInput() {
-	while read -r -t 1 Action; do
-		case "$Action" in
-		+LEFT)  K_Left=true;;
-		-LEFT)  K_Left='';;
-		+RIGHT) K_Right=true;;
-		-RIGHT) K_Right='';;
-		+UP)	K_Up=true;;
-		-UP)    K_Up='';;
-		+DOWN)  K_Down=true;;
-		-DOWN)  K_Down='';;		
-		+=)     K_In=true;;
-		-=)     K_In='';;
-		+-)     K_Out=true;;
-		--)     K_Out='';;
-		+q)     terminate=1;;
-		"_____")
-			return;
-			;;
-		-*)
-			;;
-		*)
-			echo "Unhandled IO: $Action" >&2
-			;;
-		esac
+	local ReadMore=1 ReadTimeout=0
+	while ((ReadMore)); do
+		if read -r Input; then
+			if [[ "${Input:0:2}" = "t=" ]]; then
+				# The time is the last thing we read for this frame's input
+				UpdateTime ${Input:2}
+				ReadMore=0
+			else
+				ProcessInput $Input
+			fi
+		else
+			let ReadTimeout++
+			if ((ReadTimeout>3)); then
+				terminate=1;
+				ReadMore=0;
+				die "Reading from pipe timed out...  shutting down."
+			fi
+		fi
 	done
+	cglGetTime
 }
 
 ProcessInput() {
-	if [ -n "$K_Left"  ]; then let direction+=2; fi
-	if [ -n "$K_Right" ]; then let direction-=2; fi
-	if [ -n "$K_Up"    ]; then let pitch-=2; fi
-	if [ -n "$K_Down"  ]; then let pitch+=2; fi
-	if [ -n "$K_In"    ]; then let distance--; fi
-	if [ -n "$K_Out"   ]; then let distance++; fi
+	local Press
+	case "$1" in
+	K)
+		if [[ "$2" = "+" ]]; then Press=1; else Press=0; fi
+		case "$3" in
+		right)	PanRight=$Press;;
+		left)	PanLeft=$Press;;
+		up)		PanUp=$Press;;
+		down)	PanDn=$Press;;
+		=)		ZoomIn=$Press;;
+		-)		ZoomOut=$Press;;
+		q)		terminate=1;;
+		esac
+		;;
+	M)
+		if [[ "$2" = "@" ]]; then
+			MouseMotion $3 $4 $5 $6
+		else
+			MouseClick $2 $3
+		fi
+		;;
+	esac
+}
+
+Update() {
+	if ((PanLeft)); then let direction+=2; fi
+	if ((PanRight));then let direction-=2; fi
+	if ((PanUp));   then let pitch-=2; fi
+	if ((PanDn));   then let pitch+=2; fi
+	if ((ZoomIn));  then let distance-=1; fi
+	if ((ZoomOut)); then let distance+=1; fi
 }
 
 main () {
-	cglEcho "_____";
+	cglGetTime;
 	Init
-	BuildList
-	SetLights
+	LastFPSWrite=$Timing_T
+	Frame=0
 	Swap
-	frametime=0;
-	direction=0;
-	distance=10;
+
 	terminate='';
-	pitch=0;
 	while [[ -z "$terminate" ]]; do
-		ReadInput;
-		cglEcho "_____";
-		ProcessInput
 		DrawIt
-		let x++;
-		if [ $x -eq 360 ]; then x=0; fi
-		let frametime=$frametime+33;
+		((Frame++))
+		if ((Timing_T-LastFPSWrite >1000)); then
+			echo "FPS: $Timing_FPS  $Frame" >&2
+			((LastFPSWrite+=1000, Frame=0))
+		fi
+		SyncNextFrame
+		ReadInput
+		Update
 	done
 	cglQuit
 }
 
-main < $CMDLINEGL_PIPE | CmdlineGL > $CMDLINEGL_PIPE
+if [[ "$1" == "--record" ]]; then
+	main <$CMDLINEGL_PIPE | tee replay | CmdlineGL >$CMDLINEGL_PIPE
+elif [[ "$1" == "--dump" ]]; then
+	cglGetTime() { return; }
+	ReadInput() { UpdateTime $((Timing_T+25)); }
+	main
+elif [[ -z "$1" ]]; then
+	main <$CMDLINEGL_PIPE | CmdlineGL >$CMDLINEGL_PIPE
+else
+	echo 'Usage: Pyramids.sh [ --record | --dump ]'
+	echo
+	echo '   --dump    Dump all output to stdout at a virtual 40fps'
+	echo '   --record  Run CmdlineGL, but duplicate all output to "./replay"'
+	echo
+	echo '   Recordings can be played by piping them into CmdlineGL.'
+	echo '   For instance:'
+	echo '         $ cat replay | CmdlineGL >/dev/null'
+fi
 
