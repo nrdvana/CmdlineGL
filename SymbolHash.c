@@ -64,14 +64,15 @@ int SymbVar_compare_func(const void* SearchKey, const void* Object) {
 
 const SymbVarEntry *GetSymbVar(const char *Name) {
 	SymbVarSearchKey Key;
-	
+	RBTreeNode *Node;
+
 	if (!SymbVarTreeInit) {
 		RBTree_InitRootSentinel(&SymbVarTree.RootSentinel);
 		SymbVarTreeInit= true;
 	}
 	Key.Hash= CalcHash(Name);
 	Key.Name= Name;
-	RBTreeNode *Node= RBTree_Find(&SymbVarTree.RootSentinel, &Key, SymbVar_compare_func);
+	Node= RBTree_Find(&SymbVarTree.RootSentinel, &Key, SymbVar_compare_func);
 	if (Node) return (SymbVarEntry*) Node->Object;
 	else return NULL;
 }

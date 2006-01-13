@@ -53,6 +53,7 @@ void RBTree_Clear( RBTreeNode *RootSentinel ) {
 }
 
 bool RBTree_Add( RBTreeNode *RootSentinel, RBTreeNode* NewNode, RBTree_inorder_func* inorder ) {
+	RBTreeNode* Current;
 	if (NewNode->Color != RBTreeNode_Unassigned)
 		return false;
 
@@ -60,7 +61,7 @@ bool RBTree_Add( RBTreeNode *RootSentinel, RBTreeNode* NewNode, RBTree_inorder_f
 	NewNode->Left=  &Sentinel;
 	NewNode->Right= &Sentinel;
 
-	RBTreeNode* Current= RootSentinel->Left;
+	Current= RootSentinel->Left;
 	if (Current == &Sentinel) {
 		RootSentinel->Left= NewNode;
 		NewNode->Parent= RootSentinel;
@@ -296,6 +297,7 @@ void RBTree_Balance( RBTreeNode* Current ) {
 }
 
 bool RBTree_Prune( RBTreeNode* Current ) {
+	RBTreeNode* Temp;
 	if (Current->Color == RBTreeNode_Unassigned)
 		return false;
 
@@ -314,7 +316,6 @@ bool RBTree_Prune( RBTreeNode* Current ) {
 		RBTree_PruneLeaf( Successor );
 
 		// now exchange the successor for the current node
-		RBTreeNode* Temp;
 		Temp= Current->Right;
 		Successor->Right= Temp;
 		Temp->Parent= Successor;
@@ -334,7 +335,7 @@ bool RBTree_Prune( RBTreeNode* Current ) {
 
 // PruneLeaf performs pruning of nodes with at most one child node.
 void RBTree_PruneLeaf( RBTreeNode* Node ) {
-	RBTreeNode *Parent= Node->Parent;
+	RBTreeNode *Parent= Node->Parent, *Current, *Sibling;
 	bool LeftSide= (Parent->Left == Node);
 
 	// if the node is red and has at most one child, then it has no child.
@@ -376,8 +377,8 @@ void RBTree_PruneLeaf( RBTreeNode* Node ) {
 */
 	if (LeftSide) Parent->Left= &Sentinel; else Parent->Right= &Sentinel;
 
-	RBTreeNode *Sibling= (LeftSide)? Parent->Right : Parent->Left;
-	RBTreeNode *Current= Node;
+	Sibling= (LeftSide)? Parent->Right : Parent->Left;
+	Current= Node;
 
 	// Loop until the current node is red, or until we get to the root node.
 	// (The root node's parent is the RootSentinel, which will have a NULL parent.)
