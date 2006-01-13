@@ -27,7 +27,7 @@ glNormal 3 -1.7 0
 glVertex 3 -1.7 -1
 glEnd
 glFlush
-glutSwapBuffers
+cglSwapBuffers
 cglSleep 1000
 
 
