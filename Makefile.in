@@ -4,6 +4,7 @@ DEF_CC_CMD=${CC} ${CFLAGS} ${CPPFLAGS} `sdl-config --cflags`
 
 prefix=/usr/local
 exec_prefix=${prefix}
+dist_dir=CmdlineGL-0.8.0
 
 INSTALL_SHELL_BINDINGS=@INST_SHELL_BIND@
 
@@ -109,7 +110,15 @@ install: output/CmdlineGL
 	fi
 
 dist:
-	darcs dist -d CmdlineGL-1.0.0
+	darcs dist -d ${dist_dir}
+	[[ -d ${dist_dir} ]] || mkdir ${dist_dir}
+	autoconf
+	cp configure ${dist_dir}/
+	gunzip ${dist_dir}.tar.gz
+	tar -rf ${dist_dir}.tar ${dist_dir}/configure
+	gzip ${dist_dir}.tar
+	rm ${dist_dir}/configure
+	rmdir ${dist_dir}
 
 clean:
 	rm -f *.autogen.c
