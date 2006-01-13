@@ -1,6 +1,6 @@
+#include "Global.h"
 #include <stdio.h>      // Header file for standard file i/o.
 #include <stdlib.h>     // Header file for malloc/free.
-#include "Global.h"
 #include "ImageLoader.h"
 
 
@@ -17,7 +17,7 @@
 
 // quick and dirty bitmap loader...for 24 bit bitmaps with 1 plane only.
 // See http://www.dcs.ed.ac.uk/~mxr/gfx/2d/BMP.txt for more info.
-bool LoadImage(const char *filename, Image *image) {
+bool LoadImg(const char *filename, Image *image) {
     FILE *file;
     unsigned long size;                 // size of the image in bytes.
     unsigned long i;                    // standard counter.

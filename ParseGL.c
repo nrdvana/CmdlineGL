@@ -83,9 +83,9 @@ PUBLISHED(cglLoadImage2D, DoLoadImage2D) {
 		// thought of it sooner.
 	}
 	// Now load the image
-	LoadImage(argv[0], &Img);
+	LoadImg(argv[0], &Img);
 	// Then, load the image data into OpenGL
-    glTexImage2D(GL_TEXTURE_2D, 0, 3, Img.Width, Img.Height, 0, GL_BGR, GL_UNSIGNED_BYTE, Img.Data);
+	glTexImage2D(GL_TEXTURE_2D, 0, 3, Img.Width, Img.Height, 0, GL_BGR, GL_UNSIGNED_BYTE, Img.Data);
 	free(Img.Data);
 	return 0;
 }

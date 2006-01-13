@@ -7,6 +7,6 @@ typedef struct Image_t {
     void *Data;
 } Image;
 
-bool LoadImage(const char *filename, Image *image);
+bool LoadImg(const char *filename, Image *image);
 
 #endif
