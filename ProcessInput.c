@@ -1,7 +1,10 @@
-#include <sys/un.h>
-#include <stdio.h>
 #include "Global.h"
 #include "GlHeaders.h"
+
+#ifndef _WIN32
+#include <sys/un.h>
+#endif
+#include <stdio.h>
 #include "ProcessInput.h"
 #include "SymbolHash.h"
 
@@ -10,7 +13,6 @@
 #define TOK_COUNT_MAX MAX_GL_PARAMS+1
 
 int ServerConn;
-struct sockaddr_un ServerAddr;
 void *CmdData;
 int CmdDataLen;
 char LineBuffer[CMD_LEN_MAX];
@@ -82,7 +84,12 @@ void ShiftBuffer() {
 	LineStart= ReadBuffer;
 }
 
+#ifndef _WIN32
 char* ReadLine(int fd) {
+#else
+char* ReadLine(HANDLE fd) {
+	int success;
+#endif
 	int red;
 	char *Result;
 
@@ -103,25 +110,23 @@ char* ReadLine(int fd) {
 					return NULL;
 				}
 			}
+			#ifndef _WIN32
 			red= read(fd, DataPos, StopPos-DataPos);
-			if (red <= 0) {
-				if (red == 0)
-					DEBUGMSG(("Read 0 bytes.\n"));
-				else {
-#ifdef DEBUG
-					if (errno == EAGAIN)
-						fprintf(stderr, ".");
-					else
-						perror("read");
-#endif
-				}
+			if (red <= 0)
 				return NULL;
-			}
+			#else
+			// no non-blocking mode, so we need to test the status of the object
+			if (WaitForSingleObject(fd, 0) == WAIT_OBJECT_0)
+				success= ReadFile(fd, DataPos, StopPos-DataPos, &red, NULL);
+			else
+				return NULL;
+			if (!success || red<=0)
+				return NULL;
+			#endif
 			DataPos+= red;
 		}
 		while (Pos < DataPos && *Pos != '\n')
 			Pos++;
-//		DEBUGMSG(("LineStart = %d, Pos = %d, DataPos = %d, StopPos = %d\n", LineStart-ReadBuffer, Pos-ReadBuffer, DataPos-ReadBuffer, StopPos-ReadBuffer));
 	} while (*Pos != '\n');
 	*Pos= '\0';
 	if (Pos > LineStart)
@@ -131,5 +136,7 @@ char* ReadLine(int fd) {
 	LineStart= ++Pos;
 	return Result;
 }
+
+
 
 

@@ -3,6 +3,11 @@
 
 #include "config.h"
 
+#ifdef _WIN32
+#define WIN32_LEAN_AND_MEAN
+#include <windows.h>
+#endif
+
 #ifndef NULL
   #define NULL ((void*)0)
 #endif
@@ -33,6 +38,10 @@
   void DebugMsg(char *str, ...);
 #else
   #define DEBUGMSG(a) do{}while(0)
+#endif
+
+#ifdef _WIN32
+void WinPerror(char *msg);
 #endif
 
 extern bool IsGlBegun; // indicates status of glBegin/glEnd

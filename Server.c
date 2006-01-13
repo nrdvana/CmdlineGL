@@ -1,14 +1,18 @@
+#include "Global.h"
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <fcntl.h>
 #include <stdio.h>
+#include <stdlib.h>
 #include <errno.h>
-#include <unistd.h>
 #include <string.h>
+#include "GlHeaders.h"
 #include <SDL/SDL.h>
 
-#include "Global.h"
-#include "GlHeaders.h"
+#ifndef _WIN32
+#include <unistd.h>
+#endif
+
 #include "Server.h"
 #include "ProcessInput.h"
 
@@ -43,7 +47,11 @@ void EmitMouseButton(const SDL_MouseButtonEvent *E);
 void EmitKey(const SDL_KeyboardEvent *E);
 
 char Buffer[1024];
+#ifndef _WIN32
 int InputFD= 0;
+#else
+HANDLE InputFD;
+#endif
 SDL_Surface *MainWnd= NULL;
 
 long StartTime;
@@ -52,7 +60,7 @@ int DefaultSDLFlags= SDL_OPENGL | SDL_ANYFORMAT | SDL_RESIZABLE;
 CmdlineOptions Options;
 
 int main(int Argc, char**Args) {
-    const SDL_VideoInfo* SdlVid;
+	const SDL_VideoInfo* SdlVid;
 	int bpp;
 
 	SetParamDefaults(&Options);
@@ -71,6 +79,7 @@ int main(int Argc, char**Args) {
 		return 0;
 	}
 
+	#ifndef WIN32
 	if (Options.FifoName) {
 		if (mkfifo(Options.FifoName, 0x1FF) < 0) {
 			perror("mkfifo");
@@ -90,24 +99,27 @@ int main(int Argc, char**Args) {
 			return 3;
 		}
 	}
+	#else
+	InputFD= GetStdHandle(STD_INPUT_HANDLE);
+	#endif
 
 	if (!Options.ManualSDLSetup) {
 		DEBUGMSG(("Initializing SDL\n"));
-	    if (SDL_Init(SDL_INIT_VIDEO) < 0) {
-	        fprintf(stderr, "CmdlineGL: SDL_Init: %s\n", SDL_GetError());
-	        return 4;
-	    }
+		if (SDL_Init(SDL_INIT_VIDEO) < 0) {
+			fprintf(stderr, "CmdlineGL: SDL_Init: %s\n", SDL_GetError());
+			return 4;
+		}
 		atexit(SDL_Quit);
-		
+
 //		SdlVid= SDL_GetVideoInfo();
 		SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER, 1);
 
 		DEBUGMSG(("Setting video mode\n"));
 		MainWnd= SDL_SetVideoMode(Options.Width, Options.Height, Options.Bpp, DefaultSDLFlags);
 		if (!MainWnd) {
-	        fprintf(stderr, "Couldn't set video mode: %s\n", SDL_GetError());
-	        exit(5);
-	    }
+			fprintf(stderr, "Couldn't set video mode: %s\n", SDL_GetError());
+			exit(5);
+		}
 
 		if (SDL_EnableKeyRepeat(0, 0) < 0)
 			fprintf(stderr, "Can't disable key repeat. %s\n", SDL_GetError());
@@ -125,8 +137,12 @@ int main(int Argc, char**Args) {
 		CheckSDLEvents();
 	}
 	DEBUGMSG(("Shutting down.\n"));
-	
+
+	#ifndef _WIN32
 	close(InputFD);
+	#else
+	CloseHandle(InputFD);
+	#endif
 	// this might be a socket
 	if (Options.FifoName) {
 		unlink(Options.FifoName);
@@ -154,6 +170,7 @@ void ReadParams(char **Args, CmdlineOptions *Options) {
 	//   that says all argv lists must end with a NULL pointer.
 	while (ReadingArgs && *NextArg && (*NextArg)[0] == '-') {
 		switch ((*NextArg)[1]) {
+		#ifndef WIN32
 		case 'f':
 			Options->FifoName= *++NextArg;
 			if (!Options->FifoName) {
@@ -161,6 +178,7 @@ void ReadParams(char **Args, CmdlineOptions *Options) {
 				return;
 			}
 			break; // '-f <blah>' = read from FIFO "blah"
+		#endif
 		case 't': Options->TerminateOnEOF= true; break;
 		case 'h':
 		case '?': Options->WantHelp= true; break;
@@ -196,7 +214,9 @@ void PrintUsage() {
 	"Options:\n"
 	"  -h              Display this help message.\n"
 	"  -t              Terminate after receiving EOF\n"
+	#ifndef WIN32
 	"  -f <fifo>       Create the named fifo (file path+name) and read from it.\n"
+	#endif
 	"  --showcmds      List all the available commands in this version of CmdlineGL.\n"
 	"  --showconsts    List all the constants (GL_xxxx) that are available.\n"
 	"  --title <text>  Set the title of the window to \"text\".\n"
@@ -213,7 +233,6 @@ PUBLISHED(cglExit,DoQuit) {
 }
 
 PUBLISHED(cglGetTime,DoGetTime) {
-	struct timeval curtime;
 	long t;
 	if (argc != 0) return ERR_PARAMCOUNT;
 	t= SDL_GetTicks() - StartTime;
@@ -223,7 +242,6 @@ PUBLISHED(cglGetTime,DoGetTime) {
 }
 
 PUBLISHED(cglSync,DoSync) {
-	struct timeval curtime;
 	long target, t;
 	char *endptr;
 	
@@ -240,7 +258,7 @@ PUBLISHED(cglSync,DoSync) {
 PUBLISHED(cglSleep, DoSleep) {
 	long t;
 	char *endptr;
-	
+
 	if (argc != 1) return ERR_PARAMCOUNT;
 	t= strtol(argv[0], &endptr, 10);
 	if (*endptr != '\0' || t <= 0) return ERR_PARAMPARSE;
@@ -277,7 +295,7 @@ void CheckInput() {
 	}
 	if (CmdCount < MAX_COMMAND_BATCH && errno != EAGAIN) {
 		DEBUGMSG(("Received EOF.\n"));
- 		if (Options.TerminateOnEOF)
+		if (Options.TerminateOnEOF)
 			Shutdown= 1;
 	}
 }
@@ -286,11 +304,11 @@ void CheckSDLEvents() {
 	SDL_Event Event;
 	while (SDL_PollEvent(&Event))
 		switch (Event.type) {
-            case SDL_KEYDOWN:
+			case SDL_KEYDOWN:
 			case SDL_KEYUP:
 				EmitKey(&Event.key);
-	            break;
-            case SDL_MOUSEMOTION:
+				break;
+			case SDL_MOUSEMOTION:
 				EmitMouseMotion(&Event.motion);
 				break;
 			case SDL_MOUSEBUTTONDOWN:
@@ -303,7 +321,7 @@ void CheckSDLEvents() {
 			case SDL_QUIT:
 				Shutdown= true;
 				break;
-        }
+		}
 }
 
 void InitGL(int w, int h) {

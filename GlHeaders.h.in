@@ -2,8 +2,16 @@
 wherever configure found them.  I  could have done this in
 Global.h, but then it would get sucked into every single file.
 */
+#ifdef _WIN32
+#define WIN32_LEAN_AND_MEAN
+#include <windows.h>
+#endif
 
 #include <@gl_header@>
 #include <@glu_header@>
 
+#ifndef GL_BGR
+#define GL_BGR GL_BGR_EXT
+#define GL_BGRA GL_BGRA_EXT
+#endif
 

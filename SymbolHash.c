@@ -1,5 +1,5 @@
-#include <stdio.h>
 #include "Global.h"
+#include <stdio.h>
 #include "SymbolHash.h"
 
 const char *SymbVarTypeName[]= { "Display List", "Quadric", "Texture", "Font" };
