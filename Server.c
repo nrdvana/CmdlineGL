@@ -135,6 +135,7 @@ int main(int Argc, char**Args) {
 	while (!Shutdown) {
 		CheckInput();
 		CheckSDLEvents();
+		SDL_Delay(1); // yield processor to the script
 	}
 	DEBUGMSG(("Shutting down.\n"));
 
