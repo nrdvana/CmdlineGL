@@ -7,6 +7,7 @@ fi
 die() { echo $1; exit -1; }
 
 # Make sure we have CmdlineGL
+PATH=../output:$PATH
 which CmdlineGL >/dev/null || die "Make sure CmdlineGL is in the PATH"
 
 # Initialize the pipe location, if not already set
@@ -16,12 +17,11 @@ fi
 
 # Create the fifo for attaching CmdlineGL to the script
 if [ -e "$CMDLINEGL_PIPE" ]; then
- 	rm -f "$CMDLINEGL_PIPE" || die "Cannot remove $CMDLINEGL_PIPE";
+	rm -f "$CMDLINEGL_PIPE" || die "Cannot remove $CMDLINEGL_PIPE";
 else
-	local dir=${CMDLINEGL_PIPE%/*}
-	[[ -n "$dir" ]] && mkdir -p "$dir"
+	[[ -n "${CMDLINEGL_PIPE%/*}" ]] && mkdir -p "${CMDLINEGL_PIPE%/*}"
 fi
-mkfifo $CMDLINEGL_PIPE
+mkfifo $CMDLINEGL_PIPE || die "Cannot create $CMDLINEGL_PIPE needed for communication between script and CmdlineGL"
 
 # build functions for each available command
 for cmd in `CmdlineGL --showcmds`; do
