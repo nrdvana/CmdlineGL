@@ -2,6 +2,20 @@
 #define PARSEGL_H
 
 #include "Global.h"
+#include "GlHeaders.h"
+#include "SymbolHash.h"
+
+typedef struct ScanParamsResult_t {
+	GLint Ints[MAX_GL_PARAMS];
+	GLfloat Floats[MAX_GL_PARAMS];
+	GLdouble Doubles[MAX_GL_PARAMS];
+	const SymbVarEntry* Symbolics[MAX_GL_PARAMS];
+	const char* FName; // there can only be one file name, currently
+	int ParamsParsed;
+	bool Success;
+} ScanParamsResult;
+
+bool ScanParams(const char* ParamType, char** Args, ScanParamsResult* Result);
 
 //----------------------------------------------------------------------------
 // CmdlineGL Functions
