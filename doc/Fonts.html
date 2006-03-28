@@ -1,0 +1,32 @@
+<html>
+<head>
+	<title>Working with CmdlineGL Fonts</title>
+</head>
+
+<body>
+	<h3>Preface</h3>
+	<p>In CmdlineGL, I wanted some simple kind of font system that wouldn't be dependant on
+	libraries installed on the system, and also not dependant on which SDL modules were
+	installed.  So, I went and pulled an old idea (which I've probably seen somewhere)
+	making use of control pixels in a bitmap to denote the size/spacing of font characters
+	and wrote it up.
+	<p>This font system allows you to &quot;make a font&quot; using a plain old bitmap editor,
+	or even convert a font from trueType to bitmap by using the text-tool in those same editors
+	and then marking the boundaries of the characters.  It expects the ascii characters from 0x20
+	(space) up to 0x7F (DEL), 96 characters in total.  This is likely only usable by
+	English-speaking folks, unfortunately.  I'd love to extend it to handle a variable number
+	of characters, and read UTF8 unicode, but I didn't see any easy way to do this.
+	Maybe people with more experience in this area would like to contribute.
+	
+	<h3>Using the commands</h3>
+	<p>I added 2 &quot;GL-ish&quot; commands to work with fonts:
+	cglNewFont, and cglText.
+	<p>cglNewFont takes three parameters: the type of font, the symbolic name for it, and the file name.
+	The type currently must be CGL_BMPFONT, the symbolic name can be any <a href="NamedObjects.html">valid name</a>,
+	and the file name is any valid system-dependant file path.
+
+	<p>cglText takes two parameters as well: the name of the font to use, and the text string to render with it.
+	As of now, the rendering is very dumb, and only renders lines as they are given.
+	I might, in a future version, start handling things like tabs and newlines, or even
+	add some options for wrapping.
+</body>
