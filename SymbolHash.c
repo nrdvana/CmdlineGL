@@ -14,20 +14,17 @@ const CmdHashEntry *GetCmd(const char *Key) {
 		if (strcmp(CmdLookup[code].Entries[i].Key, Key) == 0)
 			return &CmdLookup[code].Entries[i];
 	}
-	return (CmdHashEntry*) 0;
+	return NULL;
 }
 
 const IntConstHashEntry *GetIntConst(const char *Key) {
 	int code, i;
-	if (Key[0] == 'G' && Key[1] == 'L') {
-		Key+= 2;
-		code= CalcHash(Key) & (IntConstLookupSize-1); // mask it to the table size
-		for (i=IntConstLookup[code].EntryCount-1; i>=0; i--) {
-			if (strcmp(IntConstLookup[code].Entries[i].Key, Key) == 0)
-				return &IntConstLookup[code].Entries[i];
-		}
+	code= CalcHash(Key) & (IntConstLookupSize-1); // mask it to the table size
+	for (i=IntConstLookup[code].EntryCount-1; i>=0; i--) {
+		if (strcmp(IntConstLookup[code].Entries[i].Key, Key) == 0)
+			return &IntConstLookup[code].Entries[i];
 	}
-	return (IntConstHashEntry *) 0;
+	return NULL;
 }
 
 void InitSymbVarEntry(SymbVarEntry *Entry, const char* Name) {
@@ -99,7 +96,7 @@ void DumpConstList(FILE* DestStream) {
 	int i, j;
 	for (i=0; i<IntConstLookupSize; i++)
 		for (j=0; j<IntConstLookup[i].EntryCount; j++)
-			fprintf(DestStream, "GL%s %d\n", IntConstLookup[i].Entries[j].Key, IntConstLookup[i].Entries[j].Value);
+			fprintf(DestStream, "%s %d\n", IntConstLookup[i].Entries[j].Key, IntConstLookup[i].Entries[j].Value);
 }
 void DumpVarList(FILE* DestStream) {
 	RBTreeNode *Current= RBTree_GetLeftmost(SymbVarTree.RootSentinel.Left);
