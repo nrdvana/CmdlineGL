@@ -17,7 +17,8 @@ dist_dir=CmdlineGL-0.8.0
 
 INSTALL_SHELL_BINDINGS=@INST_SHELL_BIND@
 
-OBJ_FILES=SymbolHash.o Server.o ProcessInput.o ParseGL.o Global.o Contained_RBTree.o IntConstHash.autogen.o CmdHash.autogen.o HashFunc.o ImageLoader.o
+ALL_HEADERS=*.h
+OBJ_FILES=SymbolHash.o Server.o ProcessInput.o ParseGL.o Global.o Contained_RBTree.o IntConstHash.autogen.o CmdHash.autogen.o HashFunc.o ImageLoader.o Font.o
 
 all: build
 
@@ -33,7 +34,10 @@ Server.o: Server.c Server.h Global.h
 ParseGL.o: ParseGL.c ParseGL.h Global.h
 	${DEF_CC_CMD} -c ParseGL.c
 
-ImageLoader.o: ImageLoader.h ImageLoader.c
+Font.o: Font.c Font.h Global.h
+	$(DEF_CC_CMD) -c Font.c
+
+ImageLoader.o: ImageLoader.h ImageLoader.c ParseGL.h Global.h
 	${DEF_CC_CMD} -c ImageLoader.c
 
 Global.o: Global.c Global.h

@@ -7,6 +7,7 @@
 #include "ParseGL.h"
 #include "SymbolHash.h"
 #include "ImageLoader.h"
+#include "Font.h"
 
 /* For anyone who wants to reuse code from this file, or even just make it
  *   thread-safe, (heaven help you ;-) you will need to make a non-static
@@ -298,6 +299,21 @@ PUBLISHED(glTexCoord, DoTexCoord) {
 	}
 	else return ERR_PARAMCOUNT;
 	return 0;
+}
+PUBLISHED(cglNewFont, DoNewFont) {
+	const SymbVarEntry* NamedObj;
+	SDL_Surface *Img;
+	bool Success;
+	if (argc < 3) return ERR_PARAMCOUNT;
+	if (!ScanParams("iFN", argv, &ParseResult)) return ERR_PARAMPARSE;
+	if (ParseResult.Ints[0] != CGL_BMPFONT) return ERR_PARAMPARSE;
+	NamedObj= ParseResult.Symbolics[0];
+	if (!NamedObj) NamedObj= CreateNamedObj(argv[1], NAMED_FONT);
+	Img= LoadImg(ParseResult.FName);
+	if (!Img) return ERR_EXEC;
+	Success= GenerateFont(Img, (Font*) NamedObj->Data);
+	SDL_FreeSurface(Img);
+	return Success? 0 : ERR_EXEC;
 }
 
 //----------------------------------------------------------------------------

@@ -65,6 +65,7 @@ PUBLISHED(glColorMaterial, DoColorMaterial);
 PUBLISHED(glBindTexture, DoBindTexture);
 PUBLISHED(glTexParameter, DoTexParameter);
 PUBLISHED(glTexCoord, DoTexCoord);
+PUBLISHED(cglNewFont, DoNewFont);
 
 //----------------------------------------------------------------------------
 // Matrix Functions
