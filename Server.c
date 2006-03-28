@@ -102,6 +102,7 @@ int main(int Argc, char**Args) {
 	#else
 	InputFD= GetStdHandle(STD_INPUT_HANDLE);
 	#endif
+	InitLineBuffer(InputFD); // this initializes a static global LineBuffer.  See ProcessInput.c
 
 	if (!Options.ManualSDLSetup) {
 		DEBUGMSG(("Initializing SDL\n"));
@@ -286,7 +287,7 @@ void CheckInput() {
 
 	errno= 0;
 	CmdCount= 0;
-	while ((CmdCount < MAX_COMMAND_BATCH || IsGlBegun) && (Line= ReadLine(InputFD))) {
+	while ((CmdCount < MAX_COMMAND_BATCH || IsGlBegun) && (Line= ReadLine())) {
 		DEBUGMSG(("%s\n", Line));
 		if (ParseLine(Line, &TokenCount, TokenPointers))
 			ProcessCommand(TokenPointers, TokenCount);

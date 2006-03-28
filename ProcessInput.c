@@ -66,13 +66,43 @@ int ProcessCommand(char **TokenPointers, int TokenCount) {
 	}
 }
 
-char ReadBuffer[READ_BUFFER_SIZE];
-char const *StopPos= ReadBuffer+READ_BUFFER_SIZE;
-char *Pos= ReadBuffer;
-char *DataPos= ReadBuffer;
-char *LineStart= ReadBuffer;
+/** Everything from here down is "class LineBuffer".  I had to write my own
+ * because I wanted a readline function that wouldn't block, and wouldn't
+ * return a partial string.
+ *
+ * There's only one used in the whole prog, and I see it staying that way, so I
+ * 'optimized' a bit.
+ *
+ * If it ever becomes necessary to make more than one, uncomment and propogate.
+ * Also, it will then be necessary to make a constructor function, and call it
+ * before each gets used the first time.
+ */
+//typedef struct LineBuffer_t {
+	char ReadBuffer[READ_BUFFER_SIZE];
+	char const *StopPos;
+	char *Pos;
+	char *DataPos;
+	char *LineStart;
+	#ifndef _WIN32
+	int fd;
+	#else
+	HANDLE fd;
+	#endif
+//} LineBuffer;
 
-void ShiftBuffer() {
+#ifndef _WIN32
+void InitLineBuffer(int FileHandle /*, LineBuffer *this */) {
+#else
+void InitLineBuffer(HANDLE FileHandle /*, LineBuffer *this */) {
+#endif
+	fd= FileHandle;
+	StopPos= ReadBuffer+READ_BUFFER_SIZE;
+	Pos= ReadBuffer;
+	DataPos= ReadBuffer;
+	LineStart= ReadBuffer;
+}
+
+void ShiftBuffer(/* LineBuffer *this */) {
 	int shift= LineStart - ReadBuffer;
 	if (DataPos != LineStart)
 		memmove(ReadBuffer, LineStart, DataPos - LineStart);
@@ -81,12 +111,8 @@ void ShiftBuffer() {
 	LineStart= ReadBuffer;
 }
 
-#ifndef _WIN32
-char* ReadLine(int fd) {
-#else
-char* ReadLine(HANDLE fd) {
+char* ReadLine(/* LineBuffer *this */) {
 	int success;
-#endif
 	int red;
 	char *Result;
 
