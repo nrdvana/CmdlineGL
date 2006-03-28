@@ -102,7 +102,7 @@ void NormalizeFontSize(Font *F) {
 	int i;
 	for (i=0; i<FONT_CHAR_MAX; i++)
 		TotalHeight+= F->Chars[i].BoxHeight;
-	Scale= FONT_CHAR_MAX / AvgHeight;
+	Scale= FONT_CHAR_MAX / TotalHeight;
 	for (i=0; i<FONT_CHAR_MAX; i++) {
 		F->Chars[i].BoxHeight*= Scale;
 		F->Chars[i].BoxWidth*= Scale;
