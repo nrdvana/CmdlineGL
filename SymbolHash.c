@@ -86,6 +86,11 @@ SymbVarEntry *CreateSymbVar(const char *Name) {
 	return Entry;
 }
 
+void DeleteSymbVar(const SymbVarEntry *Entry) {
+	RBTree_Prune(&Entry->node);
+	free(Entry);
+}
+
 void DumpCommandList(FILE* DestStream) {
 	int i, j;
 	for (i=0; i<CmdLookupSize; i++)
