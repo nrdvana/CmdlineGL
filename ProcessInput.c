@@ -8,14 +8,8 @@
 #include "ProcessInput.h"
 #include "SymbolHash.h"
 
-#define CMD_LEN_MAX 256
 #define READ_BUFFER_SIZE 1024
 #define TOK_COUNT_MAX MAX_GL_PARAMS+1
-
-int ServerConn;
-void *CmdData;
-int CmdDataLen;
-char LineBuffer[CMD_LEN_MAX];
 
 bool ParseLine(char *Line, int *ArgCountResult, char **ArgResult) {
 	char *LastArgPos, *temp;
@@ -35,8 +29,8 @@ bool ParseLine(char *Line, int *ArgCountResult, char **ArgResult) {
 
 int ProcessCommand(char **TokenPointers, int TokenCount) {
 	const CmdHashEntry *Cmd;
-	int Result;
-	
+	int Result, GLErr;
+
 	Cmd= GetCmd(TokenPointers[0]);
 	if (Cmd != NULL) {
 		Result= Cmd->Value(TokenCount-1, TokenPointers+1); // run command
@@ -44,19 +38,22 @@ int ProcessCommand(char **TokenPointers, int TokenCount) {
 		case 0:
 			if (IsGlBegun) // can't check command success
 				return 0;
-			Result= glGetError();
-			if (Result == GL_NO_ERROR || Result == 0) // command was successful
+			GLErr= glGetError();
+			if (!GLErr) // command was successful
 				return 0;
-			else do {
-				fprintf(stderr, "GL error while executing %s: %s.\n", TokenPointers[0], gluErrorString(Result));
-				Result= glGetError();
-			} while (Result != GL_NO_ERROR && Result != 0);
+			while (GLErr) {
+				fprintf(stderr, "GL error while executing %s: %s.\n", TokenPointers[0], gluErrorString(GLErr));
+				GLErr= glGetError();
+			}
 			break;
 		case ERR_PARAMCOUNT:
 			fprintf(stderr, "Wrong number of parameters for %s\n", TokenPointers[0]);
 			break;
 		case ERR_PARAMPARSE:
 			fprintf(stderr, "Cannot parse parameters for %s\n", TokenPointers[0]);
+			break;
+		case ERR_EXEC:
+			fprintf(stderr, "Error during execution of %s\n", TokenPointers[0]);
 			break;
 		default:
 			fprintf(stderr, "Unknown result code: %d\n", Result);
