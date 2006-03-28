@@ -1,98 +1,110 @@
+#include <SDL.h>
 #include "Global.h"
-#include <stdio.h>      // Header file for standard file i/o.
-#include <stdlib.h>     // Header file for malloc/free.
+#include "ParseGL.h"
 #include "ImageLoader.h"
 
+#ifdef WITH_SDL_IMG_LIB
+#include <SDL_image.h>
+#endif
 
-// Following code taken and modified slightly from nehe.gamedev.net
-// --------------------------------------------------------------------
-//
-// This code was created by Jeff Molofee '99 (ported to Linux/GLUT by Richard Campbell '99)
-//
-// If you've found this code useful, please let me know.
-//
-// Visit me at www.demonews.com/hosted/nehe 
-// (email Richard Campbell at ulmont@bellsouth.net)
-//
-
-// quick and dirty bitmap loader...for 24 bit bitmaps with 1 plane only.
-// See http://www.dcs.ed.ac.uk/~mxr/gfx/2d/BMP.txt for more info.
-bool LoadImg(const char *filename, Image *image) {
-    FILE *file;
-    unsigned long size;                 // size of the image in bytes.
-    unsigned long i;                    // standard counter.
-    unsigned short int planes;          // number of planes in image (must be 1) 
-    unsigned short int bpp;             // number of bits per pixel (must be 24)
-//    char temp;                          // temporary color storage for bgr-rgb conversion.
-
-    // make sure the file is there.
-    if ((file = fopen(filename, "rb"))==NULL)
-    {
-		fprintf(stderr, "File Not Found : %s\n",filename);
-		return 0;
-    }
-    
-    // seek through the bmp header, up to the width/height:
-    fseek(file, 18, SEEK_CUR);
-
-    // read the width
-    if ((i = fread(&image->Width, 4, 1, file)) != 1) {
-		fprintf(stderr, "Error reading width from %s.\n", filename);
-		return 0;
-    }
-    fprintf(stderr, "Width of %s: %lu\n", filename, image->Width);
-    
-    // read the height 
-    if ((i = fread(&image->Height, 4, 1, file)) != 1) {
-		fprintf(stderr, "Error reading height from %s.\n", filename);
-		return 0;
-    }
-    fprintf(stderr, "Height of %s: %lu\n", filename, image->Height);
-    
-    // calculate the size (assuming 24 bits or 3 bytes per pixel).
-    size = image->Width * image->Height * 3;
-
-    // read the planes
-    if ((fread(&planes, 2, 1, file)) != 1) {
-		fprintf(stderr, "Error reading planes from %s.\n", filename);
-		return 0;
-    }
-    if (planes != 1) {
-		fprintf(stderr, "Planes from %s is not 1: %u\n", filename, planes);
-		return 0;
-    }
-
-    // read the bpp
-    if ((i = fread(&bpp, 2, 1, file)) != 1) {
-		fprintf(stderr, "Error reading bpp from %s.\n", filename);
-		return 0;
-    }
-    if (bpp != 24) {
-		fprintf(stderr, "Bpp from %s is not 24: %u\n", filename, bpp);
-		return 0;
-    }
-	
-    // seek past the rest of the bitmap header.
-    fseek(file, 24, SEEK_CUR);
-
-    // read the data. 
-    image->Data= malloc(size);
-    if (image->Data == NULL) {
-		fprintf(stderr, "Error allocating memory for color-corrected image data");
-		return 0;
-    }
-
-    if ((i = fread(image->Data, size, 1, file)) != 1) {
-		fprintf(stderr, "Error reading image data from %s.\n", filename);
-		return 0;
-    }
-
-//    for (i=0;i<size;i+=3) { // reverse all of the colors. (bgr -> rgb)
-//		temp = image->Data[i];
-//		image->data[i] = image->Data[i+2];
-//		image->data[i+2] = temp;
-//    }
-    
-    // we're done.
-    return 1;
+// a separate function so that not so much stack gets allocated on calls to LoadImg
+void ReportImgNotFound(const char *FName) {
+	char buffer[1024];
+	getcwd(buffer, sizeof(buffer)-1);
+	buffer[sizeof(buffer)-1]= '\0';
+	fprintf(stderr, "Error loading image: '%s'\nWorking Dir = '%s'\n", FName, buffer);
 }
+
+bool UsableByGL(SDL_Surface *Img) {
+	int dim;
+	// images must be square
+	if (Img->w != Img->h) {
+		fprintf(stderr, "OpenGL requires square images. (image is %dx%d)\n", (int)Img->w, (int)Img->h);
+		return false;
+	}
+	// image dimensions must be a power of 2
+	for (dim= Img->w; dim != 1; dim>>=1)
+		if (dim&1) {
+			fprintf(stderr, "OpenGL requires image dimensions to be a power of 2. (%d is not)\n", (int)Img->w);
+			return false;
+		}
+	if (Img->format->BytesPerPixel < 2 || Img->format->BytesPerPixel > 4) {
+		fprintf(stderr, "Image pixel format not handled by CmdlineGL. Expecting 16/24/32bpp\n");
+		return false;
+	}
+	// we need a contiguous byte array of pixels
+	if (Img->pitch != Img->w * Img->format->BytesPerPixel) {
+		fprintf(stderr, "SDL did not load the pixels as a contiguous array of bytes.\n");
+		return false;
+	}
+	return true;
+}
+
+SDL_Surface* LoadImg(const char *FName) {
+	SDL_Surface *Img;
+#ifdef WITH_SDL_IMG_LIB
+	Img= IMG_Load(FName);
+#else
+	Img= SDL_LoadBMP(FName);
+#endif
+	if (!Img)
+		ReportImgNotFound(FName);
+	else if (!UsableByGL(Img)) {
+		fprintf(stderr, "Unable to use image %s\n", FName);
+		SDL_FreeSurface(Img);
+		Img= NULL;
+	}
+	else
+		DEBUGMSG(("Loaded image '%s', %dx%d %dbpp\n", FName, Img->w, Img->h, Img->format->BitsPerPixel));
+	return Img;
+}
+
+// This code seems dirty... but I don't have enough experience with SDL & OpenGL
+// on both architecture endiannesses to optimize it.
+void LoadImgIntoTexture(SDL_Surface *Img) {
+	int format, type;
+	SDL_PixelFormat *fmt= Img->format;
+	#if SDL_BYTEORDER == SDL_BIG_ENDIAN
+	if (fmt->Rmask == 0xFF000000 && fmt->Gmask == 0x00FF0000 && fmt->Bmask == 0x0000FF00) {
+	#else
+	if (fmt->Rmask == 0x000000FF && fmt->Gmask == 0x0000FF00 && fmt->Bmask == 0x00FF0000) {
+	#endif
+		format= fmt->Amask? GL_RGBA : GL_RGB;
+		type= GL_UNSIGNED_BYTE;
+		DEBUGMSG(("Image seems to be %s/GL_UNSIGNED_BYTE\n", format==GL_RGBA?"GL_RGBA":"GL_RGB"));
+	}
+	#if SDL_BYTEORDER == SDL_BIG_ENDIAN
+	else if (fmt->Bmask == 0xFF000000 && fmt->Gmask == 0x00FF0000 && fmt->Rmask == 0x0000FF00) {
+	#else
+	else if (fmt->Bmask == 0x000000FF && fmt->Gmask == 0x0000FF00 && fmt->Rmask == 0x00FF0000) {
+	#endif
+		format= fmt->Amask? GL_BGRA : GL_BGR;
+		type= GL_UNSIGNED_BYTE;
+		DEBUGMSG(("Image seems to be %s/GL_UNSIGNED_BYTE\n", format==GL_BGRA?"GL_BGRA":"GL_BGR"));
+	}
+	else {
+		// I don't want to implement the rest until I actually have some way to test it.
+		// Really, I haven't even tested anything other than BGR.
+		fprintf(stderr, "Loading 16-bit images not yet supported.\n");
+		return;
+	}
+	glTexImage2D(GL_TEXTURE_2D, 0, 3, Img->w, Img->h, 0, format, type, Img->pixels);
+}
+
+PUBLISHED(cglLoadImage2D, DoLoadImage2D) {
+	int i, j;
+	SDL_Surface *Img;
+	ScanParamsResult ScanResult;
+	if (argc < 1) return ERR_PARAMCOUNT;
+	if (!ScanParams("N", argv, &ScanResult)) return ERR_PARAMPARSE;
+	// Now load the image
+	Img= LoadImg(ScanResult.FName);
+	if (!Img) return ERR_EXEC;
+	// Then, load the image data into OpenGL
+	SDL_LockSurface(Img);
+	LoadImgIntoTexture(Img);
+	SDL_UnlockSurface(Img);
+	SDL_FreeSurface(Img);
+	return 0;
+}
+

@@ -21,7 +21,6 @@ bool ScanParams(const char* ParamType, char** Args, ScanParamsResult* Result);
 // CmdlineGL Functions
 //
 PUBLISHED(cglFixedPt, DoSetFixedPoint);
-PUBLISHED(cglLoadImage2D, DoLoadImage2D);
 PUBLISHED(cglSwapBuffers,DoSwapBuffers);
 
 //----------------------------------------------------------------------------

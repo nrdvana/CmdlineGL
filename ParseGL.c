@@ -2,7 +2,7 @@
 #include <ctype.h>
 #include <stdlib.h>
 #include <stdio.h>
-#include <SDL/SDL.h>
+#include <SDL.h>
 #include "GlHeaders.h"
 #include "ParseGL.h"
 #include "SymbolHash.h"
@@ -43,34 +43,6 @@ PUBLISHED(cglFixedPt, DoSetFixedPoint) {
 	if (*EndPtr != '\0') return ERR_PARAMPARSE;
 
 	FixedPtMultiplier= 1.0 / newval;
-	return 0;
-}
-PUBLISHED(cglLoadImage2D, DoLoadImage2D) {
-	int i, j;
-	Image Img;
-	if (argc < 1) return ERR_PARAMCOUNT;
-	// if more than 2 params, assume its a filename with spaces in it.
-	if (argc > 1) {
-		// XXX WARNING!! DANGEROUS AND SINISTER (but fun) KLUGE FOLLOWS! XXX
-		// We know that all the arg strings came from a single string which is
-		//   still in our global read-buffer, so to reconstruct the filename
-		//   with spaces in it, we can simply replace a few NULs with spaces.
-		// (I should enter the IOCCC someday...)
-		for (i=1; i<argc; i++)
-			for (j=-1; !argv[i][j]; j--)
-				argv[i][j]= ' ';
-		// Note: if someone feels like fixing this someday, the best thing would be
-		// not to have broken up the original string.  In other words, let each one
-		// of these 'Do' functions parse its own stuff out of one single string.  It
-		// would even be more efficient since the string would then only get scanned
-		// once.  This, however, would require a lot of rewriting...  wish I'd
-		// thought of it sooner.
-	}
-	// Now load the image
-	LoadImg(argv[0], &Img);
-	// Then, load the image data into OpenGL
-	glTexImage2D(GL_TEXTURE_2D, 0, 3, Img.Width, Img.Height, 0, GL_BGR, GL_UNSIGNED_BYTE, Img.Data);
-	free(Img.Data);
 	return 0;
 }
 
