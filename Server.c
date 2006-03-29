@@ -8,6 +8,7 @@
 #include <string.h>
 #include "GlHeaders.h"
 #include <SDL/SDL.h>
+#include "Version.h"
 
 #ifndef _WIN32
 #include <unistd.h>
@@ -24,6 +25,7 @@ typedef struct {
 	bool ShowCmds, ShowConsts;
 	bool WantHelp;
 	bool NeedHelp;
+	bool VersionOnly;
 	char *WndTitle;
 	bool NoUIMessages;
 	bool ManualSDLSetup;
@@ -36,7 +38,7 @@ typedef struct {
 
 void SetParamDefaults(CmdlineOptions *Options);
 void ReadParams(char **args, CmdlineOptions *Options);
-void PrintUsage();
+void PrintUsage(bool error);
 void CheckInput();
 void CheckSDLEvents();
 
@@ -67,8 +69,12 @@ int main(int Argc, char**Args) {
 	ReadParams(Args, &Options);
 	
 	if (Options.WantHelp || Options.NeedHelp) {
-		PrintUsage();
+		PrintUsage(!Options.WantHelp);
 		return Options.WantHelp? 0 : -1;
+	}
+	if (Options.VersionOnly) {
+		printf("Version %s\n", CGLVER_String);
+		return 0;
 	}
 	if (Options.ShowCmds) {
 		DumpCommandList(stdout);
@@ -182,6 +188,7 @@ void ReadParams(char **Args, CmdlineOptions *Options) {
 			break; // '-f <blah>' = read from FIFO "blah"
 		#endif
 		case 't': Options->TerminateOnEOF= true; break;
+		case 'v': Options->VersionOnly= true; break;
 		case 'h':
 		case '?': Options->WantHelp= true; break;
 		case '\0': ReadingArgs= false; break; // "-" = end of arguments
@@ -198,6 +205,7 @@ void ReadParams(char **Args, CmdlineOptions *Options) {
 				}
 				break;
 			}
+			if (strcmp(*NextArg, "--version") == 0) { Options->VersionOnly= true; break; }
 		default:
 			fprintf(stderr, "Unrecognized argument: %s", *NextArg);
 			Options->NeedHelp= true;
@@ -207,15 +215,17 @@ void ReadParams(char **Args, CmdlineOptions *Options) {
 	}
 }
 
-void PrintUsage() {
-	fprintf(stderr, "%s",
+void PrintUsage(bool error) {
+	fprintf(error? stderr : stdout,
+	"CmdlineGL %s\n"
 	"Usage:\n"
 	"  <command-source> | CmdlineGL [options] | <user-input-reader>\n"
 	"     Reads commands from stdin, and writes user input to stdout.\n"
 	"\n"
 	"Options:\n"
 	"  -h              Display this help message.\n"
-	"  -t              Terminate after receiving EOF\n"
+	"  -t              Terminate after receiving EOF.\n"
+	"  -v --version    Display version and exit.\n"
 	#ifndef WIN32
 	"  -f <fifo>       Create the named fifo (file path+name) and read from it.\n"
 	#endif
@@ -226,7 +236,9 @@ void PrintUsage() {
 	"\n"
 	"Note: Each line of input is broken on space characters and treated as a\n"
  	"      command.  There is currently no escaping mechanism, although I'm not\n"
- 	"      opposed to the idea.\n\n");
+ 	"      opposed to the idea.\n\n",
+	CGLVER_String
+	);
 }
 
 PUBLISHED(cglExit,DoQuit) {

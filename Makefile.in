@@ -18,7 +18,7 @@ dist_dir=CmdlineGL-0.8.0
 INSTALL_SHELL_BINDINGS=@INST_SHELL_BIND@
 
 ALL_HEADERS=*.h
-OBJ_FILES=SymbolHash.o Server.o ProcessInput.o ParseGL.o Global.o Contained_RBTree.o IntConstHash.autogen.o CmdHash.autogen.o HashFunc.o ImageLoader.o Font.o
+OBJ_FILES=SymbolHash.o Server.o ProcessInput.o ParseGL.o Global.o Contained_RBTree.o IntConstHash.autogen.o CmdHash.autogen.o HashFunc.o ImageLoader.o Font.o Version.o
 
 all: build
 
@@ -29,8 +29,14 @@ output/CmdlineGL: ${OBJ_FILES}
 	${CC} ${CFLAGS} ${LDFLAGS} @LIBS@ `sdl-config --libs` -o output/CmdlineGL ${OBJ_FILES}
 # I now strip the thing by default.  It knocks off about 350K on my system, lol.  Yay for staticly-compiled hash tables.
 	strip output/CmdlineGL
+# subsequent builds are tagged by the number of times they have been built in that source dir
+	@echo "* Incrementing build number for next build"
+	@( read major minor release build reponame < Version.string; \
+	   let build=build+1; \
+	   echo "$$major $$minor $$release $$build $$reponame" > Version.string; \
+	 )
 
-Server.o: Server.c Server.h Global.h
+Server.o: Server.c Server.h Global.h Version.h
 	${DEF_CC_CMD} -c Server.c
 
 ParseGL.o: ParseGL.c ParseGL.h Global.h
@@ -41,6 +47,29 @@ Font.o: Font.c Font.h Global.h
 
 ImageLoader.o: ImageLoader.h ImageLoader.c ParseGL.h Global.h
 	${DEF_CC_CMD} -c ImageLoader.c
+
+Version.o: Version.autogen.c
+	${DEF_CC_CMD} -c Version.autogen.c -o Version.o
+
+Version.string: Version.log
+	@echo "-> Regenerating Version.string from Version.log"
+	@tail -n 1 Version.log | sed -n 's/\(^[^:]*\).*/\1/p' | ( \
+	   read major minor release; \
+	   let major=major+0 minor=minor+0 release=release+0; \
+	   if [ -f _darcs/RepoName ]; then cur_repo="$$(cat _darcs/RepoName)"; else cur_repo="$$(hostname)"; fi; \
+	   echo $$major $$minor $$release 0 $$cur_repo > Version.string; \
+	 )
+
+Version.autogen.c: Version.string
+	@echo "-> Regenerating Version.c from Version.string"
+	@( read major minor release build reponame < Version.string; \
+	   echo "const int CGLVER_Major=$$major;"; \
+	   echo "const int CGLVER_Minor=$$minor;"; \
+	   echo "const int CGLVER_Release=$$release;"; \
+	   echo "const int CGLVER_Build=$$build;"; \
+	   echo "const char* CGLVER_RepoName=\"$$reponame\";"; \
+	   echo "const char* CGLVER_String=\"$$major.$$minor.$$release.$$reponame[$$build]\";"; \
+	 ) > Version.autogen.c
 
 Global.o: Global.c Global.h
 	${DEF_CC_CMD} -c Global.c
