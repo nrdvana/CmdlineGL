@@ -243,7 +243,11 @@ PUBLISHED(cglText,DoText) {
 	if (!ScanParams("FN", argv, &Result)) return ERR_PARAMPARSE;
 	if (!Result.Symbolics[0]) return ERR_PARAMPARSE;
 	F= Result.Symbolics[0]->Data;
-	WriteText(F, Result.FName); // FName was a bad choice.  I should have called it "String"
+	if (Result.FName[0] != '"') {
+		fprintf(stderr, "(remember that cglText requires a leading \" before your text string)");
+		return ERR_EXEC;
+	}
+	WriteText(F, Result.FName+1); // FName was a bad choice.  I should have called it "String"
 	return 0;
 }
 
