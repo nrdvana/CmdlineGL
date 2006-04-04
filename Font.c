@@ -90,8 +90,8 @@ bool ProcessChar(CharCoordts* CC, SDL_Surface *Img, Uint8 *Corner, int CellPxWid
 	CC->Y1t= (CellY+CellPxHeight) / (double)Img->h; // XXX ditto
 	CC->X0v= -BoxX[0]; // negative distance from box to reach left edge of cell
 	CC->X1v= CellPxWidth-BoxX[0]; // positive distance from left edge of box to right edge of cell
-	CC->Y0v= BoxY[1]; // positive distance from bottom of box to top of cell (positive=up)
-	CC->Y1v= BoxY[1]-CellPxHeight; // negative distance from bottom of box to bottom of cell
+	CC->Y1v= BoxY[1]; // positive distance from bottom of box to top of cell (positive=up)
+	CC->Y0v= BoxY[1]-CellPxHeight; // negative distance from bottom of box to bottom of cell
 	CC->BoxWidth= BoxWidth;
 	CC->BoxHeight= BoxHeight;
 	return true;
@@ -99,17 +99,21 @@ bool ProcessChar(CharCoordts* CC, SDL_Surface *Img, Uint8 *Corner, int CellPxWid
 
 void NormalizeFontSize(Font *F) {
 	double TotalHeight= 0.0, Scale;
+	CharCoordts *CC;
 	int i;
 	for (i=0; i<FONT_CHAR_MAX; i++)
 		TotalHeight+= F->Chars[i].BoxHeight;
 	Scale= FONT_CHAR_MAX / TotalHeight;
 	for (i=0; i<FONT_CHAR_MAX; i++) {
-		F->Chars[i].BoxHeight*= Scale;
-		F->Chars[i].BoxWidth*= Scale;
-		F->Chars[i].X0v*= Scale;
-		F->Chars[i].X1v*= Scale;
-		F->Chars[i].Y0v*= Scale;
-		F->Chars[i].Y1v*= Scale;
+		CC= &F->Chars[i];
+		DEBUGMSG(("Normalized {w:%.0lf,h:%.0lf,t:%.0lf,l:%.0lf,b:%.0lf,r:%.0lf} ", CC->BoxWidth, CC->BoxHeight, CC->Y1v, CC->X0v, CC->Y0v, CC->X1v));
+		CC->BoxHeight*= Scale;
+		CC->BoxWidth*= Scale;
+		CC->X0v*= Scale;
+		CC->X1v*= Scale;
+		CC->Y0v*= Scale;
+		CC->Y1v*= Scale;
+		DEBUGMSG((" -> {w:%.4lf,h:%.4lf,t:%.4lf,l:%.4lf,b:%.4lf,r:%.4lf}\n", CC->BoxWidth, CC->BoxHeight, CC->Y1v, CC->X0v, CC->Y0v, CC->X1v));
 	}
 }
 
@@ -154,6 +158,7 @@ bool MapCharacterCoordts(SDL_Surface* Img, Font *F) {
 		fprintf(stderr, "Font only defined characters 0x20-0x%X. Need 0x20-0x7F.\n", 0x20+CurChar-1);
 		return false;
 	}
+	DEBUGMSG(("\n"));
 	NormalizeFontSize(F);
 	return true;
 }
