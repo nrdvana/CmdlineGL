@@ -148,7 +148,7 @@ SeekHome() {
 }
 
 SeekEnd() {
-	let EditCol=${#Lines[EditRow]}+1 CurCol=EditCol
+	let EditCol=${#Lines[EditRow]} CurCol=EditCol
 }
 
 # Seek horizontally on a line
@@ -159,8 +159,17 @@ SeekHoriz() {
 	local Ofs=$1 LineLen=${#Lines[EditRow]}
 	if ((EditCol!=CurCol)); then ((EditCol=CurCol)); fi
 	((EditCol+=Ofs))
-	if ((EditCol>LineLen+1)); then ((EditCol=LineLen+1)); fi
-	if ((EditCol<0)); then ((EditCol= 0)); fi
+	if ((EditCol>LineLen)); then
+		SeekVert 1
+		SeekHome
+	elif ((EditCol<0)); then
+		if ((EditRow>0)); then
+			SeekVert -1
+			SeekEnd
+		else
+			((EditCol= 0))
+		fi
+	fi
 	((CurCol=EditCol))
 }
 
@@ -173,21 +182,62 @@ SeekVert() {
 	((EditRow+=Ofs))
 	if ((EditRow<0)); then ((EditRow= 0)); fi
 	local LineLen=${#Lines[EditRow]}
-	if ((EditCol>=LineLen)); then ((CurCol=LineLen-1)); fi
+	if ((EditCol>LineLen)); then ((CurCol=LineLen)); fi
+	# Adjust text window
 	if ((EditRow>=WindowStart+WindowHeight-1)); then ((WindowStart=EditRow-WindowHeight+1)); fi
 	if ((EditRow<=WindowStart+1 && WindowStart>0 && EditRow>0)); then ((WindowStart=EditRow-1)); fi
+}
+
+# force the existance of empty row variables
+FillEmptyLines() {
+	local LineCnt=${#Lines[@]} i
+	if ((EditRow>LineCnt)); then
+		for ((i=EditRow-1; i>=LineCnt; i--)); do
+			Lines[i]="${Lines[i]}"
+		done
+	fi
 }
 
 # Insert text at the current edit position
 # @param $@ - text to insert
 #
 InsertText() {
+	FillEmptyLines
 	Lines[EditRow]="${Lines[EditRow]:0:EditCol}$@${Lines[EditRow]:EditCol}"
 	SeekHoriz ${#@}
 }
 
+# @param $1 - direction: 0=delete, -1=backspace
+DelChar() {
+	local direc=$1 LineLen=${#Lines[EditRow]}
+	if ((direc == -1 && CurCol==0)); then
+		if ((EditRow > 0)); then
+			SeekVert -1
+			SeekEnd
+			MergeLines $EditRow
+		fi
+	elif ((direc == 0 && CurCol>=LineLen)); then
+		MergeLines $EditRow
+	else
+		Lines[EditRow]="${Lines[EditRow]:0:CurCol+direc}${Lines[EditRow]:CurCol+direc+1}"
+		SeekHoriz $direc
+	fi
+}
+
+# @param $1 - line number to merge, by appending next line
+#
+MergeLines() {
+	local LineCnt=${#Lines[@]} Line=$1 i
+	Lines[Line]="${Lines[Line]}${Lines[Line+1]}"
+	for ((i=Line+1; i<LineCnt-1; i++)); do
+		Lines[i]="${Lines[i+1]}"
+	done
+	unset Lines[$LineCnt-1]
+}
+
 SplitLine() {
-	local LineCnt=${#Lines[@]} NewLine="${Lines[EditRow]:EditCol}"
+	local LineCnt=${#Lines[@]} NewLine="${Lines[EditRow]:EditCol}" i
+	FillEmptyLines
 	Lines[EditRow]="${Lines[EditRow]:0:EditCol}"
 	for ((i=LineCnt-1; i>EditRow; i--)); do
 		Lines[i+1]="${Lines[i]}"
@@ -195,6 +245,18 @@ SplitLine() {
 	Lines[EditRow+1]="$NewLine";
 	SeekHome
 	SeekVert 1
+}
+
+DrawStatus() {
+	glScale .4 .5 0
+	glColor '#00FF00'
+	glDisable GL_LIGHTING
+	cglText MyFont \""${#Lines[@]}_lines"
+	glTranslate 9 0 0;
+	cglText MyFont \""($CurCol,$EditRow)"
+	glTranslate 9 0 0;
+	cglText MyFont \""${FName}"
+	glEnable GL_LIGHTING
 }
 
 DrawIt() {
@@ -207,11 +269,7 @@ DrawIt() {
 	glPopMatrix
 	glPushMatrix
 	glTranslate -9 9.5 0
-	glScale .4 .5 0
-	glColor '#00FF00'
-	glDisable GL_LIGHTING
-	cglText MyFont \""${FName}"
-	glEnable GL_LIGHTING
+	DrawStatus
 	glPopMatrix
 	glColor '#FFFFFF'
 	glTranslate -9 7 0
@@ -226,7 +284,7 @@ DrawIt() {
 	if (( ((Timing_T/CursorBlinkPeriod)&1) == 0 )); then
 		glDisable GL_LIGHTING
 		cglFixedPt 10
-		glTranslate $((EditCol*10)) -$(( (EditRow-WindowStart)*15)) 0.1
+		glTranslate $((CurCol*10)) -$(( (EditRow-WindowStart)*15)) 0.1
 		cglFixedPt 1
 		glCallList cursor
 		glEnable GL_LIGHTING
@@ -294,7 +352,10 @@ ProcessInput() {
 			enter|return) SplitLine;;
 			home)	SeekHome;;
 			end)	SeekEnd;;
+			backspace) DelChar -1;;
+			delete) DelChar 0;;
 			?)	InsertText "$3";;
+			space)  InsertText " ";;
 			escape) terminate=1;;
 			esac
 			Press=1;
