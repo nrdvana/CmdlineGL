@@ -13,8 +13,6 @@ infodir = $(prefix)/info
 
 DEF_CC_CMD=${CC} ${CFLAGS} ${CPPFLAGS} `sdl-config --cflags`
 
-dist_dir=CmdlineGL-0.8.0
-
 INSTALL_SHELL_BINDINGS=@INST_SHELL_BIND@
 
 ALL_HEADERS=*.h
@@ -160,16 +158,24 @@ install: output/CmdlineGL
  		   done \
 	fi
 
-dist:
-	darcs dist -d ${dist_dir}
-	[[ -d ${dist_dir} ]] || mkdir ${dist_dir}
-	autoconf
-	cp configure ${dist_dir}/
-	gunzip ${dist_dir}.tar.gz
-	tar -rf ${dist_dir}.tar ${dist_dir}/configure
-	gzip ${dist_dir}.tar
-	rm ${dist_dir}/configure
-	rmdir ${dist_dir}
+dist: Version.string output/CmdlineGL
+	@echo "==>> Make sure to update the Version.log to increment the release number! <<=="
+	@( read major minor release andstuff < Version.string; \
+	   DistName="CmdlineGL_$$major.$$minor.$$release"; \
+	   echo "Generating dist tarball using 'darcs dist'"; \
+	   darcs dist -d "$$DistName"; \
+	   echo "Refreshing configure script"; \
+	   autoconf; \
+	   echo "Adding 'configure' script to tarball"; \
+	   [[ -d "$$DistName" ]] || mkdir "$$DistName"; \
+	   cp configure "$$DistName/configure"; \
+	   gunzip "$$DistName.tar.gz"; \
+	   tar -rf "$$DistName.tar" "$$DistName/configure"; \
+	   gzip "$$DistName.tar"; \
+	   rm "$$DistName/configure"; \
+	   rmdir "$$DistName"; \
+	   echo "Release tarball is $$DistName.tar.gz"; \
+	)
 
 clean:
 	rm -f *.autogen.c
