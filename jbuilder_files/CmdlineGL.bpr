@@ -1,0 +1,122 @@
+<?xml version='1.0' encoding='utf-8' ?>
+<!-- C++Builder XML Project -->
+<PROJECT>
+  <MACROS>
+    <VERSION value="BCB.05.03"/>
+    <PROJECT value="CmdlineGL.exe"/>
+    <OBJFILES value="\\192.168.42.1\lroot\home\silverdirk\code\CmdlineSDL\Server.obj 
+      \\192.168.42.1\lroot\home\silverdirk\code\CmdlineSDL\CmdHash.autogen.obj 
+      \\192.168.42.1\lroot\home\silverdirk\code\CmdlineSDL\Contained_RBTree.obj 
+      \\192.168.42.1\lroot\home\silverdirk\code\CmdlineSDL\Global.obj 
+      \\192.168.42.1\lroot\home\silverdirk\code\CmdlineSDL\HashFunc.obj 
+      \\192.168.42.1\lroot\home\silverdirk\code\CmdlineSDL\ImageLoader.obj 
+      \\192.168.42.1\lroot\home\silverdirk\code\CmdlineSDL\IntConstHash.autogen.obj 
+      \\192.168.42.1\lroot\home\silverdirk\code\CmdlineSDL\ParseGL.obj 
+      \\192.168.42.1\lroot\home\silverdirk\code\CmdlineSDL\ProcessInput.obj 
+      \\192.168.42.1\lroot\home\silverdirk\code\CmdlineSDL\SymbolHash.obj 
+      \\192.168.42.1\lroot\home\silverdirk\code\CmdlineSDL\Font.obj"/>
+    <RESFILES value=""/>
+    <DEFFILE value=""/>
+    <RESDEPEN value="$(RESFILES)"/>
+    <LIBFILES value="E:\src\SDL-1.2.4\lib\SDL_omf.lib"/>
+    <LIBRARIES value=""/>
+    <SPARELIBS value="Vcl50.lib"/>
+    <PACKAGES value="Vcl50.bpi Vclx50.bpi dclusr50.bpi custom.bpi dclocx50.bpi bcbsmp50.bpi 
+      bcb2kaxserver50.bpi"/>
+    <PATHCPP value=".;\\192.168.42.1\lroot\home\silverdirk\code\CmdlineSDL"/>
+    <PATHPAS value=".;"/>
+    <PATHRC value=".;"/>
+    <PATHASM value=".;"/>
+    <DEBUGLIBPATH value="$(BCB)\lib\debug"/>
+    <RELEASELIBPATH value="$(BCB)\lib\release"/>
+    <LINKER value="tlink32"/>
+    <USERDEFINES value="_DEBUG"/>
+    <SYSDEFINES value="NO_STRICT;_NO_VCL;USEPACKAGES"/>
+    <MAINSOURCE value="CmdlineGL.bpf"/>
+    <INCLUDEPATH value="\\192.168.42.1\lroot\home\silverdirk\code\CmdlineSDL;$(BCB)\include;$(BCB)\include\vcl;&quot;E:\src\SDL-1.2.4\include\&quot;"/>
+    <LIBPATH value="\\192.168.42.1\lroot\home\silverdirk\code\CmdlineSDL;$(BCB)\Projects\Lib;$(BCB)\lib\obj;$(BCB)\lib"/>
+    <WARNINGS value="-w-par"/>
+  </MACROS>
+  <OPTIONS>
+    <CFLAG1 value="-Od -H=$(BCB)\lib\vcl50.csm -Hc -Vx -Ve -X- -r- -a8 -b- -k -y -v -vi- -tWC 
+      -tWM- -c"/>
+    <PFLAGS value="-$YD -$W -$O- -v -JPHNE -M"/>
+    <RFLAGS value=""/>
+    <AFLAGS value="/mx /w2 /zd"/>
+    <LFLAGS value="-D&quot;&quot; -ap -Tpe -x -Gn -v"/>
+  </OPTIONS>
+  <LINKER>
+    <ALLOBJ value="c0x32.obj $(PACKAGES) $(OBJFILES)"/>
+    <ALLRES value="$(RESFILES)"/>
+    <ALLLIB value="$(LIBFILES) $(LIBRARIES) import32.lib cw32.lib"/>
+  </LINKER>
+  <IDEOPTIONS>
+[Version Info]
+IncludeVerInfo=0
+AutoIncBuild=0
+MajorVer=1
+MinorVer=0
+Release=0
+Build=0
+Debug=0
+PreRelease=0
+Special=0
+Private=0
+DLL=0
+Locale=1033
+CodePage=1252
+
+[Version Info Keys]
+CompanyName=Michael Conrad
+FileDescription=
+FileVersion=1.0.0.0
+InternalName=
+LegalCopyright=Copyright (c) 2002, Michael Conrad
+LegalTrademarks=
+OriginalFilename=
+ProductName=
+ProductVersion=1.0.0.0
+WebPage=www.silverdirk.com
+E-mail=TheSilverDirk@hotmail.com
+
+[Excluded Packages]
+$(BCB)\Bin\bcb97axserver50.bpl=Borland C++Builder COM Server Components Sample Package
+
+[HistoryLists\hlIncludePath]
+Count=5
+Item0=\\192.168.42.1\lroot\home\silverdirk\code\CmdlineSDL;L:\home\silverdirk\code\CmdlineSDL\;$(BCB)\include;$(BCB)\include\vcl;E:\src\SDL-1.2.4\include\
+Item1=L:\home\silverdirk\code\CmdlineSDL;$(BCB)\include;$(BCB)\include\vcl;E:\src\SDL-1.2.4\include\
+Item2=L:\home\silverdirk\code\CmdlineSDL;$(BCB)\include;$(BCB)\include\vcl;E:\src\SDL-1.2.4\include
+Item3=\\192.168.42.1\lroot\home\silverdirk\code\CmdlineSDL;$(BCB)\include;$(BCB)\include\vcl
+Item4=$(BCB)\include;$(BCB)\include\vcl
+
+[HistoryLists\hlLibraryPath]
+Count=4
+Item0=\\192.168.42.1\lroot\home\silverdirk\code\CmdlineSDL;L:\home\silverdirk\code\CmdlineSDL\;$(BCB)\Projects\Lib;$(BCB)\lib\obj;$(BCB)\lib
+Item1=L:\home\silverdirk\code\CmdlineSDL;$(BCB)\Projects\Lib;$(BCB)\lib\obj;$(BCB)\lib
+Item2=\\192.168.42.1\lroot\home\silverdirk\code\CmdlineSDL;$(BCB)\Projects\Lib;$(BCB)\lib\obj;$(BCB)\lib
+Item3=$(BCB)\Projects\Lib;$(BCB)\lib\obj;$(BCB)\lib
+
+[HistoryLists\hlDebugSourcePath]
+Count=1
+Item0=$(BCB)\source\vcl
+
+[HistoryLists\hlConditionals]
+Count=1
+Item0=_DEBUG
+
+[Debugging]
+DebugSourceDirs=$(BCB)\source\vcl
+
+[Parameters]
+RunParams=
+HostApplication=
+RemoteHost=
+RemotePath=
+RemoteDebug=0
+
+[Compiler]
+ShowInfoMsgs=0
+LinkDebugVcl=1
+  </IDEOPTIONS>
+</PROJECT>
