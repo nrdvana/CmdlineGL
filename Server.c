@@ -350,7 +350,7 @@ void InitGL(int w, int h) {
 	if (w<h) {
 		// if the width is less than the height, make the viewable width
 		// 20 world units wide, and calculate the viewable height assuming
-		// as aspect ratio of "1".
+		// an aspect ratio of "1".
 		left= -10;
 		right= 10;
 		bottom= -10.0 * ((GLfloat)h) / w;
@@ -359,16 +359,14 @@ void InitGL(int w, int h) {
 	else {
 		// if the height is less than the width, make the viewable height
 		// 20 world units tall, and calculate the viewable width assuming
-		// as aspect ratio of "1".
+		// an aspect ratio of "1".
 		left= -10.0 * ((GLfloat)w) / h;
 		right= 10.0 * ((GLfloat)w) / h;
 		bottom= -10;
 		top= 10;
 	}
 
-	// In perspective mode, use 1/10 the world width|height at the near
-	//  clipping plane.
-	glFrustum(left/10, right/10, bottom/10, top/10, 1.0, 100.0);
+	glFrustum(left/10, right/10, bottom/10, top/10, 1.0, 10000.0);
 
 	glMatrixMode(GL_MODELVIEW);
 }
