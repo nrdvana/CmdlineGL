@@ -15,6 +15,8 @@
 \*****************************************************************************/
 
 #include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
 
 #include "HashFunc.c"
 
@@ -39,7 +41,7 @@ int main(int argc, char**argv) {
 	if (argc != 5)
 		die("Usage: HashTableGenUtil BucketCount TableName BucketName EntryStruct < table_data > TableData.c");
 
-	tableSize= strtol(argv[1], (char*) NULL, 10);
+	tableSize= strtol(argv[1], (char**) NULL, 10);
 	if (tableSize <= 0) die("Invalid table size specified\n");
 
 	table= (TableEntry*) malloc(tableSize * sizeof(TableEntry));

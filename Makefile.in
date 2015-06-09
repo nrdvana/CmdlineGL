@@ -24,15 +24,15 @@ build: output/CmdlineGL
 
 output/CmdlineGL: ${OBJ_FILES}
 	@if [ ! -d output ]; then mkdir output; fi
-	${CC} ${CFLAGS} ${LDFLAGS} @LIBS@ `sdl-config --libs` -o output/CmdlineGL ${OBJ_FILES}
+	$(CC) $(CFLAGS) -o output/CmdlineGL $(OBJ_FILES) $(LDFLAGS) `sdl-config --libs` $(LIBS)
 # I now strip the thing by default.  It knocks off about 350K on my system, lol.  Yay for staticly-compiled hash tables.
 	strip output/CmdlineGL
 # subsequent builds are tagged by the number of times they have been built in that source dir
 	@echo "* Incrementing build number for next build"
-	@( read major minor release build reponame < Version.string; \
+	@bash -c 'read major minor release build reponame < Version.string; \
 	   let build=build+1; \
 	   echo "$$major $$minor $$release $$build $$reponame" > Version.string; \
-	 )
+	 '
 
 Server.o: Server.c Server.h Global.h Version.h
 	${DEF_CC_CMD} -c Server.c
@@ -51,12 +51,12 @@ Version.o: Version.autogen.c
 
 Version.string: Version.log
 	@echo "-> Regenerating Version.string from Version.log"
-	@tail -n 1 Version.log | sed -n 's/\(^[^:]*\).*/\1/p' | ( \
+	@tail -n 1 Version.log | sed -n 's/\(^[^:]*\).*/\1/p' | bash -c ' \
 	   read major minor release; \
 	   let major=major+0 minor=minor+0 release=release+0; \
 	   if [ -f _darcs/RepoName ]; then cur_repo="$$(cat _darcs/RepoName)"; else cur_repo="$$(hostname)"; fi; \
 	   echo $$major $$minor $$release 0 $$cur_repo > Version.string; \
-	 )
+	 '
 
 Version.autogen.c: Version.string
 	@echo "-> Regenerating Version.c from Version.string"
@@ -122,7 +122,7 @@ HashTableGenUtil: HashTableGenUtil.c HashFunc.c
 ConstList.txt:
 	@echo "-> Attempting to get the useful #define'd constants from your GL headers..."
 	@cat ConstList.works_on_my_box\
-	 | (\
+	 | bash -c '\
 		echo "#include <@gl_header@>";\
 		echo "#include <@glu_header@>";\
 		while read ConstName;\
@@ -130,7 +130,7 @@ ConstList.txt:
 			echo "validconst $${ConstName:2}";\
 			echo "#endif";\
 		done\
-	   )\
+	   '\
 	 | cpp ${CFLAGS} ${CPPFLAGS} `sdl-config --cflags` | grep validconst\
 	 | sed -e 's/[^ ]* \(.*\)$$/GL\1/' > ConstList.txt
 	@echo

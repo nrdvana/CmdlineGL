@@ -1,5 +1,7 @@
 #include "Global.h"
 #include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
 #include "SymbolHash.h"
 
 const char *SymbVarTypeName[]= { "Display List", "Quadric", "Texture", "Font" };
@@ -86,7 +88,7 @@ SymbVarEntry *CreateSymbVar(const char *Name) {
 	return Entry;
 }
 
-void DeleteSymbVar(const SymbVarEntry *Entry) {
+void DeleteSymbVar(SymbVarEntry *Entry) {
 	RBTree_Prune(&Entry->node);
 	free(Entry);
 }

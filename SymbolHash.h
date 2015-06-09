@@ -41,7 +41,7 @@ void DumpConstList(FILE* DestStream);
 
 SymbVarEntry *CreateSymbVar(const char *Name);
 const SymbVarEntry *GetSymbVar(const char *Name);
-void DeleteSymbVar(const SymbVarEntry *Entry); // does not free contents of the variable!!
+void DeleteSymbVar(SymbVarEntry *Entry); // does not free contents of the variable!!
 void DumpVarList(FILE* DestStream);
 
 #define CmdLookupSize 64

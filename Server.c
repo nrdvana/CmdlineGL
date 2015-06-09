@@ -250,7 +250,7 @@ PUBLISHED(cglGetTime,DoGetTime) {
 	long t;
 	if (argc != 0) return ERR_PARAMCOUNT;
 	t= SDL_GetTicks() - StartTime;
-	printf("t=%d\n", t);
+	printf("t=%d\n", (int) t);
 	fflush(stdout);
 	return 0;
 }
