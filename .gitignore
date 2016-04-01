@@ -1,0 +1,12 @@
+*.o
+config.*
+configure
+autom4te.cache
+*.autogen.c
+Makefile
+ConstList.txt
+Version.string
+GlHeaders.h
+HashTableGenUtil
+output
+
