@@ -8,16 +8,11 @@
 	A.hover { color:white; }
 	DIV.code { color:white; background-color:#555555; border:1px solid blue; margin:0.5em; padding:0.5em; }
 	DIV.warning { color:#FFBBBB; background-color:#222222; border:2px solid red; margin:0.5em; padding:0.5em; }
-	SPAN.note { color:gray; font-size:-1; font-style:italic; }
+	SPAN.note { color:gray; font-size:70%; font-style:italic; }
 	</style>
 </head>
 <body>
 	<center>
-	<div class="warning">
-	Please do not forward this link, as CmdlineGl is not yet ready for release.
-	<br/>I'll be slashdotting this in due time; your friends can wait ;-)
-	<br/>Send all feedback to conradme@email.uc.edu
-	</div>
 	<h2>Introducing</h2>
  	<h1>OpenGL Bindings for BASH</h1>
 	</center>
@@ -26,7 +21,7 @@
 	clone written in Perl using the OpenGL bindings.  I was rather offended by the
 	whole concept, and said something like "Arg! Thats almost as bad as writing a 3D
 	game in Bash!".  So, this December during winter break, when I was trying to think
-	of something to do for <i>TheSilverDirk's Abuse of Technology</i> #6....
+	of something to do for <i>Mike's Abuse of Technology</i> #6....
 	</p>
 	<table border="0" cellspacing="0" cellpadding="0"><tr><td><h2>"Oh, God!&nbsp;&nbsp;No!!"</h2></td><td><span class="note">&nbsp;&nbsp;&lt;-- (common actual quote)</span></td></tr></table>
 	<p>But here it is!  Bwa-Ha-Ha! All the normal languages have OpenGL support,
@@ -36,7 +31,7 @@
 	<h2>"BUT WHY, DAMNIT? WHY??"</h2>
 	<p>If you have to ask why, you are not a member of the intended audience.  Please
 	go on about your business and accept my apologies for this distraction.
-	<br/><span class="note">(copied from Bob Zimbinski <a href="#credits">[1]</a>)</span>
+	<br/><span class="note">(tribute to Bob Zimbinski <a href="#credits">[1]</a>)</span>
 	</p>
 	<h2>"But how?  Bash doesn't support modules..."</h2>
 	<p>Right.  So I gave it an interface just like all the others it uses:
@@ -57,7 +52,7 @@
 	of doing all text operations on the same character buffer filled by the call to 'read',
 	and sacraficing reusability for performance (and wow, was it ever liberating!).
 	It also uses a statically defined hash table to map command names to function pointers.
-	To top things off, it uses a <a href="http://www.ececs.uc.edu/~franco/C321/html/RedBlack/redblack.html">Red/Black Tree</a> to manage the names of objects
+	To top things off, it uses a <a href="http://gauss.ececs.uc.edu/RedBlack/redblack.html">Red/Black Tree</a> to manage the names of objects
 	like display lists, quadrics, textures, and fonts.
 	</p>
 	<p>Because of the support for display lists, any part of your game that doesn't move
@@ -70,7 +65,10 @@
 	especially with the speed of today's computers ;-)
 	</p>
 	<h2>"And you actually wrote a game using this kluge?"</h2>
-	<p>Well, that part was a bit more tricky, but yes.  Lets review some of the obstacles
+	<p>Well, mostly just demos, but a game engine of sorts, yes.
+	<br><span class="note">(I never finished the flight simulator)</span>
+	</p>
+	<p>Lets review some of the obstacles
 	involved with a real-time game, and our old friend/nemesis Bash:
 	<ul>
 	<li><h4>Bash needs to receive key/mouse activity from the server.  There are no RPCs</h4>
@@ -87,7 +85,7 @@ $ mkfifo /tmp/CmdlineGL_fifo<br/>
 $ Script.sh &lt; /tmp/CmdlineGL_fifo | CmdlineGL &gt; /tmp/CmdlineGL_fifo
 </div>
 		<p>And then the rest was simple:  script reads user input from stdin, script generates
-		frame of output commands to stdout, script reads use input from stdin....
+		frame of output commands to stdout, and repeat.
 		</p>
 	</li>
 	<li><h4>Bash does not support asynchronous IO</h4>
@@ -115,12 +113,12 @@ $ Script.sh &lt; /tmp/CmdlineGL_fifo | CmdlineGL &gt; /tmp/CmdlineGL_fifo
 		I decided to put frame-limiting and time counting on the CmdlineGL side.
 		When CmdlineGL starts it marks the current time, and thereafter can subtract that from
 		the current time to get elapsed game-time.  There are two ways to take advantage
-		of game-time:  The first is using "cglSync&nbsp;T" which tells CmdlineGl to wait until
+		of game-time:  The first is using "cglSync&nbsp;T" which tells CmdlineGL to wait until
 		time T before processing any more commands.  The second is "cglGetTime", which causes
 		CmdlineGL to write the current time (in milliseconds) to stdout.  The script can then
 		process time differences to adjust the progress it displays in each frame.
 		</p>
-		<p>Additionally, there is a cglSleep function, which causes CmdlineGl to sleep for a
+		<p>Additionally, there is a cglSleep function, which causes CmdlineGL to sleep for a
 		number of milliseconds.  This would be useful in animated text movies to put a pause
 		at certian points regardless of the frame rate.
 		</p>
@@ -135,7 +133,7 @@ $ Script.sh &lt; /tmp/CmdlineGL_fifo | CmdlineGL &gt; /tmp/CmdlineGL_fifo
 		Why not just use glScale?  Well, mainly because that won't scale the angles of the
 		glRotate command, and the robot was looking a little jerky with whole degree rotations.
 		</p>
-		<p>So... against my instincts for good design, I added a 'feature' to CmdlineGl that
+		<p>So... against my instincts for good design, I added a 'feature' to CmdlineGL that
 		causes it to look for fixed-point numbers any place it would normally expect floating point.
 		Implementing this was rather simple, though: I made a "cglFixedPt &lt;x&gt;" function that
 		takes a parameter X, calculates 1/X, and multiplies all future floating point numbers
@@ -145,33 +143,10 @@ $ Script.sh &lt; /tmp/CmdlineGL_fifo | CmdlineGL &gt; /tmp/CmdlineGL_fifo
 	</li>
 	</ul>
 	<h2>"How much time did you waste on this??"</h2>
-	<p>Well, I haven't really dedicated my full attention to it until just recently-
-	I mentioned earlier that I started in December.  I put in about 4 days worth over
-	winter break, and then decided my design was wrong and so naturally stopped working
-	on it.   Two months ago or so I came up a better way (the current design) of doing
-	it, and then started dropping bits of time into it, here and there.  Overall, I'd
-	estimate I've put in about 9 days (work days, not 24-hour periods) of work (including
-	the 4 days in December) on the CmdlineGL itself, and another 3 days playing with the
-	scripts, and another 2 days to put it all together in a presentable fasion.
-	<p>
-	<p>The hash tables were pretty simple, and generating them wasn't too hard.  Writing a
-	good hash function only took a few tries (I watched the tables to evaluate my hash
-	performance), I'd already written the Red/Black trees a long while back, and once
-	I decided on the client/server design (or rather, decided to get rid of the client)
-	that part was pretty straightforward.  The actual implementation of the gl functions
-	(and parsing their params) was simple, but tedious, and probably accounts for 2 days of the total time.</p>
-	<p>Ironically, the part that gave me the most trouble (in debugging time) was my
-	super-optimized Readline function (hehehe).  I wanted a system that would prevent
-	copying the data AT ALL from the time the OS delivered it to the time I performed
-	string-to-float conversions and stuff on it, and be able to handle the usual situations
-	where buffering delivers partial or multiple lines of text at once.  (I also wanted
-	the ability to read from file descriptors, and not FILE*, so I pretty much had to
-	write my own)
-	Debugging that stupid thing probably ate up a whole day worth of time.
-	</p>
+	<p>Less time than I wasted on World of Warcraft</p>
 	<h2>"So, what can I do to... 'Repay' you for this?"</h2>
 	<p>If you were thinking along the lines of thanks: bug fixes, implementing more of
-	the OpenGL commands, bug reports, money, pizza coupons, sending Morrowgrain to Zellin
+	the OpenGL commands, bug reports, money, pizza, sending Morrowgrain to Zellin
 	on Earthen Ring (if you don't know what that means, don't worry about it), etc.
 	</p>
 	<p>If you were thinking more along the lines of revenge, you could try using CmdlineGL
@@ -195,10 +170,10 @@ $ Script.sh &lt; /tmp/CmdlineGL_fifo | CmdlineGL &gt; /tmp/CmdlineGL_fifo
 	That only works of you have two machines, of course.  Anyway, it's your time,
 	but if you get a windows version working I'll gladly host it.
 	</p>
-	<h2 id="credits"qbz.c>Credits</h2>
-	<ul><li>Bob Zimbinski, for <a href="http://webpages.mr.net/bobz/ttyquake/">inspiring the format</a> of this page.</li>
+	<h2 id="credits">Credits</h2>
+	<ul><li>Bob Zimbinski, for <a href="https://web.archive.org/web/20100127215948/http://webpages.mr.net/bobz/ttyquake/">inspiring the format</a> of this page.</li>
 	<li>Jeff Molofee, of <a href="http://nehe.gamedev.net/">nehe.gamedev.net</a>, for providing an excellent OpenGL resource to the community.</li>
-	<li>All the fellow nerds at <a href="http://pohl.ececs.uc.edu/larc/">LaRC</a> (UC's Labratory for Recreational Computing) whos' looks of pure horror and disgust inspired me to finish the project.</li>
+	<li>All the fellow nerds at (the former) UC's Labratory for Recreational Computing whose looks of pure horror and disgust inspired me to finish the project.</li>
 	</ul>
 </body>
 </html>
