@@ -20,13 +20,13 @@ OBJ_FILES=SymbolHash.o Server.o ProcessInput.o ParseGL.o Global.o Contained_RBTr
 
 all: build
 
-build: output/CmdlineGL
+build: bin/CmdlineGL
 
-output/CmdlineGL: ${OBJ_FILES}
-	@if [ ! -d output ]; then mkdir output; fi
-	$(CC) $(CFLAGS) -o output/CmdlineGL $(OBJ_FILES) $(LDFLAGS) `sdl-config --libs` $(LIBS)
+bin/CmdlineGL: ${OBJ_FILES}
+	@if [ ! -d bin ]; then mkdir bin; fi
+	$(CC) $(CFLAGS) -o bin/CmdlineGL $(OBJ_FILES) $(LDFLAGS) `sdl-config --libs` $(LIBS)
 # I now strip the thing by default.  It knocks off about 350K on my system, lol.  Yay for staticly-compiled hash tables.
-	strip output/CmdlineGL
+	strip bin/CmdlineGL
 # subsequent builds are tagged by the number of times they have been built in that source dir
 	@echo "* Incrementing build number for next build"
 	@bash -c 'read major minor release build reponame < Version.string; \
@@ -143,10 +143,10 @@ ConstList.txt:
 	@echo "  Also beware: 'make clean' will remove it!"
 	@echo
 
-install: output/CmdlineGL
+install: bin/CmdlineGL
 	if [ ! -d @bindir@ ]; then install -d @bindir@; fi
 	
-	install output/CmdlineGL @bindir@
+	install bin/CmdlineGL @bindir@
 	@if [ -n "${INSTALL_SHELL_BINDINGS}" ]; then \
 		echo "-> Making all the symlinks from the CmdlineGLClient script to the command names in bin" \
 		&& echo install CmdlineGLClient @bindir@ \
@@ -158,7 +158,7 @@ install: output/CmdlineGL
  		   done \
 	fi
 
-dist: Version.string output/CmdlineGL
+dist: Version.string bin/CmdlineGL
 	@echo "==>> Make sure to update the Version.log to increment the release number! <<=="
 	@( read major minor release andstuff < Version.string; \
 	   DistName="CmdlineGL_$$major.$$minor.$$release"; \
@@ -181,5 +181,5 @@ clean:
 	rm -f *.autogen.c
 	rm -f *.o
 	rm -f ConstList.txt
-	rm -rf output/
+	rm -rf bin/
 	rm -f HashTableGenUtil
