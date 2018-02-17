@@ -1,0 +1,58 @@
+# Prevent multiple inclusion
+[[ -n "$CMDLINEGL_LIB" ]] && return 0
+CMDLINEGL_LIB=1
+
+# CmdlineGL Base API
+#--------------------------------------
+# Functions:
+#   CmdlineGL_Start [MODE]
+#   CmdlineGL_Send COMMAND [ARGS...]
+#   CmdlineGL_Recv
+#   gl*
+#   glu*
+#   cgl*
+#
+# Variables:
+#
+#   CmdlineGL_Mode: str - either 'stdout', 'w' or 'rw', or empty if CmdlineGL is not started yet
+#   CmdlineGL_In: int - File handle of user input returned from CmdlineGL
+#   CmdlineGL_Out: int - File handle where commands are written
+#   CmdlineGL_InputLine: str - Most recent input event
+#
+
+# build aliases for each available command in the API
+for cmd in `CmdlineGL --showcmds`; do
+	eval "$cmd(){ CmdlineGL_Send $cmd \"\$@\"; }"
+done
+# This default gets overwritten by CmdlineGL_Start  (thunk/trampoline style)
+CmdlineGL_Send() {
+	CmdlineGL_Start
+	CmdlineGL_Send "$@"
+}
+CmdlineGL_Recv() {
+	CmdlineGL_Start
+	CmdlineGL_Recv "$@"
+}
+# If we are running under bash, we can create a coprocess
+# and skip all the fifo nonsense.
+CmdlineGL_Start() {
+	if [[ "$1" = "stdout" ]]; then
+		CmdlineGL_Mode=stdout
+		CmdlineGL_Out=1
+		CmdlineGL_Send(){ echo "$@"; };
+		CmdlineGL_Recv(){ return 1; }
+	elif [[ "$1" = "rw" ]]; then
+		coproc CmdlineGL -t
+		CmdlineGL_Mode=rw
+		CmdlineGL_In="${COPROC[0]}"
+		CmdlineGL_Out="${COPROC[1]}"
+		CmdlineGL_Send(){ echo "$@" >&$CmdlineGL_Out; };
+		CmdlineGL_Recv(){ read -r -u $CmdlineGL_In CmdlineGL_InputLine; };
+	else
+		coproc CmdlineGL -t --nouimsg
+		CmdlineGL_Mode=w
+		CmdlineGL_Out="${COPROC[1]}"
+		CmdlineGL_Send(){ echo "$@" >&$CmdlineGL_Out; };
+		CmdlineGL_Recv(){ return 1; }
+	fi
+}

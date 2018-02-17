@@ -1,0 +1,39 @@
+CmdlineGL_setup_fifo() {
+	# Create a FIFO unless one is already active
+	if [ "z$CMDLINEGL_FIFO_DIR" = "z" ]; then
+		CMDLINEGL_FIFO_DIR=$(mktemp -d -t CmdlineGL.XXXXXX);
+	elif [ ! -d "$CMDLINEGL_FIFO_DIR" ]; then
+		echo "CMDLINE_FIFO_DIR '$CMDLINEGL_FIFO_DIR' does not exist"
+		return 1
+	fi
+	[ -e "$CMDLINEGL_FIFO_DIR/out" ] || mkfifo "$CMDLINEGL_FIFO_DIR/out" || {
+		echo "Failed to create output fifo";
+		return 1;
+	}
+	[ -e "$CMDLINEGL_FIFO_DIR/in" ] || mkfifo "$CMDLINEGL_FIFO_DIR/in" || {
+		echo "Failed to create input fifo";
+		return 1;
+	}
+	return 0;
+}
+
+CmdlineGL_Start() {
+	CmdlineGL_setup_fifo
+	if [ "x$1" = "rw" ]; then
+		CmdlineGL -f $CmdlineGL_Out > $CmdlineGL_In &
+		CmdlineGL_Mode=rw
+		CmdlineGL_Out=$CMDLINEGL_FIFO_DIR/out;
+		CmdlineGL_In=$CMDLINEGL_FIFO_DIR/in;
+	else
+		CmdlineGL -f $CmdlineGL_Out --nouimsg &
+		CmdlineGL_Mode=w
+		CmdlineGL_Out=$CMDLINEGL_FIFO_DIR/out;
+	fi
+}
+# build functions for each available command in the API
+for cmd in `CmdlineGL --showcmds`; do
+	eval "$cmd() { test \"z\$CmdlineGL_Mode\" != \"z\" || CmdlineGL_start; echo \"$cmd \$@\" >>\$CmdlineGL_Out; }"
+done
+CmdlineGL_ReadInput() {
+	CmdlineGL_InputLine=$(read -r <$CmdlineGL_In);
+}

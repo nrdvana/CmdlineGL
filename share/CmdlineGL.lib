@@ -1,0 +1,51 @@
+#! /bin/bash
+# This script is meant to be sourced into bash to add each CmdlineGL
+# function as a shell function.  You may additionally request optional
+# modules from the ../share/CmdlineGL/lib-bash directory.
+#
+# Example:
+#   source CmdlineGL.lib Timing Model_Cube
+#
+
+# First, make sure this script is being sourced and run from bash.
+case "$0" in
+*CmdlineGL.lib)
+	echo "Usage: source `which CmdlineGL.lib` [LIB...]"
+	echo "       (use `which` to avoid loading from current directory)"
+	echo
+	echo "Available libs:"
+	echo "       Timing - Provides virtual clock and FPS routines"
+	echo ""
+	exit 1
+	;;
+esac
+
+if [ -n "$BASH_VERSION" ]; then
+	# Calculate the ../share/CmdlineGL/bash-lib/ directory relative to the ../bin where CmdlineGL.lib was found
+	if [ -n "$BASH_SOURCE" ]; then
+		# Start with absolute path of source file
+		CMDLINEGL_SHARE_PATH="$BASH_SOURCE"
+		[[ "$BASH_SOURCE" == /* ]] || CMDLINEGL_SHARE_PATH="$PWD/$BASH_SOURCE"
+		# Remove file name
+		CMDLINEGL_SHARE_PATH="${CMDLINEGL_SHARE_PATH%/*}"
+		# If it does not contain the "lib-bash" dir, then go up one dir and down into share/CmdlineGL
+		if [[ ! -d "$CMDLINEGL_SHARE_PATH/lib-bash" ]]; then
+			CMDLINEGL_SHARE_PATH="${CMDLINEGL_SHARE_PATH%/*}/share/CmdlineGL"
+			if [[ ! -d "$CMDLINEGL_SHARE_PATH" ]]; then
+				echo "Unable to locate CmdlineGL share path"
+				return 1;
+			fi
+		fi
+		source "$CMDLINEGL_SHARE_PATH/lib-bash/CmdlineGL.lib";
+		for module in "$@"; do
+			source "$CMDLINEGL_SHARE_PATH/lib-bash/${module}.lib";
+		done
+	else
+		echo "Your version of bash is too old (no BASH_SOURCE defined)"
+	fi
+else
+	echo "You must source this libary from bash."
+	echo "No other shells are currently supported."
+	echo "(argv = $0 $@ )"
+	return 1;
+fi

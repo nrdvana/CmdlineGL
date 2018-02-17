@@ -1,0 +1,79 @@
+# Prevent multiple inclusion
+[[ -n "$EVENTLOOP_LIB" ]] && return 0
+EVENTLOOP_LIB=1
+
+source "$CMDLINEGL_SHARE_PATH/lib-bash/Timing.lib"
+
+# RenderLoop API
+#--------------------------------------
+# Functions:
+#   RenderLoop_Run
+# Callbacks (to be implemented by user)
+#   RenderLoop_Render
+#   RenderLoop_DispatchEvent EVENT_TYPE [EVENT_ARGS...]
+#
+# Variables:
+#   RenderLoop_Done: bool - Set to true in order to end main loop
+#
+RenderLoop_Done=0
+
+# Generic do-nothing place holder to be replaced by caller
+RenderLoop_Render() {
+	glClear GL_COLOR_BUFFER_BIT
+	cglSwapBuffers
+}
+
+# Generic do-nothing place holder which receives each input event
+RenderLoop_DispatchEvent() {
+	false
+}
+
+# Using Timing lib, repeatedly run RenderLoop_Render and RenderLoop_DispatchEvent
+# as needed and terminate when RenderLoop_Done is set.
+RenderLoop_Run() {
+	RenderLoop_Done="";
+	if [[ -z "$CmdlineGL_In" ]]; then
+		# For write-only mode, assume a constant max frame rate.
+		# If we get too far ahead, the pipe will fill and pause us.
+		while (( !RenderLoop_Done )); do
+			RenderLoop_Render
+			Timing_SyncNextFrame
+			Timing_AssumeNextFrame
+		done
+	else
+		# For read-write mode, ask for the time before starting the frame,
+		# then when we collect the input we know we're done when we see
+		# the timestamp come back, and don't need to do awkward non-blocking
+		# reads.
+		cglGetTime
+		while (( !RenderLoop_Done )); do
+			RenderLoop_Render
+			Timing_SyncNextFrame
+			RenderLoop_ProcessInput
+			cglGetTime
+		done
+	fi
+}
+
+# Split out for readability
+RenderLoop_ProcessInput() {
+	local ReadMore=1 ReadTimeout=0
+	while ((ReadMore)); do
+		if CmdlineGL_Recv; then
+			if [[ "$CmdlineGL_InputLine" == t=* ]]; then
+				# The time is the last thing we read for this frame's input
+				Timing_Update ${CmdlineGL_InputLine:2}
+				ReadMore=0
+			else
+				RenderLoop_DispatchEvent $CmdlineGL_InputLine
+			fi
+		else
+			let ReadTimeout++
+			if ((ReadTimeout>3)); then
+				RenderLoop_Done=1
+				ReadMore=0
+				echo "Reading from pipe timed out...  shutting down." >&2
+			fi
+		fi
+	done
+}

@@ -1,0 +1,98 @@
+# Prevent multiple inclusion
+[[ -n "$TIMING_LIB" ]] && return 0
+TIMING_LIB=1;
+
+# Timing API
+#--------------------------------------
+#
+# This library uses a concept of "Virtual Frames per Second"; any time the
+# game loop isn't able to maintain the minimum frame rate it will slow down
+# the game time to match the speed of the computer.  In other words, Timing_T
+# may count slower than real time in order to maintain the minimum FPS needed
+# by game logic.
+#
+# Functions:
+#   Timing_SetMinMaxFPS MIN MAX
+#   Timing_Update TIME
+#   Timing_SyncNextFrame
+#   Timing_AssumeNextFrame
+#   Timing_PrintFPS
+#
+# Variables:
+#
+#   Timing_T: milliseconds - virtual time
+#   Timing_RT: milliseconds - real time
+#   Timing_Frame: current frame number
+#   Timing_dT: milliseconds - virtual time elapsed since last frame
+#   Timing_FPS: int - frames per real second
+#   Timing_FPVS: int - frames per virtual second
+#   Timing_AvgCount: int - number of samples to average
+#   Timing_MinFPS: int - lowest allowed FPVS
+#   Timing_MaxFPS: int - highest allowed FPS
+#
+Timing_T=0;
+Timing_RT=0;
+Timing_Slip=0;
+Timing_dT=0;
+Timing_dTAvg=100;
+Timing_dRTAvg=100;
+Timing_AvgCount=10;
+Timing_FPS=0;
+Timing_FPVS=0;
+Timing_FPSPrint_dT=0;
+Timing_FPSLastPrint=0;
+Timing_Frame=0;
+
+# Choose the minimum frame rate (below which the "game time" slows down)
+# and the max frame rate (above which we sleep)
+Timing_SetMinMaxFPS() {
+	local NewMin=$1
+	local NewMax=$2
+	(( Timing_MinFPS=NewMin ))
+	(( Timing_MaxFPS=NewMax ))
+	(( Timing_MaxFPS < Timing_MinFPS )) && (( Timing_MaxFPS=Timing_MinFPS ))
+	(( Timing_MaxFPS < 1 )) && Timing_MaxFPS=1
+	(( Timing_Min_dT=1000/Timing_MaxFPS ))
+	if (( Timing_MinFPS > 0 )); then
+		(( Timing_Max_dT=(1000+Timing_MinFPS/2)/Timing_MinFPS )) # round up
+	else
+		Timing_Max_dT=1000000;
+	fi
+}
+
+# Update the game time with a new "Real" timestamp, and assume a frame is completed.
+# This will adjust the game time according to Min FPS, and recalculate the current FPS
+Timing_Update() {
+	local NewTime=$1
+	(( Timing_dT=NewTime-Timing_RT ))
+	(( Timing_Frame++ ))
+	(( Timing_dT<1? Timing_dT=1 : 1))
+	(( Timing_dRTAvg= (Timing_dRTAvg * Timing_AvgCount + Timing_dT*100) / (Timing_AvgCount+1) ))
+	(( Timing_dT>Timing_Max_dT? Timing_dT=Timing_Max_dT : 1))
+	(( Timing_RT=NewTime, Timing_T+=Timing_dT ))
+	(( Timing_dTAvg= (Timing_dTAvg * Timing_AvgCount + Timing_dT*100) / (Timing_AvgCount+1) ))
+
+	(( Timing_FPVS=100000/Timing_dTAvg, Timing_FPS=100000/Timing_dRTAvg ))
+	if (( (Timing_FPSPrint_dT? (Timing_T - Timing_FPSLastPrint) : -1) > Timing_FPSPrint_dT )); then
+		Timing_PrintFPS
+		((Timing_FPSLastPrint+=Timing_FPSPrintFreq, Frame=0))
+	fi
+}
+
+# Send the command to CmdlineGL asking it to pause until the given timestamp.
+Timing_SyncNextFrame() {
+	cglSync $(( Timing_RT+Timing_Min_dT ))
+}
+
+# Simulate a maximum frame rate.  Used when we don't get feedback from CmdlineGL
+# about the current time, like when generating a recording.
+Timing_AssumeNextFrame() {
+	Timing_Update $(( Timing_RT+Timing_Min_dT ))
+}
+
+# Called automatically by Update if Timing_FPSPrint_dT > 0
+Timing_PrintFPS() {
+	echo "FPS: $Timing_FPS  $Timing_Frame" >&2
+}
+
+Timing_SetMinMaxFPS 10 80
