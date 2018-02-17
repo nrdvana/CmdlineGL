@@ -42,17 +42,62 @@ CmdlineGL_Start() {
 		CmdlineGL_Send(){ echo "$@"; };
 		CmdlineGL_Recv(){ return 1; }
 	elif [[ "$1" = "rw" ]]; then
-		coproc CmdlineGL -t
+		if [[ "${BASH_VERSINFO[0]}" -ge 4 ]]; then
+			coproc CmdlineGL -t || return 1
+			CmdlineGL_In="${COPROC[0]}"
+			CmdlineGL_Out="${COPROC[1]}"
+		else
+			# In dark ages of bash, need to find free FDs and connect them to fifos
+			CmdlineGL_CreateFifo || return 1
+			CmdlineGL_NextFreeFD CmdlineGL_Out || return 1
+			eval "exec $CmdlineGL_Out<>\"\$CMDLINEGL_FIFO_DIR/out\""
+			# Start CmdlineGL before we open the input fifo, else it would block us
+			CmdlineGL -t <&$CmdlineGL_Out >"$CMDLINEGL_FIFO_DIR/in" &
+			CmdlineGL_NextFreeFD CmdlineGL_In || return 1
+			eval "exec $CmdlineGL_In<\"\$CMDLINEGL_FIFO_DIR/in\""
+		fi
 		CmdlineGL_Mode=rw
-		CmdlineGL_In="${COPROC[0]}"
-		CmdlineGL_Out="${COPROC[1]}"
 		CmdlineGL_Send(){ echo "$@" >&$CmdlineGL_Out; };
 		CmdlineGL_Recv(){ read -r -u $CmdlineGL_In CmdlineGL_InputLine; };
 	else
-		coproc CmdlineGL -t --nouimsg
+		if [[ "${BASH_VERSINFO[0]}" -ge 4 ]]; then
+			coproc CmdlineGL -t --nouimsg || return 1
+			CmdlineGL_Out="${COPROC[1]}"
+		else
+			# In dark ages of bash, need to find free FDs and connect them to fifos
+			CmdlineGL_CreateFifo || return 1
+			CmdlineGL_NextFreeFD CmdlineGL_Out || return 1
+			eval "exec $CmdlineGL_Out<>\"\$CMDLINEGL_FIFO_DIR/out\""
+			CmdlineGL -t <&$CmdlineGL_Out &
+		fi
 		CmdlineGL_Mode=w
-		CmdlineGL_Out="${COPROC[1]}"
 		CmdlineGL_Send(){ echo "$@" >&$CmdlineGL_Out; };
 		CmdlineGL_Recv(){ return 1; }
 	fi
+}
+
+CmdlineGL_CreateFifo() {
+	# Create a FIFO unless one is already active
+	if [[ "z$CMDLINEGL_FIFO_DIR" = "z" ]]; then
+		CMDLINEGL_FIFO_DIR=$(mktemp -d -t CmdlineGL.XXXXXX);
+	elif [[ ! -d "$CMDLINEGL_FIFO_DIR" ]]; then
+		echo "CMDLINEGL_FIFO_DIR '$CMDLINEGL_FIFO_DIR' does not exist"
+		return 1
+	fi
+	[[ -e "$CMDLINEGL_FIFO_DIR/in" ]] || mkfifo "$CMDLINEGL_FIFO_DIR/in" || {
+		echo "Failed to create input fifo";
+		return 1;
+	}
+	[[ -e "$CMDLINEGL_FIFO_DIR/out" ]] || mkfifo "$CMDLINEGL_FIFO_DIR/out" || {
+		echo "Failed to create output fifo";
+		return 1;
+	}
+	return 0;
+}
+
+CmdlineGL_NextFreeFD() {
+	local fd=2 fd_max=$(ulimit -n) dest_var=$1;
+	while ((++fd < fd_max)); do ! true <&$fd && break; done 2>&- \
+		&& (( $dest_var=fd )) \
+		|| { echo "No free file descriptor"; return 1; }
 }

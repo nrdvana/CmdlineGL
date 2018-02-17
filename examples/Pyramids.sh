@@ -2,10 +2,11 @@
 [ -n "$BASH_VERSION" ] || exec bash $0
 
 # Define our handy die function
-die() { echo $1; exit -1; }
+die() { echo "$@" >&2; exit 2; }
 
-# Make sure we have CmdlineGL
-source share/CmdlineGL.lib RenderLoop Timing || die "Make sure CmdlineGL.lib is in the PATH"
+# Load bash libraries
+source "${BASH_SOURCE%/*}/../share/CmdlineGL.lib" RenderLoop Timing \
+	|| die "Can't find ../share directory (from $PWD via ${BASH_SOURCE%/*})"
 
 let x=0;
 
@@ -195,13 +196,13 @@ main() {
 
 if [[ "$1" == "--record" ]]; then
 	CmdlineGL() { tee replay | command CmdlineGL; }
-	CmdlineGL_Start rw
+	CmdlineGL_Start rw || die "Can't init CmdlineGL"
 	main
 elif [[ "$1" == "--dump" ]]; then
-	CmdlineGL_Start stdout
+	CmdlineGL_Start stdout || die "Can't init CmdlineGL state"
 	main
 elif [[ -z "$1" ]]; then
-	CmdlineGL_Start rw
+	CmdlineGL_Start rw || die "Can't init CmdlineGL"
 	main
 else
 	echo 'Usage: Pyramids.sh [ --record | --dump ]'
