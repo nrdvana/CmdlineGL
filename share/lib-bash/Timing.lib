@@ -1,5 +1,5 @@
 # Prevent multiple inclusion
-[[ -n "$TIMING_LIB" ]] && return 0
+[[ -z ${TIMING_LIB+x} ]] || return 0
 TIMING_LIB=1;
 
 # Timing API

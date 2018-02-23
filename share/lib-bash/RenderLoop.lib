@@ -1,6 +1,6 @@
 # Prevent multiple inclusion
-[[ -n "$EVENTLOOP_LIB" ]] && return 0
-EVENTLOOP_LIB=1
+[[ -z ${RENDERLOOP_LIB+x} ]] || return 0
+RENDERLOOP_LIB=1
 
 source "$CMDLINEGL_SHARE_PATH/lib-bash/Timing.lib"
 

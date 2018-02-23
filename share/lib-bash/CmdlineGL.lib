@@ -1,5 +1,5 @@
 # Prevent multiple inclusion
-[[ -n "$CMDLINEGL_LIB" ]] && return 0
+[ -z ${CMDLINEGL_LIB+x} ] || return 0
 CMDLINEGL_LIB=1
 
 # CmdlineGL Base API
@@ -8,17 +8,31 @@ CMDLINEGL_LIB=1
 #   CmdlineGL_Start [MODE]
 #   CmdlineGL_Send COMMAND [ARGS...]
 #   CmdlineGL_Recv
+#   CmdlineGL_SetFixedPt SCALE
 #   gl*
 #   glu*
 #   cgl*
 #
 # Variables:
 #
+#   CmdlineGL_FixedPt: int - the current scale for any floating point numbers
 #   CmdlineGL_Mode: str - either 'stdout', 'w' or 'rw', or empty if CmdlineGL is not started yet
 #   CmdlineGL_In: int - File handle of user input returned from CmdlineGL
 #   CmdlineGL_Out: int - File handle where commands are written
 #   CmdlineGL_InputLine: str - Most recent input event
 #
+
+CmdlineGL_FixedPt=1
+CmdlineGL_Mode=
+CmdlineGL_In=
+CmdlineGL_Out=
+CmdlineGL_InputLine=
+
+# Set the fixed-point divisor and also store it locally for other libs to use
+CmdlineGL_SetFixedPt() {
+	CmdlineGL_FixedPt="$1"
+	cglFixedPt "$1"
+}
 
 # build aliases for each available command in the API
 for cmd in `CmdlineGL --showcmds`; do
