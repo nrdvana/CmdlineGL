@@ -1,38 +1,12 @@
-#! /bin/sh
-if [ -z "$BASH" ]; then
-	exec bash $0
-fi
+#! /bin/bash
+[ -n "$BASH_VERSION" ] || exec bash $0
 
 # Define our handy die function
-die() { echo $1; exit -1; }
+die() { echo "$@" >&2; exit 2; }
 
-# Make sure we have CmdlineGL
-PATH=../output:$PATH
-which CmdlineGL >/dev/null || die "Make sure CmdlineGL is in the PATH"
-
-# Initialize the pipe location, if not already set
-if [ -z "$CMDLINEGL_PIPE" ]; then
-	CMDLINEGL_PIPE="/tmp/${USER}_CGL/fifo";
-fi
-
-# Create the fifo for attaching CmdlineGL to the script
-if [ -e "$CMDLINEGL_PIPE" ]; then
- 	rm -f "$CMDLINEGL_PIPE" || die "Cannot remove $CMDLINEGL_PIPE";
-else
-	[[ -n "${CMDLINEGL_PIPE%/*}" ]] && mkdir -p "${CMDLINEGL_PIPE%/*}"
-fi
-mkfifo $CMDLINEGL_PIPE || die "Cannot create $CMDLINEGL_PIPE needed for communication between script and CmdlineGL"
-
-# build functions for each available command
-for cmd in `CmdlineGL --showcmds`; do
-	eval "$cmd() { echo \"$cmd \$@\"; }"
-done
-
-if [[ -f Timing.sh ]]; then
-	source Timing.sh
-else
-	die "Need the timing library, Timing.sh"
-fi
+# Load bash libraries
+source "${BASH_SOURCE%/*}/../share/CmdlineGL.lib" RenderLoop Timing \
+	|| die "Can't find ../share directory (from $PWD via ${BASH_SOURCE%/*})"
 
 #------------------------------------------------------------------------------
 # This is an almost line-by-line conversion from C to bash
@@ -434,7 +408,6 @@ Animate() {
 	else
 		SetJoints "Standing" "Standing" 0
 	fi
-	Repaint
 }
 
 MouseClick() {
@@ -502,42 +475,19 @@ Init() {
 	Robot_Animate=true;
 }
 
-ReadInput() {
-	local ReadMore=1 ReadTimeout=0
-	while ((ReadMore)); do
-		if read -r Input; then
-			if [[ "${Input:0:2}" = "t=" ]]; then
-				# The time is the last thing we read for this frame's input
-				UpdateTime ${Input:2}
-				ReadMore=0
-			else
-				ProcessInput $Input
-			fi
-		else
-			let ReadTimeout++
-			if ((ReadTimeout>3)); then
-				terminate=1;
-				ReadMore=0;
-				die "Reading from pipe timed out...  shutting down."
-			fi
-		fi
-	done
-	cglGetTime
-}
-
-ProcessInput() {
+RenderLoop_DispatchEvent() {
 	local Press
 	case "$1" in
 	K)
 		if [[ "$2" = "+" ]]; then Press=1; else Press=0; fi
 		case "$3" in
-		right)	PanRight=$Press;;
-		left)	PanLeft=$Press;;
-		up)		PanUp=$Press;;
-		down)	PanDn=$Press;;
-		=)		ZoomIn=$Press;;
-		-)		ZoomOut=$Press;;
-		q)		terminate=1;;
+		right) PanRight=$Press;;
+		left)  PanLeft=$Press;;
+		up)    PanUp=$Press;;
+		down)  PanDn=$Press;;
+		=)     ZoomIn=$Press;;
+		-)     ZoomOut=$Press;;
+		q)     terminate=1;;
 		esac
 		;;
 	M)
@@ -559,37 +509,28 @@ Update() {
 	if ((ZoomOut)); then let View_Distance+=50; fi
 }
 
+RenderLoop_Render() {
+	Update
+	Animate
+	Repaint
+}
+
 main() {
-	cglGetTime;
-
-	# Initialize our own stuff (and OpenGL lighting).
-	Init;
-	LastFPSWrite=$Timing_T
-	Frame=0
-
-	# repaint robot forever
-	while [[ -z "$terminate" ]]; do
-		ReadInput
-		Update
-		Animate
-		((Frame++))
-		if ((Timing_T-LastFPSWrite >1000)); then
-			echo "FPS: $Timing_FPS  $Frame" >&2
-			((LastFPSWrite+=1000, Frame=0))
-		fi
-		SyncNextFrame
-	done
+	Init
+	RenderLoop_Run;
 	cglQuit
 }
 
 if [[ "$1" == "--record" ]]; then
-	main <$CMDLINEGL_PIPE | tee replay | CmdlineGL >$CMDLINEGL_PIPE
+	CmdlineGL() { tee replay | command CmdlineGL; }
+	CmdlineGL_Start rw || die "Can't init CmdlineGL"
+	main
 elif [[ "$1" == "--dump" ]]; then
-	cglGetTime() { return; }
-	ReadInput() { UpdateTime $((Timing_T+25)); }
+	CmdlineGL_Start stdout || die "Can't init CmdlineGL state"
 	main
 elif [[ -z "$1" ]]; then
-	main <$CMDLINEGL_PIPE | CmdlineGL >$CMDLINEGL_PIPE
+	CmdlineGL_Start rw || die "Can't init CmdlineGL"
+	main
 else
 	echo 'Usage: Robot.sh [ --record | --dump ]'
 	echo
@@ -598,6 +539,6 @@ else
 	echo
 	echo '   Recordings can be played by piping them into CmdlineGL.'
 	echo '   For instance:'
-	echo '         $ cat replay | CmdlineGL >/dev/null'
+	echo '         $ CmdlineGL <replay >/dev/null'
 fi
 
