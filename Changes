@@ -1,0 +1,8 @@
+Version 1.1.0 - 2006-04-05
+  * Added font support
+  * Added version numbering
+  * Many more examples and bug fixes
+
+Version 1.0.0 - 2006-01-27
+  * Converted from GLUT to SDL
+  * Able to compile on Win32

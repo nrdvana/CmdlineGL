@@ -5,8 +5,7 @@ autom4te.cache
 *.autogen.c
 Makefile
 ConstList.txt
-Version.string
+Version.parts
 GlHeaders.h
 HashTableGenUtil
-output
-
+bin
