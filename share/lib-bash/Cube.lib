@@ -2,7 +2,7 @@
 
 CmdlineGL_LoadLib FixedPt
 
-Cube() {
+Cube_InitGfx() {
 	# turn off fixed point mechanisms
 	cglFixedPt 1
 
@@ -57,9 +57,11 @@ Cube() {
 
 	# restore previous fixed point mechanism
 	cglFixedPt $FixedPt
-
-	glCallList Cube
-
-	# Optimize future calls
+	
 	Cube() { glCallList Cube; }
+}
+
+Cube() {
+	Cube_InitGfx
+	glCallList Cube
 }

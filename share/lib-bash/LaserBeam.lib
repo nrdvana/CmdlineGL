@@ -1,0 +1,44 @@
+CmdlineGL_LoadLib FixedPt
+
+LaserBeam_InitGfx() {
+	# turn off fixed point mechanisms
+	cglFixedPt 1
+
+	glNewList LaserBeam GL_COMPILE
+
+	# Front
+	glBegin GL_TRIANGLE_FAN
+	glColor 1 0.7 0.7
+	glVertex 0 0 2
+	glColor 1 0.2 0.2
+	glVertex 0 0.3 1.6
+	glVertex -0.3 0 1.6
+	glVertex 0 -0.3 1.6
+	glVertex 0.3 0 1.6
+	glVertex 0 0.3 1.6
+	glEnd
+
+	# Tail
+	glBegin GL_TRIANGLE_FAN
+	glColor 0.6 0 0
+	glVertex 0 0 0
+	glColor 1 0.2 0.2
+	glVertex 0 0.3 1.6
+	glVertex 0.3 0 1.6
+	glVertex 0 -0.3 1.6
+	glVertex -0.3 0 1.6
+	glVertex 0 0.3 1.6
+	glEnd
+
+	glEndList
+
+	# restore previous fixed point mechanism
+	cglFixedPt $FixedPt
+	
+	LaserBeam() { glCallList LaserBeam; }
+}
+
+LaserBeam() {
+	LaserBeam_InitGfx
+	glCallList LaserBeam
+}

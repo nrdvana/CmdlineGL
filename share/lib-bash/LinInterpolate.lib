@@ -1,0 +1,48 @@
+# Title: LinInterpolate.sh
+# Author: Michael Conrad
+# Date:	2005-05-29
+#
+
+## Perform a linear interpolation on a table of values, to simulate a function.
+# This routine uses linear interpolation between the nearest two
+# elements of an array containing points along the function.
+#
+# $1: Table: a name of an array
+# $2: Pos: a position of the value to retrieve, in the range 0..Max
+# $3: Max: the maximum value of Pos
+interpolate() {
+	# FromIdx: the index of the array to interpolate from
+	# ToIdx: the index of the array to interpolate to
+	# Pct: the percentage of the distance from From to To which the result should be
+	local Table=$1 Pos=$2 Max=$3 TableLen From Pct Idx FromVal ToVal
+	eval "TableLen=\${#$Table[@]}"
+	(( From= Pos * (TableLen-1), Idx= From/Max, Pct= From - Idx*Max ))
+	if ((Idx==$TableMax)); then
+		(( Result=Table[Idx] ));
+	else
+		(( FromVal=$Table[Idx], ToVal=$Table[Idx+1], Result= FromVal + (ToVal - FromVal)*Pct/Max ));
+	fi
+}
+
+## Create an interpolation function with the array and bounds "compiled" into it.
+# This function creates a new function which performs the same operation as
+# "interpolate", except that it "compiles" the name, maximum table element,
+# and maximum parameter value into the function as constants, for better
+# performance.
+#
+# $1: FunctionName: the name to define for the function
+# $2: Table: the name of the table to interpolate from
+# $3: InputMax: the maximum input value; this defines the domain of the function
+make_interpolate_func() {
+	local fname=$1 Table=$2 TableMax TableMax inpMax=$3
+	eval "(( TableMax=\${#$Table[@]} - 1 ))"
+	eval "$fname() {
+		local From Pct Idx FromVal ToVal
+		(( From= \$1*$TableMax, Idx=From/$inpMax, Pct=From-Idx*$inpMax ))
+		if ((Idx==$TableMax)); then
+			(( Result=$Table[Idx] ))
+		else
+			(( FromVal=$Table[Idx], ToVal=$Table[Idx+1], Result=FromVal+(ToVal-FromVal)*Pct/$inpMax ));
+		fi
+	}"
+}

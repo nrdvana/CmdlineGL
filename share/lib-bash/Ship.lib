@@ -1,0 +1,226 @@
+# This is the model for the player's ship.
+# It was originally designed facing the -Z axis, but then I decided to make
+# all my models face down +z, and rather than mangling all the coordinates,
+# I just rotate 180 before drawing it.
+#
+
+CmdlineGL_LoadLib FixedPt Trig
+
+Ship_GunXOffset=( $((-12*FixedPt/10)) $((12*FixedPt/10)) $((-16*FixedPt/10)) $((16*FixedPt/10)) )
+Ship_GunYOffset=$((3*FixedPt/10))
+Ship_GunZOffset=$((9*FixedPt/10))
+Ship_Throttle=0
+Ship_Initialized=0
+
+Ship_WingShield() {
+	#inside
+	glBegin GL_TRIANGLE_FAN;
+	glNormal 1 0 0; 	glVertex 0 0 0
+	glNormal 1 0 0.2;	glVertex 0.2 0 -3
+	glNormal 1 -0.7 0;	glVertex 0.2 1 0.5
+	glNormal 1 0 -0.2;	glVertex 0.2 0 2
+	glNormal 1 0.7 0;	glVertex 0.2 -1 0.5
+	glNormal 1 0 0.2;	glVertex 0.2 0 -3
+	glEnd
+	#outside
+	glBegin GL_TRIANGLE_FAN;
+	glNormal -1 0 0;	glVertex -0.5 0 0
+	glNormal -1 1 0;	glVertex 0.2 1 0.5
+	glNormal -1 0 -0.3;	glVertex 0.2 0 -3
+	glNormal -1 -1 0;	glVertex 0.2 -1 0.5
+	glNormal -1 0 0.3;	glVertex 0.2 0 2
+	glNormal -1 1 0;	glVertex 0.2 1 0.5
+	glEnd
+}
+
+Ship_Wing() {
+	glBegin GL_QUAD_STRIP
+	glNormal 0 1 0.1;   glVertex -2 0 0.5;     glVertex 0 0 1.5
+	glNormal 0 1 -0.1;  glVertex -2 0.3 -0.3;  glVertex 0 0.3 -0.5
+	glNormal 0 0 -1;    glVertex -2 0 -0.4;    glVertex 0 0 -0.6
+	glNormal 0 -2 -0.1; glVertex -2 -0.3 -0.3; glVertex 0 -0.3 -0.5
+	glNormal 0 -1 0.1;  glVertex -2 0 0.5;     glVertex 0 0 1.5
+	glEnd
+}
+
+Ship_HalfBody() {
+	glBegin GL_TRIANGLE_STRIP
+	glNormal 0.1 1 -0.1
+	glVertex 0 0 -6
+	glVertex 0 0.2 -4
+	glVertex 0.8 0 -4.5
+	glNormal 0 1 0
+	glVertex 0 0.3 -3
+	glVertex 1 0 -3.3
+	glNormal 0 1 -0.3
+	glVertex 0 0.2 0
+	glVertex 0.8 0 0
+	glEnd
+	glBegin GL_TRIANGLE_STRIP
+	glNormal 0.1 -1 -0.1
+	glVertex 0 0 -6
+	glVertex 0.8 0 -4.5
+	glVertex 0 -0.2 -4
+	glNormal 0 -1 0
+	glVertex 1 0 -3.3
+	glVertex 0 -0.3 -3
+	glNormal 0 -1 -0.3
+	glVertex 0.8 0 0
+	glVertex 0 -0.2 0
+	glEnd
+}
+
+Ship_Thruster() {
+	# Back half of thruster
+	gluCylinder thruster 0.4 0.2 1.7 7 1
+	glTranslate 0 0 1.7
+	gluCylinder thruster 0.2 0.17 0 7 1
+	glTranslate 0 0 -1.7
+	glRotate 180 0 1 0
+	# Front half of thruster
+	gluCylinder thruster 0.4 0.2 1.1 7 1
+	glTranslate 0 0 1.1
+	gluCylinder thruster 0.18 0.2 0 7 1
+	gluCylinder innerthruster 0.18 0.0 -0.5 7 1
+}
+Ship_BuildThrustLists() {
+	glNewList Thrust0 GL_COMPILE
+	glDisable GL_LIGHTING
+	glBegin GL_TRIANGLE_FAN
+	glColor '#770000'
+	glVertex 0 0 1.5
+	glColor '#330000'
+	cglFixedPt 10000
+	for ((i=0; i<8; i++)); do
+		sincos $((-36000*i/7))
+		glVertex $((Result*18/100)) $((Result2*18/100)) 17000
+	done
+	cglFixedPt 1
+	glEnd
+	glEnable GL_LIGHTING
+	glEndList
+
+	glNewList Thrust1 GL_COMPILE
+	glDisable GL_LIGHTING
+	glBlendFunc GL_SRC_ALPHA GL_ONE_MINUS_SRC_ALPHA
+	glEnable GL_BLEND
+	glBegin GL_TRIANGLE_FAN
+	glColor '#DD5500'
+	glVertex 0 0 1.5
+	glColor '#773300'
+	cglFixedPt 10000
+	for ((i=0; i<8; i++)); do
+		sincos $((-36000*i/7))
+		glVertex $((Result*18/100)) $((Result2*18/100)) 17000
+	done
+	glEnd
+	glDisable GL_CULL_FACE
+	glBegin GL_TRIANGLE_STRIP
+	for ((i=0; i<8; i++)); do
+		sincos $((36000*i/7))
+		glColor '#000088'
+		glVertex $((Result*18/100)) $((Result2*18/100)) 17000
+		glColor 5000 5000 5000 5000
+		glVertex $((Result*8/100)) $((Result2*8/100)) 20333
+	done
+	glEnd
+	glEnable GL_CULL_FACE
+	cglFixedPt 1
+	glDisable GL_BLEND
+	glEnable GL_LIGHTING
+	glEndList
+}
+Ship_Thrust() {
+	glRotate $RANDOM 0 0 1
+	if ((Ship_Throttle)); then glCallList Thrust1; else glCallList Thrust0; fi
+}
+Ship_Gun() {
+	glPushMatrix
+	glBegin GL_TRIANGLE_FAN
+	glNormal 0 1 0; 	glVertex 0 0.1 0
+	glNormal 0 0.5 1;	glVertex 0 -0.15 0.3
+	glNormal 1 0.5 -1;	glVertex 0.1 0 -0.1
+	glNormal -1 0.5 -1;	glVertex -0.1 0 -0.1
+	glNormal 0 0.5 1;	glVertex 0 -0.15 0.3
+	glEnd
+	glTranslate 0 0 -1
+	gluCylinder gun 0.025 0.05 1 5 1
+	glPopMatrix
+}
+
+Ship_InitGfx() {
+	# turn off fixed point mechanisms
+	cglFixedPt 1
+
+	gluNewQuadric thruster
+	gluNewQuadric innerthruster
+	gluNewQuadric gun
+	gluQuadricOrientation innerthruster GLU_INSIDE
+
+	glNewList Ship GL_COMPILE
+	glDisable GL_TEXTURE_2D
+	glColor 0.4 0.4 0.4
+	glPushMatrix
+		Ship_HalfBody
+		Ship_Wing
+		glTranslate -2 0 0
+		Ship_WingShield
+		glTranslate 4 0 0
+		glRotate 180 0 0 1
+		Ship_WingShield
+		glTranslate 2 0 0
+		Ship_Wing
+		Ship_HalfBody
+	glPopMatrix
+
+	glColor 0.2 0.2 0.2
+	glPushMatrix
+		glTranslate -1.9 -0.4 -0.2
+		glRotate 10 0 1 0
+		glRotate 5 1 0 0
+		Ship_Thruster
+	glPopMatrix
+	glPushMatrix
+		glTranslate 1.9 -0.4 -0.2
+		glRotate -10 0 1 0
+		glRotate 5 1 0 0
+		Ship_Thruster
+	glPopMatrix
+
+	glPushMatrix
+		glTranslate -1.2 0.3 -0.1
+		Ship_Gun
+		glTranslate -0.4 0 0
+		Ship_Gun
+		glTranslate 2.8 0 0
+		Ship_Gun
+		glTranslate 0.4 0 0
+		Ship_Gun
+	glPopMatrix
+	glEndList
+
+	Ship_BuildThrustLists
+
+	cglFixedPt $FixedPt
+	Ship_Initialized=1;
+}
+
+Ship() {
+	((Ship_Initialized))||Ship_InitGfx
+	cglFixedPt 1
+	glPushMatrix
+	glRotate 180 0 1 0 # reverse model on Z axis
+	glCallList Ship
+	glPushMatrix
+	glTranslate -1.9 -0.4 -0.2
+	glRotate 10 0 1 0
+	glRotate 5 1 0 0
+	Ship_Thrust
+	glPopMatrix
+	glTranslate 1.9 -0.4 -0.2
+	glRotate -10 0 1 0
+	glRotate 5 1 0 0
+	Ship_Thrust
+	glPopMatrix
+	cglFixedPt $FixedPt
+}

@@ -1,0 +1,117 @@
+# Title: Trig.sh
+# Author: Michael Conrad
+# Date: 2005-05-29
+#
+# Some useful trig functions.
+# All are approximated using linear interpolation over a table of values.
+#
+CmdlineGL_LoadLib LinInterpolate
+
+SIN_TABLE=( 0 0523 1045 1564 2079 2588 3090 3584 4067 4540 5000 5446 5878 6293 6691 7071 7431 7771 8090 8387 8660 8910 9135 9336 9511 9659 9781 9877 9945 9986 10000 )
+SIN_TABLE_LEN=${#SIN_TABLE[@]}
+let SIN_TABLE_MAX=SIN_TABLE_LEN-1
+
+ASIN_TABLE=( 0 115 229 344 459 574 689 805 921 1037 1154 1271 1389 1507 1626 1746 1866 1988 2110 2233 2358 2483 2610 2739 2869 3000 3133 3268 3406 3545 3687 3832 3979 4130 4284 4443 4605 4773 4946 5126 5313 5508 5714 5932 6164 6416 6693 7005 7374 7852 9000 )
+ASIN_TABLE_LEN=${#ASIN_TABLE[@]}
+ASIN_TAIL_TABLE=( 6416 6469 6523 6578 6635 6693 6752 6813 6875 6939 7005 7073 7144 7218 7294 7374 7456 7547 7641 7742 7852 7974 8111 8275 8487 9000 )
+ASIN_TAIL_TABLE_LEN=${#ASIN_TAIL_TABLE[@]}
+let ASIN_TABLE_MAX=ASIN_TABLE_LEN-1
+let ASIN_TAIL_TABLE_MAX=ASIN_TAIL_TABLE_LEN-1
+
+## Autogeneration of "trig_interpolate"
+# This generates an interpolation function that uses SIN_TABLE and
+# expects params in the range 0-9000
+#
+make_interpolate_func trig_interpolate SIN_TABLE 9000
+
+## Autogeneration of "trig_inv_interpolate"
+# This generates an interpolation function for the inverse trig functions
+# that uses ASIN_TABLE and expects params in the range 0-10000
+#
+# trig_inv_tail_interpolate handles arcsin inputs of 9000-10000
+# It provides much better tracking of the arcsin function over this range
+#
+make_interpolate_func trig_inv_interpolate ASIN_TABLE 10000
+make_interpolate_func trig_inv_tail_interpolate ASIN_TAIL_TABLE 1000
+
+## Get the sine of an angle
+# @Param $1: the angle, as an integer from 0 to 36000 (or any modular equivalent)
+# @return $Result: the sin of the angle, from -10000 to 10000
+#
+sin() {
+	local Angle=$1 Flip=1
+	(( Angle=(Angle%36000+36000)%36000 ));
+	if (( Angle >= 18000 )); then (( Angle-=18000, Flip=-1 )); fi
+	if (( Angle >= 9000 )); then (( Angle=18000-Angle )); fi
+	trig_interpolate $Angle
+	(( Result*=Flip ));
+}
+
+## Get the cosine of an angle
+# @Param $1: the angle, as an integer from 0 to 36000 (or any modular equivalent)
+# @return $Result: the cos of the angle, from -10000 to 10000
+#
+cos() {
+	local Angle=$1 Flip=1
+	(( Angle=(Angle%36000+36000)%36000 ));
+	if (( Angle >= 18000 )); then (( Angle=36000-Angle )); fi
+	if (( Angle >= 9000 )); then (( Angle-=9000, Flip=-1 )); else (( Angle=9000-Angle )); fi
+	trig_interpolate $Angle
+	(( Result*=Flip ));
+}
+
+## Perform both Sine and Cosine
+# This function performs both the sin and cosine on an angle, and runs significantly
+# faster than calling them separately.
+#
+# @Param $1: the angle, as an integer from 0 to 36000 (or any modular equivalent)
+# @return $Result: the sin of the angle, from -10000 to 10000
+# @return $Result2: the cos of the angle, from -10000 to 10000
+#
+# It was a sad day indeed when I realized that runtimes went down when I eliminated whitespace,
+# and that doing the substitutions during the declaration of the function instead of at runtime
+# made a significant difference...
+#
+eval "sincos() {
+local Angle sFlip=1 cFlip=1 From Pct Idx FromVal ToVal
+((Angle=(\$1%36000+36000)%36000));
+if((Angle>=9000&&Angle<27000)); then cFlip=-1;fi
+if((Angle>=18000));then((Angle-=18000,sFlip=-1));fi
+if((Angle>=9000));then((Angle=18000-Angle));fi
+((From=Angle*$SIN_TABLE_MAX,Idx=From/9000,Pct=From-Idx*9000))
+if((Idx==$SIN_TABLE_MAX));then
+((Result=SIN_TABLE[$SIN_TABLE_MAX]*sFlip,Result2=SIN_TABLE[0]*cFlip))
+else
+((FromVal=SIN_TABLE[Idx],ToVal=SIN_TABLE[Idx+1],Result=(FromVal+(ToVal-FromVal)*Pct/9000)*sFlip));
+((FromVal=SIN_TABLE[$SIN_TABLE_MAX-Idx],ToVal=SIN_TABLE[$((SIN_TABLE_MAX-1))-Idx],Result2=(FromVal+(ToVal-FromVal)*Pct/9000)*cFlip));
+fi
+}"
+
+tan() {
+	sincos $1
+	(( Result=Result*10000/Result2 ))
+}
+
+## Get the angle of a Sine
+# @Param $1: the sine of the angle, as an integer from -10000..10000
+# @return Result: the angle of the sine, as an integer from -9000..9000
+#
+asin() {
+	local Sin=$1 Sign=1
+	if (( Sin < 0 )); then (( Sin=-Sin, Sign=-1 )); fi
+	if (( Sin <= 9000 )); then trig_inv_interpolate $Sin
+	else (( Sin=Sin-9000 )); trig_inv_tail_interpolate $Sin; fi
+	(( Result*=Sign ));
+}
+
+## Get the angle of a Cosine
+# @Param $1: the cosine of the angle, as an integer from -10000 to 10000
+# @return Result: the angle of the cosine, as an integer from 0 to 18000
+#
+acos() {
+	local Cos=$1 Sign=1
+	if (( Cos < 0 )); then (( Cos=-Cos, Sign=-1 )); fi
+	if (( Cos <= 9000 )); then trig_inv_interpolate $Cos
+	else (( Cos=Cos-9000 )); trig_inv_tail_interpolate $Cos; fi
+	(( Result=9000-(Result*Sign) ));
+}

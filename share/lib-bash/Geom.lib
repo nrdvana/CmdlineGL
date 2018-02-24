@@ -1,0 +1,167 @@
+# Title: Geom.sh
+# Author: Michael Conrad
+# Date: 2005-05-29
+#
+# Library of some stuff mostly to do with cartesian points, vectors
+# and coordinate-systems.
+#
+CmdlineGL_LoadLib FixedPt Trig
+
+## Calculate the magnitude of a vector
+# For numbers which are close to forming a unit vector, the initial guess of
+# Mag^2/FixedPt is very close, and tends to converge in just 2-4 iterations.
+# Note that this only approximates sqrt, since I don't bother to round properly
+#
+# @param $1: x coordinate
+# @param $2: y coordinate
+# @param $3: z coordinate
+# @return $Result: the approximate magnitude of the vector
+#
+eval "Magnitude3D() {
+	local magsq=\$1*\$1+\$2*\$2+\$3*\$3 mag=magsq/$FixedPt prevmag=0
+	while((prevmag-mag>1||mag-prevmag>1));do((prevmag=mag,mag=(mag+magsq/mag)/2));done
+	let Result=mag
+}"
+
+InitPoint() {
+	let ${1}_x=${2:-0}
+	let ${1}_y=${3:-0}
+	let ${1}_z=${4:-0}
+	eval "${1}_Add() { (( ${1}_x+=\$1, ${1}_y+=\$2, ${1}_z+=\$3 )); }"
+	eval "${1}_Scale() { (( ${1}_x=${1}_x*\$1/$FixedPt, ${1}_y=${1}_y*\$1/$FixedPt, ${1}_z=${1}_z*\$1/$FixedPt )); }"
+}
+# Copy the value of Point $2 into Point $1
+ClonePoint() {
+	((${1}_x=${2}_x, ${1}_y=${2}_y, ${1}_z=${2}_z))
+}
+FreePoint() {
+	unset ${1}_x ${1}_y ${1}_z ${1}_Add
+}
+InitVec() {
+	InitPoint $1 $2 $3 $4
+	eval "${1}_Magnitude() { Magnitude3D \$${1}_x \$${1}_y \$${1}_z; }"
+	eval "${1}_SetMagnitude() {
+		local NewMag=\$1
+		${1}_Magnitude
+		((${1}_x=${1}_x*NewMag/Result, ${1}_y=${1}_y*NewMag/Result, ${1}_z=${1}_z*NewMag/Result))
+	}"
+	eval "${1}_Normalize() {
+		${1}_Magnitude
+		((${1}_x=${1}_x*$FixedPt/Result, ${1}_y=${1}_y*$FixedPt/Result, ${1}_z=${1}_z*$FixedPt/Result))
+	}"
+}
+FreeVec() {
+	unset ${1}_Magnitude ${1}_MakeUnit
+	FreePoint $1
+}
+
+InitCoordSys() {
+	InitVec ${1}_IV $FixedPt 0 0
+	InitVec ${1}_JV 0 $FixedPt 0
+	InitVec ${1}_KV 0 0 $FixedPt
+	InitVec ${1}_Pos 0 0 0
+
+	# Push an OpenGL Matrix that changes the modelview coordinate system to that
+ 	# of this object.
+	#
+	eval "${1}_EnterCS() {
+		glMultMatrix \$${1}_IV_x \$${1}_IV_y \$${1}_IV_z 0 \$${1}_JV_x \$${1}_JV_y \$${1}_JV_z 0 \$${1}_KV_x \$${1}_KV_y \$${1}_KV_z 0 \$${1}_Pos_x \$${1}_Pos_y \$${1}_Pos_z $FixedPt
+	}"
+
+	# Push an OpenGL matrix that enters this object's parent coordinate system.
+	# This goes on the assumption that this object is the current coordinate system,
+	# such as would happen if this CS were a mobile camera.
+	# For situations where the modelview is in this coord. sys. due to a _EnterCS(),
+ 	# just use glPopMatrix
+	# Note: this could be done in a single glMultMatrix, but then bash would be
+	# doing the math instead of OpenGL.  I'm betting its best to generate this extra
+	# line of output, though I didn't benchmark it.
+	#
+	eval "${1}_ExitCS() {
+		glMultMatrix \$${1}_IV_x \$${1}_JV_x \$${1}_KV_x 0 \$${1}_IV_y \$${1}_JV_y \$${1}_KV_y 0 \$${1}_IV_z \$${1}_JV_z \$${1}_KV_z 0 0 0 0 $FixedPt
+		glTranslate -\$${1}_Pos_x -\$${1}_Pos_y -\$${1}_Pos_z
+	}"
+
+	# Makes the I/J/K vectors into something close to unit vectors
+	#
+	eval "${1}_Normalize() {
+		${1}_IV_Normalize
+		${1}_JV_Normalize
+		${1}_KV_Normalize
+	}"
+
+	eval "${1}_RelativeYaw() {
+		local angle=\$1 x2 y2 z2 cy sy
+		# K2= K * cos(y) - I * sin(y)
+		sincos \$angle
+		(( sy=Result, cy=Result2,
+		   ${1}_KV_x= (${1}_KV_x*cy - ${1}_IV_x*sy)/$FixedPt,
+		   ${1}_KV_y= (${1}_KV_y*cy - ${1}_IV_y*sy)/$FixedPt,
+		   ${1}_KV_z= (${1}_KV_z*cy - ${1}_IV_z*sy)/$FixedPt ))
+		${1}_RegenIV
+	}"
+	eval "${1}_RelativePitch() {
+		local angle=\$1 x2 y2 z2 cy sy
+		# K2= K * cos(y) - J * sin(y)
+		sincos \$angle
+		(( sy=Result, cy=Result2,
+		   ${1}_KV_x= (${1}_KV_x*cy - ${1}_JV_x*sy)/$FixedPt,
+		   ${1}_KV_y= (${1}_KV_y*cy - ${1}_JV_y*sy)/$FixedPt,
+		   ${1}_KV_z= (${1}_KV_z*cy - ${1}_JV_z*sy)/$FixedPt ))
+		${1}_RegenJV
+	}"
+	eval "${1}_RelativeRoll() {
+		local angle=\$1 x2 y2 z2 cy sy
+		# J2= J * cos(y) - I * sin(y)
+		sincos \$angle
+		(( sy=Result, cy=Result2,
+		   ${1}_JV_x= (${1}_JV_x*cy - ${1}_IV_x*sy)/$FixedPt,
+		   ${1}_JV_y= (${1}_JV_y*cy - ${1}_IV_y*sy)/$FixedPt,
+		   ${1}_JV_z= (${1}_JV_z*cy - ${1}_IV_z*sy)/$FixedPt ))
+		${1}_RegenIV
+	}"
+	# I= J cross K
+	eval "${1}_RegenIV() {
+		(( x2=(${1}_JV_y*${1}_KV_z - ${1}_JV_z*${1}_KV_y)/$FixedPt, y2=(${1}_JV_z*${1}_KV_x - ${1}_JV_x*${1}_KV_z)/$FixedPt, z2=(${1}_JV_x*${1}_KV_y - ${1}_JV_y*${1}_KV_x)/$FixedPt ))
+		(( ${1}_IV_x=x2, ${1}_IV_y=y2, ${1}_IV_z=z2 ))
+	}"
+	# J= K cross I
+	eval "${1}_RegenJV() {
+		(( x2=(${1}_KV_y*${1}_IV_z - ${1}_KV_z*${1}_IV_y)/$FixedPt, y2=(${1}_KV_z*${1}_IV_x - ${1}_KV_x*${1}_IV_z)/$FixedPt, z2=(${1}_KV_x*${1}_IV_y - ${1}_KV_y*${1}_IV_x)/$FixedPt ))
+		(( ${1}_JV_x=x2, ${1}_JV_y=y2, ${1}_JV_z=z2 ))
+	}"
+	# K= I cross J
+	eval "${1}_RegenKV() {
+		(( x2=(${1}_IV_y*${1}_JV_z - ${1}_IV_z*${1}_JV_y)/$FixedPt, y2=(${1}_IV_z*${1}_JV_x - ${1}_IV_x*${1}_JV_z)/$FixedPt, z2=(${1}_IV_x*${1}_JV_y - ${1}_IV_y*${1}_JV_x)/$FixedPt ))
+		(( ${1}_KV_x=x2, ${1}_KV_y=y2, ${1}_KV_z=z2 ))
+	}"
+}
+
+# Copy the value of CoordSys $2 into CoordSys $1
+CoordSys_Clone() {
+	ClonePoint ${1}_IV ${2}_IV
+	ClonePoint ${1}_JV ${2}_JV
+	ClonePoint ${1}_KV ${2}_KV
+	ClonePoint ${1}_Pos ${2}_Pos
+}
+
+# Print the coordinate system
+CoordSys_Print() {
+	local x, y, z
+	((x=${1}_IV_x y=${1}_IV_y z=${1}_IV_z))
+	echo "I: ($x,	$y,	$z) Magnitude=$((x*x+y*y+z*z))"[K
+	((x=${1}_JV_x y=${1}_JV_y z=${1}_JV_z))
+	echo "J: ($x,	$y,	$z) Magnitude=$((x*x+y*y+z*z))"[K
+	((x=${1}_KV_x y=${1}_KV_y z=${1}_KV_z))
+	echo "K: ($x,	$y,	$z) Magnitude=$((x*x+y*y+z*z))"[K
+	echo "Origin: (${1}_Pos_x,	${1}_Pos_y,	${1}_Pos_z)"[K
+}
+
+FreeCoordSys() {
+	FreeVec ${1}_IV
+	FreeVec ${1}_JV
+	FreeVec ${1}_KV
+	unset ${1}_EnterCS ${1}_ExitCS ${1}_Normalize
+	unset ${1}_RelativeYaw ${1}_RelativePitch ${1}_RelativeRoll
+	unset ${1}_RegenIV ${1}_RegenJV ${1}_RegenKV
+}
