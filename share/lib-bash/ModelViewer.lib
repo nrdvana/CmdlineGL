@@ -9,7 +9,12 @@
 #   ModelViewer_Update
 #   ModelViewer_ApplyMatrix
 # Variables
-#   ModelViewer_
+#   ModelViewer_PanDegPerSec - Number of degrees to rotate per second of continual up/down/left/right keypress
+#   ModelViewer_ZoomPctPerSec - Percentage of distance to model which we will travel in one second
+#   ModelViewer_Distance   - Initial camera distance from the model
+#   ModelViewer_Pitch      - Initial camera vertical angle above the model
+#   ModelViewer_Direction  - Initial camera sideways angle around the model
+#
 
 CmdlineGL_LoadLib Timing FixedPt
 

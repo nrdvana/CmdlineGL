@@ -1,5 +1,5 @@
 #! /bin/bash
-[ -n "$BASH_VERSION" ] || exec bash $0
+[ -n "$BASH_VERSION" ] || exec bash $0 "$@"
 set -u
 # Define our handy die function
 die() { echo "$@" >&2; exit 2; }
