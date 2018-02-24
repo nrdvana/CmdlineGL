@@ -30,7 +30,7 @@ ModelViewer_Down=0
 ModelViewer_In=0
 ModelViewer_Out=0
 ModelViewer_PanDegPerSec=90
-ModelViewer_ZoomPctPerSec=20
+ModelViewer_ZoomPctPerSec=40
 
 # DispatchEvent returns true if it consumed the event, false otherwise.
 # Positonal arguments are as received from CmdlineGL
@@ -80,6 +80,8 @@ ModelViewer_DispatchEvent() {
 	esac
 }
 
+# The user input events toggle variables, but don't modify the viewer state, yet.
+# Call Update once per frame to apply those inputs to the viewer state.
 ModelViewer_Update() {
 	# All numbers are scaled by 1000 to match time reported in milliseconds
 	((ModelViewer_Left))  && ((ModelViewer_Direction+=Timing_dT*ModelViewer_PanDegPerSec))
@@ -88,14 +90,18 @@ ModelViewer_Update() {
 	((ModelViewer_Down))  && ((ModelViewer_Pitch+=Timing_dT*ModelViewer_PanDegPerSec))
 	local Zoom;
 	((Zoom=ModelViewer_In? ( ModelViewer_Out? 0 : -1 ) : ModelViewer_Out? 1 : 0))
-	((Zoom*= ModelViewer_ZoomPctPerSec*ModelViewer_Distance/100))
+	((Zoom*= ModelViewer_ZoomPctPerSec*ModelViewer_Distance/100*Timing_dT/1000))
+	#echo "dist=$ModelViewer_Distance dT=$Timing_dT Zoom=$Zoom";
 	((ModelViewer_Distance += Zoom))
 	((ModelViewer_Distance>0)) || ((ModelViewer_Distance=1))
 }
 
+# Call this right after LoadIdentity to move from camera space to model space
 ModelViewer_ApplyMatrix() {
 	# Alter the model matrix to give the effect of having a movable camera.
-	glTranslate 0 0 -$((ModelViewer_Distance*FixedPt/1000))
-	glRotate $((ModelViewer_Pitch*FixedPt/1000)) $((FixedPt)) 0 0
-	glRotate $((ModelViewer_Direction*FixedPt/1000)) 0 $((FixedPt)) 0
+	((FixedPt == 1000)) || cglFixedPt 1000
+	glTranslate 0 0 -$ModelViewer_Distance
+	glRotate $ModelViewer_Pitch 1000 0 0
+	glRotate $ModelViewer_Direction 0 1000 0
+	((FixedPt == 1000)) || cglFixedPt $FixedPt
 }
