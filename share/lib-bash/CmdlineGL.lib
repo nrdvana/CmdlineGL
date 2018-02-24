@@ -1,37 +1,69 @@
-# Prevent multiple inclusion
-[ -z ${CMDLINEGL_LIB+x} ] || return 0
-CMDLINEGL_LIB=1
-
 # CmdlineGL Base API
 #--------------------------------------
 # Functions:
+#   CmdlineGL_LoadLib LIBRARY [LIBRARY...]
+#   CmdlineGL_LoadTex TEXTURE [TEXTURE...]
+#   CmdlineGL_LoadFont FONT [FONT...]
 #   CmdlineGL_Start [MODE]
 #   CmdlineGL_Send COMMAND [ARGS...]
 #   CmdlineGL_Recv
-#   CmdlineGL_SetFixedPt SCALE
 #   gl*
 #   glu*
 #   cgl*
 #
 # Variables:
-#
-#   CmdlineGL_FixedPt: int - the current scale for any floating point numbers
+#   CmdlineGL_LibPath - ':' separated list of directories where *.lib can be found
+#   CmdlineGL_TexPath - same for *.png
+#   CmdlineGL_FontPath - same for *.ttf
 #   CmdlineGL_Mode: str - either 'stdout', 'w' or 'rw', or empty if CmdlineGL is not started yet
 #   CmdlineGL_In: int - File handle of user input returned from CmdlineGL
 #   CmdlineGL_Out: int - File handle where commands are written
 #   CmdlineGL_InputLine: str - Most recent input event
 #
 
-CmdlineGL_FixedPt=1
 CmdlineGL_Mode=
 CmdlineGL_In=
 CmdlineGL_Out=
 CmdlineGL_InputLine=
+CmdlineGL_LibLoaded=":"
+CmdlineGL_TexLoaded=":"
+CmdlineGL_FontLoaded=":"
 
-# Set the fixed-point divisor and also store it locally for other libs to use
-CmdlineGL_SetFixedPt() {
-	CmdlineGL_FixedPt="$1"
-	cglFixedPt "$1"
+CmdlineGL_LoadLib() {
+	# Unpack path into an array, so that we can expand the path into 'find' cleanly
+	IFS=':' read -ra CmdlineGL_LibPathAry <<< "$CmdlineGL_LibPath";
+	for lib in "$@"; do
+		if [[ "$CmdlineGL_LibLoaded" != *:"$lib":* ]]; then
+			local fname=`find "${CmdlineGL_LibPathAry[@]}" -name "$lib".lib | head -n 1` || { echo "Can't find lib '$lib' in path '$CmdlineGL_LibPath'"; return 2; }
+			source "$fname" || { echo "Failed to load '$lib'"; return 2; }
+			CmdlineGL_LibLoaded="$CmdlineGL_LibLoaded$lib:"
+		fi
+	done
+}
+
+CmdlineGL_LoadTex() {
+	# Unpack path into an array, so that we can expand the path into 'find' cleanly
+	IFS=':' read -ra CmdlineGL_TexPathAry <<< "$CmdlineGL_TexPath";
+	for tex in "$@"; do
+		if [[ "$CmdlineGL_TexLoaded" != *:"$tex":* ]]; then
+			local fname=`find "${CmdlineGL_TexPathAry[@]}" -name "$tex".png | head -n 1` || { echo "Can't find Tex '$tex' in path '$CmdlineGL_TexPath'"; return 2; }
+			glBindTexture GL_TEXTURE_2D "$tex"
+			cglLoadImage2D "$fname"
+			glTexParameter GL_TEXTURE_2D GL_TEXTURE_MIN_FILTER GL_LINEAR
+			glTexParameter GL_TEXTURE_2D GL_TEXTURE_MAG_FILTER GL_LINEAR
+		fi
+	done
+}
+
+CmdlineGL_LoadFont() {
+	# Unpack path into an array, so that we can expand the path into 'find' cleanly
+	IFS=':' read -ra CmdlineGL_FontPathAry <<< "$CmdlineGL_FontPath";
+	for font in "$@"; do
+		if [[ "$CmdlineGL_FontLoaded" != *:"$font":* ]]; then
+			local fname=`find "${CmdlineGL_FontPathAry[@]}" -name "$font".png | head -n 1` || { echo "Can't find Font '$font' in path '$CmdlineGL_FontPath'"; return 2; }
+			echo "TODO" >&2; return 1;
+		fi
+	done
 }
 
 # build aliases for each available command in the API
@@ -88,6 +120,8 @@ CmdlineGL_Start() {
 		CmdlineGL_Send(){ echo "$@" >&$CmdlineGL_Out; };
 		CmdlineGL_Recv(){ return 1; }
 	fi
+	# Initialize fixed-point math mode if that module is initialized
+	if [[ -z ${FixedPt+x} ]]; then CmdlineGL_Send cglFixedPt "$FixedPt"; fi;
 }
 
 CmdlineGL_CreateFifo() {

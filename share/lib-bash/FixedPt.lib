@@ -1,0 +1,24 @@
+# FixedPt is the divisor that CmdlineGL will apply to all numbers intended
+# as floating-point, so that Bash can emit integers.
+
+# This module makes sure a sane value of FixedPt has been declared, so that
+# other modules can cache it, and to make the end-user very aware of this
+# requirement.
+
+: "${FixedPt:=1}"
+(( FixedPt= FixedPt? 0+FixedPt : 1 )) # this guarantees it will be a number now
+[[ ${FixedPt//0} == 1 ]] || { echo 'Value of $FixedPt should be a clean power of 10'; return 2; }
+FixedPt_Power=${#FixedPt}-1
+FixedPt_ZeroBuf=0${FixedPt:1} # a buffer of zeroes long enough for substr op below
+declare -ri FixedPt=$FixedPt; # Make it read-only
+
+# If CmdlineGL is active, send it the value of FixedPt.
+# Else when CmdlineGL starts it will initialize with the value of FixedPt.
+if [ -n "$CmdlineGL_Out" ]; then cglFixedPt $FixedPt; fi
+
+FixedPt_ToFloat() {
+	local len=${#1}
+	local digits="${FixedPt_ZeroBuf:len}$1"
+	local wholelen=${#digits}-FixedPt_Power
+	Result="${digits:0:wholelen}.${digits:wholelen}"
+}

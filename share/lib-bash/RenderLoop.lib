@@ -1,8 +1,4 @@
-# Prevent multiple inclusion
-[[ -z ${RENDERLOOP_LIB+x} ]] || return 0
-RENDERLOOP_LIB=1
-
-source "$CMDLINEGL_SHARE_PATH/lib-bash/Timing.lib"
+CmdlineGL_LoadLib Timing
 
 # RenderLoop API
 #--------------------------------------

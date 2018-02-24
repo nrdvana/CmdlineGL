@@ -1,15 +1,8 @@
-# Prevent multiple inclusion
-[[ -z ${MODELVIEWER_LIB+x} ]] || return 0
-MODELVIEWER_LIB=1;
-
-source "$CMDLINEGL_SHARE_PATH/lib-bash/Timing.lib"
-
 # ModelView API
 #--------------------------------------
 #
 # This module sets up the translations and handles user input to give the
 # effect of a camera looking at a model, which you then render at the origin.
-# UI motion is not currently scaled according to frame rate, but ought to be...
 #
 # Functions
 #   ModelViewer_DispatchEvent EVENT [PARAM...]
@@ -17,6 +10,8 @@ source "$CMDLINEGL_SHARE_PATH/lib-bash/Timing.lib"
 #   ModelViewer_ApplyMatrix
 # Variables
 #   ModelViewer_
+
+CmdlineGL_LoadLib Timing FixedPt
 
 ModelViewer_Distance=10000
 ModelViewer_Pitch=0
@@ -95,7 +90,7 @@ ModelViewer_Update() {
 
 ModelViewer_ApplyMatrix() {
 	# Alter the model matrix to give the effect of having a movable camera.
-	glTranslate 0 0 -$((ModelViewer_Distance*CmdlineGL_FixedPt/1000))
-	glRotate $((ModelViewer_Pitch*CmdlineGL_FixedPt/1000)) $((CmdlineGL_FixedPt)) 0 0
-	glRotate $((ModelViewer_Direction*CmdlineGL_FixedPt/1000)) 0 $((CmdlineGL_FixedPt)) 0
+	glTranslate 0 0 -$((ModelViewer_Distance*FixedPt/1000))
+	glRotate $((ModelViewer_Pitch*FixedPt/1000)) $((FixedPt)) 0 0
+	glRotate $((ModelViewer_Direction*FixedPt/1000)) 0 $((FixedPt)) 0
 }

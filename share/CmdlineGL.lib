@@ -1,51 +1,35 @@
 #! /bin/bash
-# This script is meant to be sourced into bash to add each CmdlineGL
-# function as a shell function.  You may additionally request optional
-# modules from the ../share/CmdlineGL/lib-bash directory.
-#
-# Example:
-#   source CmdlineGL.lib Timing Model_Cube
-#
+# This script is a trampoline to detect shells and versions
+# ...but only Bash 3+ is supported at the moment.
 
-# First, make sure this script is being sourced and run from bash.
+# First, make sure this script is being sourced
 case "$0" in
-*CmdlineGL.lib)
-	echo "Usage: source `which CmdlineGL.lib` [LIB...]"
-	echo "       (use `which` to avoid loading from current directory)"
-	echo
-	echo "Available libs:"
-	echo "       Timing - Provides virtual clock and FPS routines"
-	echo ""
+*/CmdlineGL.lib)
+	echo "Usage: source /path/to/CmdlineGL.lib"
 	exit 1
 	;;
 esac
 
+# Then figure out where the lib path is
+CmdlineGL_SharePath="@share_path@" # set by "make install"
+if [ ! -d "@share_path@" ]; then
+	# Running from project dir, before "make install"
+	CmdlineGL_SharePath="${BASH_SOURCE%/*}"
+fi
+if [ ! -d "$CmdlineGL_SharePath/lib-bash" ]; then
+	echo "Can't determine CmdlineGL share path (checked for '$CmdlineGL_SharePath/lib-bash')"
+	return 1
+fi
+
+# Force safe defaults for paths.  Calling script can modify these afterward.
+CmdlineGL_TexPath="$CmdlineGL_SharePath/textures"
+CmdlineGL_FontPath="$CmdlineGL_SharePath/fonts"
+# Then load the lib appropriate for this shell.  Right now bash is the only supported shell.
 if [ -n "$BASH_VERSION" ]; then
-	# Calculate the ../share/CmdlineGL/bash-lib/ directory relative to the ../bin where CmdlineGL.lib was found
-	if [ -n "$BASH_SOURCE" ]; then
-		# Start with absolute path of source file
-		CMDLINEGL_SHARE_PATH="$BASH_SOURCE"
-		[[ "$BASH_SOURCE" == /* ]] || CMDLINEGL_SHARE_PATH="$PWD/$BASH_SOURCE"
-		# Remove file name
-		CMDLINEGL_SHARE_PATH="${CMDLINEGL_SHARE_PATH%/*}"
-		# If it does not contain the "lib-bash" dir, then go up one dir and down into share/CmdlineGL
-		if [[ ! -d "$CMDLINEGL_SHARE_PATH/lib-bash" ]]; then
-			CMDLINEGL_SHARE_PATH="${CMDLINEGL_SHARE_PATH%/*}/share/CmdlineGL"
-			if [[ ! -d "$CMDLINEGL_SHARE_PATH" ]]; then
-				echo "Unable to locate CmdlineGL share path"
-				return 1;
-			fi
-		fi
-		source "$CMDLINEGL_SHARE_PATH/lib-bash/CmdlineGL.lib";
-		for module in "$@"; do
-			source "$CMDLINEGL_SHARE_PATH/lib-bash/${module}.lib";
-		done
-	else
-		echo "Your version of bash is too old (no BASH_SOURCE defined)"
-	fi
+	CmdlineGL_LibPath="$CmdlineGL_SharePath/lib-bash"
+	source "$CmdlineGL_SharePath/lib-bash/CmdlineGL.lib"
 else
 	echo "You must source this libary from bash."
 	echo "No other shells are currently supported."
-	echo "(argv = $0 $@ )"
 	return 1;
 fi

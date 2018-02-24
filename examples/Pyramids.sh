@@ -4,9 +4,9 @@
 # Define our handy die function
 die() { echo "$@" >&2; exit 2; }
 
-# Load bash libraries
-source "${BASH_SOURCE%/*}/../share/CmdlineGL.lib" RenderLoop Timing \
-	|| die "Can't find ../share directory (from $PWD via ${BASH_SOURCE%/*})"
+source "${BASH_SOURCE%/*}/../share/CmdlineGL.lib" || die "Can't find ../share directory (from $PWD via ${BASH_SOURCE%/*})";
+
+CmdlineGL_LoadLib Timing RenderLoop
 
 let x=0;
 
