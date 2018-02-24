@@ -1,14 +1,9 @@
 # Process this file with autoconf to produce a configure script.
 #
-# I hereby declare that I have no clue what I'm doing when it comes
-# to autoconf.  All suggestions (and patches!) are welcome.
-#
 AC_PREREQ(2.59)
-AC_INIT(CmdlineGL, 0.9, silverdirk@silverdirk.com)
+AC_INIT(CmdlineGL, 1.0, mike@nrdvana.net)
 AC_CONFIG_SRCDIR([Global.c])
 AC_CONFIG_HEADER([config.h])
-
-AC_ARG_VAR(INST_SHELL_BIND,[Set to 'y' to install a script symlink into bin/ for each glXxxx command, so that they can be run from the command line])
 
 # Checks for programs.
 AC_PROG_CXX
@@ -21,6 +16,7 @@ AC_PROG_MAKE_SET
 # Checks for libraries.
 AC_CHECK_LIB(GL,glBegin)
 AC_CHECK_LIB(GLU,gluNewQuadric)
+AC_CHECK_LIB(ftgl,ftglCreateTextureFont)
 AC_CHECK_LIB(SDL,SDL_Init)
 
 # Checks for header files.
@@ -31,7 +27,10 @@ fi
 AC_HEADER_STDC
 AC_CHECK_HEADERS([fcntl.h stdlib.h unistd.h])
 AC_CHECK_HEADERS([GL/gl.h GL/glu.h],[AC_SUBST(gl_header,GL/gl.h) AC_SUBST(glu_header,GL/glu.h)],[AC_CHECK_HEADERS([OpenGL/gl.h OpenGL/glu.h],[AC_SUBST(gl_header,OpenGL/gl.h) AC_SUBST(glu_header,OpenGL/glu.h)],[AC_MSG_ERROR([Can't find OpenGL headers])])])
-AC_CHECK_HEADERS([SDL/SDL.h],[AC_SUBST(sdl_header,SDL/SDL.h)],[AC_MSG_ERROR([Can't find Glut header (is it installed?)])])
+AC_CHECK_HEADERS([SDL/SDL.h],[AC_SUBST(sdl_header,SDL/SDL.h)],[AC_MSG_ERROR([Can't find SDL header (apt-get install libsdl1.2-dev)])])
+CFLAGS="${CFLAGS} -I/usr/include/freetype2"
+CPPFLAGS="${CPPFLAGS} -I/usr/include/freetype2"
+AC_CHECK_HEADERS([FTGL/ftgl.h],[AC_SUBST(ftgl_header,FTGL/ftgl.h)],[AC_MSG_ERROR([Can't find FTGL header (apt-get install libftgl-dev)])])
 
 # Checks for typedefs, structures, and compiler characteristics.
 AC_HEADER_STDBOOL
