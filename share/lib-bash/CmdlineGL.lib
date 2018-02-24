@@ -87,10 +87,7 @@ CmdlineGL_Start() {
 	if [[ $# > 0 && "$1" == stdout ]]; then
 		CmdlineGL_Mode=stdout
 		CmdlineGL_Out=1
-		CmdlineGL_Send(){ echo "$@"; };
 		CmdlineGL_Recv(){ return 1; }
-		# Performance optimization! whee!
-		for cmd in ${CmdlineGL_Commands[@]}; do eval "$cmd(){ echo $cmd \"\$@\"; }"; done
 	elif [[ $# > 0 && "$1" == rw ]]; then
 		if [[ "${BASH_VERSINFO[0]}" -ge 4 ]]; then
 			coproc CmdlineGL -t || return 1
@@ -107,10 +104,7 @@ CmdlineGL_Start() {
 			eval "exec $CmdlineGL_In<\"\$CMDLINEGL_FIFO_DIR/in\""
 		fi
 		CmdlineGL_Mode=rw
-		CmdlineGL_Send(){ echo "$@" >&$CmdlineGL_Out; };
 		CmdlineGL_Recv(){ read -r -u $CmdlineGL_In CmdlineGL_InputLine; };
-		# Performance optimization! whee!
-		for cmd in ${CmdlineGL_Commands[@]}; do eval "$cmd(){ echo $cmd \"\$@\" >&$CmdlineGL_Out; }"; done
 	else
 		if [[ "${BASH_VERSINFO[0]}" -ge 4 ]]; then
 			coproc CmdlineGL -t --nouimsg || return 1
@@ -123,11 +117,11 @@ CmdlineGL_Start() {
 			CmdlineGL -t <&$CmdlineGL_Out &
 		fi
 		CmdlineGL_Mode=w
-		CmdlineGL_Send(){ echo "$@" >&$CmdlineGL_Out; };
 		CmdlineGL_Recv(){ return 1; }
-		# Performance optimization! whee!
-		for cmd in ${CmdlineGL_Commands[@]}; do eval "$cmd(){ echo $cmd \"\$@\" >&$CmdlineGL_Out; }"; done
 	fi
+	CmdlineGL_Send(){ echo "$@" >&$CmdlineGL_Out; };
+	# Performance optimization! whee!
+	for cmd in ${CmdlineGL_Commands[@]}; do eval "$cmd(){ echo $cmd \"\$@\" >&$CmdlineGL_Out; }"; done
 	# Initialize fixed-point math mode if that module is initialized
 	if [[ -z ${FixedPt+x} ]]; then CmdlineGL_Send cglFixedPt "$FixedPt"; fi;
 }
