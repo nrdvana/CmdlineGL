@@ -1,40 +1,12 @@
 #! /bin/bash
 [ -n "$BASH_VERSION" ] || exec bash $0
-set -vue
+set -u
 # Define our handy die function
 die() { echo "$@" >&2; exit 2; }
 
-source "${BASH_SOURCE%/*}/../share/CmdlineGL.lib" || die "Can't find ../share directory (from $PWD via ${BASH_SOURCE%/*})";
+source "${BASH_SOURCE%/*}/../share/CmdlineGL.lib" || die "Can't load CmdlineGL.lib  ('${BASH_SOURCE%/*}/../share/CmdlineGL.lib')";
 
-CmdlineGL_LoadLib RenderLoop ModelViewer
-
-Face() {
-	glBegin GL_QUADS
-	glNormal 0 0 1;
-	glTexCoord 0 1; glVertex -1 -1 1;
-	glTexCoord 1 1; glVertex 1 -1 1;
-	glTexCoord 1 0; glVertex 1 1 1;
-	glTexCoord 0 0; glVertex -1 1 1;
-	glEnd
-}
-
-Cube() {
-	glNewList cube GL_COMPILE
-	Face
-	glRotate 90 0 1 0
-	Face
-	glRotate 90 0 1 0
-	Face
-	glRotate 90 0 1 0
-	Face
-	glRotate 90 1 0 0
-	Face
-	glRotate 180 1 0 0
-	Face
-	glEndList
-	# Optimize future calls
-	Cube() { glCallList cube; }
-}
+CmdlineGL_LoadLib RenderLoop ModelViewer Cube
 
 Init() {
 	glEnable GL_NORMALIZE GL_DEPTH_TEST GL_CULL_FACE
@@ -62,7 +34,7 @@ RenderLoop_Render() {
 	
 	glLoadIdentity
 	ModelViewer_ApplyMatrix
-	glColor 0.5 0.5 0.5
+	glColor 0.5 0.5 0.5 1
 	glBindTexture GL_TEXTURE_2D checker
 	Cube
 	glFlush
@@ -71,7 +43,11 @@ RenderLoop_Render() {
 }
 
 RenderLoop_DispatchEvent() {
-	ModelViewer_DispatchEvent "$@"
+	if ! ModelViewer_DispatchEvent "$@"; then
+		if [[ "$1" == "K" && "$2" == "+" && "$3" == "q" ]]; then
+			RenderLoop_Done=1;
+		fi
+	fi
 }
 
 main () {

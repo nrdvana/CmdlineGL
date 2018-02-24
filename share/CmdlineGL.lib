@@ -21,7 +21,7 @@ if [ ! -d "$CmdlineGL_SharePath/lib-bash" ]; then
 	return 1
 fi
 
-# Force safe defaults for paths.  Calling script can modify these afterward.
+# Force safe defaults for paths.  Caller can modify these afterward.
 CmdlineGL_TexPath="$CmdlineGL_SharePath/textures"
 CmdlineGL_FontPath="$CmdlineGL_SharePath/fonts"
 # Then load the lib appropriate for this shell.  Right now bash is the only supported shell.

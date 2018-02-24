@@ -66,10 +66,16 @@ CmdlineGL_LoadFont() {
 	done
 }
 
-# build aliases for each available command in the API
-for cmd in `CmdlineGL --showcmds`; do
+# Build aliases for each available command in the API.
+# This is the first time we check for an executable CmdlineGL, but can't check its
+# exit status within the substitution...
+Result=0;
+for cmd in $( CmdlineGL --showcmds ); do
 	eval "$cmd(){ CmdlineGL_Send $cmd \"\$@\"; }"
+	Result=1;
 done
+((Result)) || { echo "Can't run CmdlineGL"; return 2; }
+
 # This default gets overwritten by CmdlineGL_Start  (thunk/trampoline style)
 CmdlineGL_Send() {
 	CmdlineGL_Start

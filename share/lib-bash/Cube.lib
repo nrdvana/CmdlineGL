@@ -1,0 +1,65 @@
+# Simple 2x2x2 cube model, with colored faces, which auto-compiles to a display list
+
+CmdlineGL_LoadLib FixedPt
+
+Cube() {
+	# turn off fixed point mechanisms
+	cglFixedPt 1
+
+	glNewList Cube GL_COMPILE
+	glBegin GL_QUADS
+
+	# Top
+	glNormal 0 1 0
+	glVertex 1 1 1
+	glVertex 1 1 -1
+	glVertex -1 1 -1
+	glVertex -1 1 1
+
+	# Right
+	glNormal 1 0 0
+	glVertex 1 1 -1
+	glVertex 1 1 1
+	glVertex 1 -1 1
+	glVertex 1 -1 -1
+
+	# Front
+	glNormal 0 0 1
+	glVertex 1 1 1
+	glVertex -1 1 1
+	glVertex -1 -1 1
+	glVertex 1 -1 1
+
+	# Bottom
+	glNormal 0 -1 0
+	glVertex 1 -1 1
+	glVertex -1 -1 1
+	glVertex -1 -1 -1
+	glVertex 1 -1 -1
+
+	# Left
+	glNormal -1 0 0
+	glVertex -1 1 1
+	glVertex -1 1 -1
+	glVertex -1 -1 -1
+	glColor 0.7 0 0.7
+	glVertex -1 -1 1
+
+	# Back
+	glNormal 0 0 -1
+	glVertex 1 1 -1
+	glVertex 1 -1 -1
+	glVertex -1 -1 -1
+	glVertex -1 1 -1
+
+	glEnd
+	glEndList
+
+	# restore previous fixed point mechanism
+	cglFixedPt $FixedPt
+
+	glCallList Cube
+
+	# Optimize future calls
+	Cube() { glCallList Cube; }
+}
