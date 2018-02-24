@@ -18,7 +18,7 @@
 
 CmdlineGL_LoadLib Timing FixedPt
 
-ModelViewer_Distance=10000
+ModelViewer_Zoom=1000
 ModelViewer_Pitch=0
 ModelViewer_Direction=0
 
@@ -27,8 +27,8 @@ ModelViewer_Left=0
 ModelViewer_Right=0
 ModelViewer_Up=0
 ModelViewer_Down=0
-ModelViewer_In=0
-ModelViewer_Out=0
+ModelViewer_Grow=0
+ModelViewer_Shrink=0
 ModelViewer_PanDegPerSec=90
 ModelViewer_ZoomPctPerSec=40
 
@@ -45,8 +45,8 @@ ModelViewer_DispatchEvent() {
 		left)  ((ModelViewer_Left=  Press));;
 		up)    ((ModelViewer_Up=    Press));;
 		down)  ((ModelViewer_Down=  Press));;
-		=)     ((ModelViewer_In=    Press));;
-		-)     ((ModelViewer_Out=   Press));;
+		=)     ((ModelViewer_Grow=  Press));;
+		-)     ((ModelViewer_Shrink=Press));;
 		*)     return 1;; # not consumed
 		esac
 		return 0 # consumed
@@ -88,19 +88,18 @@ ModelViewer_Update() {
 	((ModelViewer_Right)) && ((ModelViewer_Direction-=Timing_dT*ModelViewer_PanDegPerSec))
 	((ModelViewer_Up))    && ((ModelViewer_Pitch-=Timing_dT*ModelViewer_PanDegPerSec))
 	((ModelViewer_Down))  && ((ModelViewer_Pitch+=Timing_dT*ModelViewer_PanDegPerSec))
-	local Zoom;
-	((Zoom=ModelViewer_In? ( ModelViewer_Out? 0 : -1 ) : ModelViewer_Out? 1 : 0))
-	((Zoom*= ModelViewer_ZoomPctPerSec*ModelViewer_Distance/100*Timing_dT/1000))
-	#echo "dist=$ModelViewer_Distance dT=$Timing_dT Zoom=$Zoom";
-	((ModelViewer_Distance += Zoom))
-	((ModelViewer_Distance>0)) || ((ModelViewer_Distance=1))
+	local adjust;
+	((adjust=ModelViewer_Grow? ( ModelViewer_Shrink? 0 : -1 ) : ModelViewer_Shrink? 1 : 0))
+	((adjust= adjust + adjust * ModelViewer_ZoomPctPerSec*ModelViewer_Zoom*Timing_dT/100000))
+	((ModelViewer_Zoom += adjust))
+	((ModelViewer_Zoom>=10)) || ((ModelViewer_Zoom=10))
 }
 
 # Call this right after LoadIdentity to move from camera space to model space
 ModelViewer_ApplyMatrix() {
-	# Alter the model matrix to give the effect of having a movable camera.
-	((FixedPt == 1000)) || cglFixedPt 1000
-	glTranslate 0 0 -$ModelViewer_Distance
+	cglFixedPt $ModelViewer_Zoom # clever way to get arbitrary small scale
+	glScale 1000 # / ModelViewer_Zoom
+	cglFixedPt 1000
 	glRotate $ModelViewer_Pitch 1000 0 0
 	glRotate $ModelViewer_Direction 0 1000 0
 	((FixedPt == 1000)) || cglFixedPt $FixedPt

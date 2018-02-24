@@ -339,7 +339,8 @@ void CheckSDLEvents() {
 }
 
 void InitGL(int w, int h) {
-	GLfloat top, bottom, left, right;
+	GLfloat top, bottom, left, right, dist;
+	dist= 20; // 20 units from near clipping plane to the origin
 
 	// Use the entire window
 	glViewport(0, 0, w, h);
@@ -366,8 +367,8 @@ void InitGL(int w, int h) {
 		top= 10;
 	}
 
-	glFrustum(left/10, right/10, bottom/10, top/10, 1.0, 10000.0);
-
+	glFrustum(left/dist, right/dist, bottom/dist, top/dist, 1, 1000);
+	glTranslated(0, 0, -dist);
 	glMatrixMode(GL_MODELVIEW);
 }
 
