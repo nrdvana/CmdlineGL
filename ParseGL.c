@@ -349,15 +349,31 @@ PUBLISHED(glMultMatrix, DoMultMatrix) {
 	return 0;
 }
 PUBLISHED(glScale, DoScale) {
-	if (argc != 3) return ERR_PARAMCOUNT;
-	if (!ScanParams("ddd", argv, &ParseResult)) return ERR_PARAMPARSE;
-	glScaled(ParseResult.Doubles[0], ParseResult.Doubles[1], ParseResult.Doubles[2]);
+	if (argc == 3) {
+		if (!ScanParams("ddd", argv, &ParseResult)) return ERR_PARAMPARSE;
+		glScaled(ParseResult.Doubles[0], ParseResult.Doubles[1], ParseResult.Doubles[2]);
+	}
+	else if (argc == 2) {
+		if (!ScanParams("dd", argv, &ParseResult)) return ERR_PARAMPARSE;
+		glScaled(ParseResult.Doubles[0], ParseResult.Doubles[1], 1);
+	}
+	else if (argc == 1) {
+		if (!ScanParams("d", argv, &ParseResult)) return ERR_PARAMPARSE;
+		glScaled(ParseResult.Doubles[0], ParseResult.Doubles[0], ParseResult.Doubles[0]);
+	}
+	else return ERR_PARAMCOUNT;
 	return 0;
 }
 PUBLISHED(glTranslate, DoTranslate) {
-	if (argc != 3) return ERR_PARAMCOUNT;
-	if (!ScanParams("ddd", argv, &ParseResult)) return ERR_PARAMPARSE;
-	glTranslated(ParseResult.Doubles[0], ParseResult.Doubles[1], ParseResult.Doubles[2]);
+	if (argc == 3) {
+		if (!ScanParams("ddd", argv, &ParseResult)) return ERR_PARAMPARSE;
+		glTranslated(ParseResult.Doubles[0], ParseResult.Doubles[1], ParseResult.Doubles[2]);
+	}
+	else if (argc == 2) {
+		if (!ScanParams("dd", argv, &ParseResult)) return ERR_PARAMPARSE;
+		glTranslated(ParseResult.Doubles[0], ParseResult.Doubles[1], 0);
+	}
+	else return ERR_PARAMCOUNT;
 	return 0;
 }
 PUBLISHED(glRotate, DoRotate) {
