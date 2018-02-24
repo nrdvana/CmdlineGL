@@ -69,12 +69,8 @@ CmdlineGL_LoadFont() {
 # Build aliases for each available command in the API.
 # This is the first time we check for an executable CmdlineGL, but can't check its
 # exit status within the substitution...
-Result=0;
-for cmd in $( CmdlineGL --showcmds ); do
-	eval "$cmd(){ CmdlineGL_Send $cmd \"\$@\"; }"
-	Result=1;
-done
-((Result)) || { echo "Can't run CmdlineGL"; return 2; }
+CmdlineGL_Commands=( $( CmdlineGL --showcmds ) ) || { echo "Can't run CmdlineGL"; return 2; }
+for cmd in ${CmdlineGL_Commands[@]}; do eval "$cmd(){ CmdlineGL_Send $cmd \"\$@\"; }"; done
 
 # This default gets overwritten by CmdlineGL_Start  (thunk/trampoline style)
 CmdlineGL_Send() {
@@ -88,12 +84,14 @@ CmdlineGL_Recv() {
 # If we are running under bash, we can create a coprocess
 # and skip all the fifo nonsense.
 CmdlineGL_Start() {
-	if [[ "$1" = "stdout" ]]; then
+	if [[ $# > 0 && "$1" == stdout ]]; then
 		CmdlineGL_Mode=stdout
 		CmdlineGL_Out=1
 		CmdlineGL_Send(){ echo "$@"; };
 		CmdlineGL_Recv(){ return 1; }
-	elif [[ "$1" = "rw" ]]; then
+		# Performance optimization! whee!
+		for cmd in ${CmdlineGL_Commands[@]}; do eval "$cmd(){ echo $cmd \"\$@\"; }"; done
+	elif [[ $# > 0 && "$1" == rw ]]; then
 		if [[ "${BASH_VERSINFO[0]}" -ge 4 ]]; then
 			coproc CmdlineGL -t || return 1
 			CmdlineGL_In="${COPROC[0]}"
@@ -111,6 +109,8 @@ CmdlineGL_Start() {
 		CmdlineGL_Mode=rw
 		CmdlineGL_Send(){ echo "$@" >&$CmdlineGL_Out; };
 		CmdlineGL_Recv(){ read -r -u $CmdlineGL_In CmdlineGL_InputLine; };
+		# Performance optimization! whee!
+		for cmd in ${CmdlineGL_Commands[@]}; do eval "$cmd(){ echo $cmd \"\$@\" >&$CmdlineGL_Out; }"; done
 	else
 		if [[ "${BASH_VERSINFO[0]}" -ge 4 ]]; then
 			coproc CmdlineGL -t --nouimsg || return 1
@@ -125,6 +125,8 @@ CmdlineGL_Start() {
 		CmdlineGL_Mode=w
 		CmdlineGL_Send(){ echo "$@" >&$CmdlineGL_Out; };
 		CmdlineGL_Recv(){ return 1; }
+		# Performance optimization! whee!
+		for cmd in ${CmdlineGL_Commands[@]}; do eval "$cmd(){ echo $cmd \"\$@\" >&$CmdlineGL_Out; }"; done
 	fi
 	# Initialize fixed-point math mode if that module is initialized
 	if [[ -z ${FixedPt+x} ]]; then CmdlineGL_Send cglFixedPt "$FixedPt"; fi;
