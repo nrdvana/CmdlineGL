@@ -1,12 +1,12 @@
 #! /bin/bash
 [ -n "$BASH_VERSION" ] || exec bash $0
-
+set -u
 # Define our handy die function
 die() { echo "$@" >&2; exit 2; }
 
-# Load bash libraries
-source "${BASH_SOURCE%/*}/../share/CmdlineGL.lib" RenderLoop Timing \
-	|| die "Can't find ../share directory (from $PWD via ${BASH_SOURCE%/*})"
+source "${BASH_SOURCE%/*}/../share/CmdlineGL.lib" || die "Can't load CmdlineGL.lib  ('${BASH_SOURCE%/*}/../share/CmdlineGL.lib')";
+
+CmdlineGL_LoadLib RenderLoop ModelViewer
 
 #------------------------------------------------------------------------------
 # This is an almost line-by-line conversion from C to bash
@@ -301,9 +301,7 @@ Repaint() {
 	glLoadIdentity
 
 	# Alter the model matrix to give the effect of having a movable camera.
-	glTranslate 0 0 -$View_Distance
-	glRotate $View_Pitch 100 0 0
-	glRotate $View_Direction 0 100 0
+	ModelViewer_ApplyMatrix
 
 	glPushMatrix
 	# Move to the center of the head rotate by the neck angles and draw.
@@ -410,31 +408,6 @@ Animate() {
 	fi
 }
 
-MouseClick() {
-	local Press btn=$2
-	if [[ "$1" = "+" ]]; then Press=1; else Press=0; fi
-	if ((btn==1)); then
-		((Dragging=Press))
-	fi
-}
-
-# Handle mouse drag actions.
-# If the mouse has moved since last time change the pitch or direction
-# by the vertical or horizontal distance the mouse has moved.
-# Also repaint the robot and record the "last position" of the mouse.
-#
-MouseMotion() {
-	local dx=$3 dy=$4;
-	if ((Dragging)); then
-		if ((dy)); then
-			((View_Pitch+= dy*100))
-		fi
-		if ((dx)); then
-			((View_Direction+= dx*100));
-		fi
-	fi
-}
-
 # Initialize the globals and set up OpenGL.
 #
 Init() {
@@ -476,41 +449,15 @@ Init() {
 }
 
 RenderLoop_DispatchEvent() {
-	local Press
-	case "$1" in
-	K)
-		if [[ "$2" = "+" ]]; then Press=1; else Press=0; fi
-		case "$3" in
-		right) PanRight=$Press;;
-		left)  PanLeft=$Press;;
-		up)    PanUp=$Press;;
-		down)  PanDn=$Press;;
-		=)     ZoomIn=$Press;;
-		-)     ZoomOut=$Press;;
-		q)     terminate=1;;
-		esac
-		;;
-	M)
-		if [[ "$2" = "@" ]]; then
-			MouseMotion $3 $4 $5 $6
-		else
-			MouseClick $2 $3
+	if ! ModelViewer_DispatchEvent "$@"; then
+		if [[ "$1" == "K" && "$2" == "+" && "$3" == "q" ]]; then
+			RenderLoop_Done=1;
 		fi
-		;;
-	esac
-}
-
-Update() {
-	if ((PanLeft)); then let View_Direction+=200; fi
-	if ((PanRight));then let View_Direction-=200; fi
-	if ((PanUp));   then let View_Pitch-=200; fi
-	if ((PanDn));   then let View_Pitch+=200; fi
-	if ((ZoomIn));  then let View_Distance-=50; fi
-	if ((ZoomOut)); then let View_Distance+=50; fi
+	fi
 }
 
 RenderLoop_Render() {
-	Update
+	ModelViewer_Update
 	Animate
 	Repaint
 }
@@ -521,15 +468,15 @@ main() {
 	cglQuit
 }
 
-if [[ "$1" == "--record" ]]; then
+if (( ! $# )); then
+	CmdlineGL_Start rw || die "Can't init CmdlineGL"
+	main
+elif [[ "$1" == "--record" ]]; then
 	CmdlineGL() { tee replay | command CmdlineGL; }
 	CmdlineGL_Start rw || die "Can't init CmdlineGL"
 	main
 elif [[ "$1" == "--dump" ]]; then
 	CmdlineGL_Start stdout || die "Can't init CmdlineGL state"
-	main
-elif [[ -z "$1" ]]; then
-	CmdlineGL_Start rw || die "Can't init CmdlineGL"
 	main
 else
 	echo 'Usage: Robot.sh [ --record | --dump ]'
