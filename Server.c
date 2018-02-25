@@ -135,6 +135,9 @@ int main(int Argc, char**Args) {
 			fprintf(stderr, "Can't disable key repeat. %s\n", SDL_GetError());
 
 		InitGL(Options.Width, Options.Height);
+
+		if (!Options.WndTitle) Options.WndTitle= "CmdlineGL";
+		SDL_WM_SetCaption(Options.WndTitle, Options.WndTitle);
 	}
 
 	DEBUGMSG(("Recording time\n"));
@@ -198,7 +201,7 @@ void ReadParams(char **Args, CmdlineOptions *Options) {
 			if (strcmp(*NextArg, "--help") == 0) { Options->WantHelp= true; break; }
 			if (strcmp(*NextArg, "--showcmds") == 0) { Options->ShowCmds= true; break; }
 			if (strcmp(*NextArg, "--showconsts") == 0) { Options->ShowConsts= true; break; }
-			if (strcmp(*NextArg, "--nouimsg") == 0) { Options->NoEmitEvents= true; break; }
+			if (strcmp(*NextArg, "--noevents") == 0) { Options->NoEmitEvents= true; break; }
 			if (strcmp(*NextArg, "--manual-viewport") == 0) { Options->ManualViewport= true; break; }
 			if (strcmp(*NextArg, "--manual-projection") == 0) { Options->ManualProjection= true; break; }
 			if (strcmp(*NextArg, "--title") == 0) {
@@ -211,7 +214,7 @@ void ReadParams(char **Args, CmdlineOptions *Options) {
 			}
 			if (strcmp(*NextArg, "--version") == 0) { Options->VersionOnly= true; break; }
 		default:
-			fprintf(stderr, "Unrecognized argument: %s", *NextArg);
+			fprintf(stderr, "Unrecognized argument: %s\n", *NextArg);
 			Options->NeedHelp= true;
 			return;
 		}
@@ -227,18 +230,18 @@ void PrintUsage(bool error) {
 	"     Reads commands from stdin, and writes user input to stdout.\n"
 	"\n"
 	"Options:\n"
-	"  -t                     Terminate after a zero-length read (EOF).\n"
-	"     --manual-viewport   No automatic glViewport on window resize\n"
-	"     --manual-projection No default GL_PROJECTION matrix\n"
+	"  -t                  Terminate after a zero-length read (EOF).\n"
+	"  --manual-viewport   No automatic glViewport on window resize\n"
+	"  --manual-projection No default GL_PROJECTION matrix\n"
 	#ifndef WIN32
-	"  -f <fifo>              Create the named fifo (file path+name) and read from it.\n"
+	"  -f <fifo>           Create the named fifo (file path+name) and read from it.\n"
 	#endif
-	"  --showcmds             List all the available commands in this version of CmdlineGL.\n"
-	"  --showconsts           List all the constants (GL_xxxx) that are available.\n"
-	"  --title <text>         Set the title of the window to \"text\".\n"
-	"  --noevents             Don't print any input event messages to stdout.\n"
-	"  -v --version           Print version and exit.\n"
-	"  -h                     Display this help message.\n"
+	"  --title <text>      Set the title of the window to \"text\".\n"
+	"  --noevents          Don't print any input event messages to stdout.\n"
+	"  --showcmds          List all the available commands in this version of CmdlineGL.\n"
+	"  --showconsts        List all the constants (GL_xxxx) that are available.\n"
+	"  -v --version        Print version and exit.\n"
+	"  -h                  Display this help message.\n"
 	"\n"
 	"Note: Each line of input is broken on space characters and treated as a\n"
  	"      command.  There is currently no escaping mechanism, although I'm not\n"
