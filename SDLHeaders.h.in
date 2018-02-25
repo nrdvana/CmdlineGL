@@ -1,0 +1,9 @@
+#ifdef _WIN32
+#define WIN32_LEAN_AND_MEAN
+#include <windows.h>
+#endif
+
+#include <@sdl_header@>
+#ifdef HAVE_LIBSDL_IMAGE
+#include <@sdl_image_header@>
+#endif

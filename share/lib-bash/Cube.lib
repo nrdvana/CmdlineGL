@@ -6,46 +6,45 @@ Cube_InitGfx() {
 
 	# Top
 	glNormal 0 1 0
-	glVertex 1 1 1
-	glVertex 1 1 -1
-	glVertex -1 1 -1
-	glVertex -1 1 1
+	glTexCoord 1 1; glVertex 1 1 1
+	glTexCoord 1 0; glVertex 1 1 -1
+	glTexCoord 0 0; glVertex -1 1 -1
+	glTexCoord 0 1; glVertex -1 1 1
 
 	# Right
 	glNormal 1 0 0
-	glVertex 1 1 -1
-	glVertex 1 1 1
-	glVertex 1 -1 1
-	glVertex 1 -1 -1
+	glTexCoord 1 0; glVertex 1 1 -1
+	glTexCoord 1 1; glVertex 1 1 1
+	glTexCoord 0 1; glVertex 1 -1 1
+	glTexCoord 0 0; glVertex 1 -1 -1
 
 	# Front
 	glNormal 0 0 1
-	glVertex 1 1 1
-	glVertex -1 1 1
-	glVertex -1 -1 1
-	glVertex 1 -1 1
+	glTexCoord 1 1; glVertex 1 1 1
+	glTexCoord 0 1; glVertex -1 1 1
+	glTexCoord 0 0; glVertex -1 -1 1
+	glTexCoord 1 0; glVertex 1 -1 1
 
 	# Bottom
 	glNormal 0 -1 0
-	glVertex 1 -1 1
-	glVertex -1 -1 1
-	glVertex -1 -1 -1
-	glVertex 1 -1 -1
+	glTexCoord 1 1; glVertex 1 -1 1
+	glTexCoord 0 1; glVertex -1 -1 1
+	glTexCoord 0 0; glVertex -1 -1 -1
+	glTexCoord 1 0; glVertex 1 -1 -1
 
 	# Left
 	glNormal -1 0 0
-	glVertex -1 1 1
-	glVertex -1 1 -1
-	glVertex -1 -1 -1
-	glColor 0.7 0 0.7
-	glVertex -1 -1 1
+	glTexCoord 1 1; glVertex -1 1 1
+	glTexCoord 1 0; glVertex -1 1 -1
+	glTexCoord 0 0; glVertex -1 -1 -1
+	glTexCoord 0 1; glVertex -1 -1 1
 
 	# Back
 	glNormal 0 0 -1
-	glVertex 1 1 -1
-	glVertex 1 -1 -1
-	glVertex -1 -1 -1
-	glVertex -1 1 -1
+	glTexCoord 0 1; glVertex 1 1 -1
+	glTexCoord 0 0; glVertex 1 -1 -1
+	glTexCoord 1 0; glVertex -1 -1 -1
+	glTexCoord 1 1; glVertex -1 1 -1
 
 	glEnd
 	glEndList
