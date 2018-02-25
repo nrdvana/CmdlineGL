@@ -16,7 +16,7 @@
 #   ModelViewer_Direction  - Initial camera sideways angle around the model
 #
 
-CmdlineGL_LoadLib Timing FixedPt
+CmdlineGL_LoadLib Timing
 
 ModelViewer_Zoom=1000
 ModelViewer_Pitch=0
@@ -97,10 +97,7 @@ ModelViewer_Update() {
 
 # Call this right after LoadIdentity to move from camera space to model space
 ModelViewer_ApplyMatrix() {
-	cglFixedPt $ModelViewer_Zoom # clever way to get arbitrary small scale
-	glScale 1000 # / ModelViewer_Zoom
-	cglFixedPt 1000
-	glRotate $ModelViewer_Pitch 1000 0 0
-	glRotate $ModelViewer_Direction 0 1000 0
-	((FixedPt == 1000)) || cglFixedPt $FixedPt
+	glScale 1000/$ModelViewer_Zoom
+	glRotate $ModelViewer_Pitch/1000 1/1 0 0
+	glRotate $ModelViewer_Direction/1000 0 1/1 0
 }

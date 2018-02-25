@@ -21,6 +21,9 @@ ScanParamsResult ParseResult;
  * all float values by this multiplier.  Naturally, it defaults to 1.0
  */
 double FixedPtMultiplier= 1.0;
+double DivisorStack[16];
+int DivisorStackPos= -1;
+const int DivisorStackMax= sizeof(DivisorStack)/sizeof(double) - 1;
 
 bool ParseInt(const char* Text, GLint *Result);
 bool ParseFloat(const char* Text, GLfloat *Result);
@@ -34,16 +37,24 @@ int ReportMissingObj(const char *Name);
 //----------------------------------------------------------------------------
 // CmdlineGL Functions
 //
-PUBLISHED(cglFixedPt, DoSetFixedPoint) {
+PUBLISHED(cglPushDivisor, DoPushDivisor) {
 	char *EndPtr;
 	double newval;
 	if (argc != 1) return ERR_PARAMCOUNT;
+	if (DivisorStackPos >= DivisorStackMax) return ERR_EXEC;
 	// We don't want to scale the new scale... so don't use ScanParams("d").
 	// That was a fun bug, lol.
 	newval= strtod(argv[0], &EndPtr);
 	if (*EndPtr != '\0') return ERR_PARAMPARSE;
-
+	DivisorStack[++DivisorStackPos]= newval;
 	FixedPtMultiplier= 1.0 / newval;
+	return 0;
+}
+
+PUBLISHED(cglPopDivisor, DoPopDivisor) {
+	if (argc != 0) return ERR_PARAMCOUNT;
+	if (DivisorStackPos < 0) return ERR_EXEC;
+	FixedPtMultiplier= (--DivisorStackPos >= 0)? 1.0 / DivisorStack[DivisorStackPos] : 1.0;
 	return 0;
 }
 
@@ -636,8 +647,16 @@ bool ParseFloat(const char* Text, GLfloat *Result) {
 
 bool ParseDouble(const char* Text, GLdouble *Result) {
 	char *EndPtr;
+	double num, denom;
 	if (Text[0] == '-' && Text[1] == '-') Text+= 2; // be nice about double negatives
-	*Result= FixedPtMultiplier * strtod(Text, &EndPtr);
+	num= strtod(Text, &EndPtr);
+	if (*EndPtr == '/') {
+		denom= strtod(EndPtr+1, &EndPtr);
+		if (!denom) return 0;
+		*Result= num / denom;
+	} else {
+		*Result= num * FixedPtMultiplier;
+	}
 	return (*EndPtr == '\0');
 }
 

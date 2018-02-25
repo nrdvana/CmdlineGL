@@ -20,7 +20,8 @@ bool ScanParams(const char* ParamType, char** Args, ScanParamsResult* Result);
 //----------------------------------------------------------------------------
 // CmdlineGL Functions
 //
-PUBLISHED(cglFixedPt, DoSetFixedPoint);
+PUBLISHED(cglPushDivisor, DoPushDivisor);
+PUBLISHED(cglPopDivisor, DoPopDivisor);
 PUBLISHED(cglSwapBuffers,DoSwapBuffers);
 
 //----------------------------------------------------------------------------

@@ -439,7 +439,7 @@ MouseMotion() {
 #
 Init() {
 	# Use fixed point numbers for all floating-point GL parameters
-	cglFixedPt 100
+	cglPushDivisor 100
 
 	# Turn on normalization of surface vectors and enable Z-buffering.
 	glEnable GL_NORMALIZE

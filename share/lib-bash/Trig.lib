@@ -6,6 +6,7 @@
 # All are approximated using linear interpolation over a table of values.
 #
 CmdlineGL_LoadLib LinInterpolate
+Trig_SinScale=10000
 
 SIN_TABLE=( 0 0523 1045 1564 2079 2588 3090 3584 4067 4540 5000 5446 5878 6293 6691 7071 7431 7771 8090 8387 8660 8910 9135 9336 9511 9659 9781 9877 9945 9986 10000 )
 SIN_TABLE_LEN=${#SIN_TABLE[@]}

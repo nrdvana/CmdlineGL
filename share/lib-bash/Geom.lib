@@ -1,11 +1,11 @@
-# Title: Geom.sh
-# Author: Michael Conrad
-# Date: 2005-05-29
-#
 # Library of some stuff mostly to do with cartesian points, vectors
 # and coordinate-systems.
 #
-CmdlineGL_LoadLib FixedPt Trig
+CmdlineGL_LoadLib Trig
+
+: ${Geom_FixedPt:=1000}
+(( Geom_FixedPt= Geom_Fixed_pt )) # ensure integer, so it's safe to eval
+declare -r Geom_FixedPt=$Geom_FixedPt
 
 ## Calculate the magnitude of a vector
 # For numbers which are close to forming a unit vector, the initial guess of
@@ -18,7 +18,7 @@ CmdlineGL_LoadLib FixedPt Trig
 # @return $Result: the approximate magnitude of the vector
 #
 eval "Magnitude3D() {
-	local magsq=\$1*\$1+\$2*\$2+\$3*\$3 mag=magsq/$FixedPt prevmag=0
+	local magsq=\$1*\$1+\$2*\$2+\$3*\$3 mag=magsq/$Geom_FixedPt prevmag=0
 	while((prevmag-mag>1||mag-prevmag>1));do((prevmag=mag,mag=(mag+magsq/mag)/2));done
 	let Result=mag
 }"
@@ -28,7 +28,7 @@ InitPoint() {
 	let ${1}_y=${3:-0}
 	let ${1}_z=${4:-0}
 	eval "${1}_Add() { (( ${1}_x+=\$1, ${1}_y+=\$2, ${1}_z+=\$3 )); }"
-	eval "${1}_Scale() { (( ${1}_x=${1}_x*\$1/$FixedPt, ${1}_y=${1}_y*\$1/$FixedPt, ${1}_z=${1}_z*\$1/$FixedPt )); }"
+	eval "${1}_Scale() { (( ${1}_x=${1}_x*\$1/$Geom_FixedPt, ${1}_y=${1}_y*\$1/$Geom_FixedPt, ${1}_z=${1}_z*\$1/$Geom_FixedPt )); }"
 }
 # Copy the value of Point $2 into Point $1
 ClonePoint() {
@@ -47,7 +47,7 @@ InitVec() {
 	}"
 	eval "${1}_Normalize() {
 		${1}_Magnitude
-		((${1}_x=${1}_x*$FixedPt/Result, ${1}_y=${1}_y*$FixedPt/Result, ${1}_z=${1}_z*$FixedPt/Result))
+		((${1}_x=${1}_x*$Geom_FixedPt/Result, ${1}_y=${1}_y*$Geom_FixedPt/Result, ${1}_z=${1}_z*$Geom_FixedPt/Result))
 	}"
 }
 FreeVec() {
@@ -56,16 +56,19 @@ FreeVec() {
 }
 
 InitCoordSys() {
-	InitVec ${1}_IV $FixedPt 0 0
-	InitVec ${1}_JV 0 $FixedPt 0
-	InitVec ${1}_KV 0 0 $FixedPt
+	InitVec ${1}_IV $Geom_FixedPt 0 0
+	InitVec ${1}_JV 0 $Geom_FixedPt 0
+	InitVec ${1}_KV 0 0 $Geom_FixedPt
 	InitVec ${1}_Pos 0 0 0
 
 	# Push an OpenGL Matrix that changes the modelview coordinate system to that
  	# of this object.
 	#
 	eval "${1}_EnterCS() {
-		glMultMatrix \$${1}_IV_x \$${1}_IV_y \$${1}_IV_z 0 \$${1}_JV_x \$${1}_JV_y \$${1}_JV_z 0 \$${1}_KV_x \$${1}_KV_y \$${1}_KV_z 0 \$${1}_Pos_x \$${1}_Pos_y \$${1}_Pos_z $FixedPt
+		glMultMatrix \$${1}_IV_x/$Geom_FixedPt \$${1}_IV_y/$Geom_FixedPt \$${1}_IV_z/$Geom_FixedPt 0 \\
+		             \$${1}_JV_x/$Geom_FixedPt \$${1}_JV_y/$Geom_FixedPt \$${1}_JV_z/$Geom_FixedPt 0 \\
+		             \$${1}_KV_x/$Geom_FixedPt \$${1}_KV_y/$Geom_FixedPt \$${1}_KV_z/$Geom_FixedPt 0 \\
+		             \$${1}_Pos_x/$Geom_FixedPt \$${1}_Pos_y/$Geom_FixedPt \$${1}_Pos_z/$Geom_FixedPt 1
 	}"
 
 	# Push an OpenGL matrix that enters this object's parent coordinate system.
@@ -78,8 +81,11 @@ InitCoordSys() {
 	# line of output, though I didn't benchmark it.
 	#
 	eval "${1}_ExitCS() {
-		glMultMatrix \$${1}_IV_x \$${1}_JV_x \$${1}_KV_x 0 \$${1}_IV_y \$${1}_JV_y \$${1}_KV_y 0 \$${1}_IV_z \$${1}_JV_z \$${1}_KV_z 0 0 0 0 $FixedPt
-		glTranslate -\$${1}_Pos_x -\$${1}_Pos_y -\$${1}_Pos_z
+		glMultMatrix \$${1}_IV_x/$Geom_FixedPt \$${1}_JV_x/$Geom_FixedPt \$${1}_KV_x/$Geom_FixedPt 0 \\
+		             \$${1}_IV_y/$Geom_FixedPt \$${1}_JV_y/$Geom_FixedPt \$${1}_KV_y/$Geom_FixedPt 0 \\
+		             \$${1}_IV_z/$Geom_FixedPt \$${1}_JV_z/$Geom_FixedPt \$${1}_KV_z/$Geom_FixedPt 0 \\
+		             0 0 0 1
+		glTranslate -\$${1}_Pos_x/$Geom_FixedPt -\$${1}_Pos_y/$Geom_FixedPt -\$${1}_Pos_z/$Geom_FixedPt
 	}"
 
 	# Makes the I/J/K vectors into something close to unit vectors
@@ -95,9 +101,9 @@ InitCoordSys() {
 		# K2= K * cos(y) - I * sin(y)
 		sincos \$angle
 		(( sy=Result, cy=Result2,
-		   ${1}_KV_x= (${1}_KV_x*cy - ${1}_IV_x*sy)/$FixedPt,
-		   ${1}_KV_y= (${1}_KV_y*cy - ${1}_IV_y*sy)/$FixedPt,
-		   ${1}_KV_z= (${1}_KV_z*cy - ${1}_IV_z*sy)/$FixedPt ))
+		   ${1}_KV_x= (${1}_KV_x*cy - ${1}_IV_x*sy)/$Trig_SinScale,
+		   ${1}_KV_y= (${1}_KV_y*cy - ${1}_IV_y*sy)/$Trig_SinScale,
+		   ${1}_KV_z= (${1}_KV_z*cy - ${1}_IV_z*sy)/$Trig_SinScale ))
 		${1}_RegenIV
 	}"
 	eval "${1}_RelativePitch() {
@@ -105,9 +111,9 @@ InitCoordSys() {
 		# K2= K * cos(y) - J * sin(y)
 		sincos \$angle
 		(( sy=Result, cy=Result2,
-		   ${1}_KV_x= (${1}_KV_x*cy - ${1}_JV_x*sy)/$FixedPt,
-		   ${1}_KV_y= (${1}_KV_y*cy - ${1}_JV_y*sy)/$FixedPt,
-		   ${1}_KV_z= (${1}_KV_z*cy - ${1}_JV_z*sy)/$FixedPt ))
+		   ${1}_KV_x= (${1}_KV_x*cy - ${1}_JV_x*sy)/$Trig_SinScale,
+		   ${1}_KV_y= (${1}_KV_y*cy - ${1}_JV_y*sy)/$Trig_SinScale,
+		   ${1}_KV_z= (${1}_KV_z*cy - ${1}_JV_z*sy)/$Trig_SinScale ))
 		${1}_RegenJV
 	}"
 	eval "${1}_RelativeRoll() {
@@ -115,24 +121,24 @@ InitCoordSys() {
 		# J2= J * cos(y) - I * sin(y)
 		sincos \$angle
 		(( sy=Result, cy=Result2,
-		   ${1}_JV_x= (${1}_JV_x*cy - ${1}_IV_x*sy)/$FixedPt,
-		   ${1}_JV_y= (${1}_JV_y*cy - ${1}_IV_y*sy)/$FixedPt,
-		   ${1}_JV_z= (${1}_JV_z*cy - ${1}_IV_z*sy)/$FixedPt ))
+		   ${1}_JV_x= (${1}_JV_x*cy - ${1}_IV_x*sy)/$Trig_SinScale,
+		   ${1}_JV_y= (${1}_JV_y*cy - ${1}_IV_y*sy)/$Trig_SinScale,
+		   ${1}_JV_z= (${1}_JV_z*cy - ${1}_IV_z*sy)/$Trig_SinScale ))
 		${1}_RegenIV
 	}"
 	# I= J cross K
 	eval "${1}_RegenIV() {
-		(( x2=(${1}_JV_y*${1}_KV_z - ${1}_JV_z*${1}_KV_y)/$FixedPt, y2=(${1}_JV_z*${1}_KV_x - ${1}_JV_x*${1}_KV_z)/$FixedPt, z2=(${1}_JV_x*${1}_KV_y - ${1}_JV_y*${1}_KV_x)/$FixedPt ))
+		(( x2=(${1}_JV_y*${1}_KV_z - ${1}_JV_z*${1}_KV_y)/$Geom_FixedPt, y2=(${1}_JV_z*${1}_KV_x - ${1}_JV_x*${1}_KV_z)/$Geom_FixedPt, z2=(${1}_JV_x*${1}_KV_y - ${1}_JV_y*${1}_KV_x)/$Geom_FixedPt ))
 		(( ${1}_IV_x=x2, ${1}_IV_y=y2, ${1}_IV_z=z2 ))
 	}"
 	# J= K cross I
 	eval "${1}_RegenJV() {
-		(( x2=(${1}_KV_y*${1}_IV_z - ${1}_KV_z*${1}_IV_y)/$FixedPt, y2=(${1}_KV_z*${1}_IV_x - ${1}_KV_x*${1}_IV_z)/$FixedPt, z2=(${1}_KV_x*${1}_IV_y - ${1}_KV_y*${1}_IV_x)/$FixedPt ))
+		(( x2=(${1}_KV_y*${1}_IV_z - ${1}_KV_z*${1}_IV_y)/$Geom_FixedPt, y2=(${1}_KV_z*${1}_IV_x - ${1}_KV_x*${1}_IV_z)/$Geom_FixedPt, z2=(${1}_KV_x*${1}_IV_y - ${1}_KV_y*${1}_IV_x)/$Geom_FixedPt ))
 		(( ${1}_JV_x=x2, ${1}_JV_y=y2, ${1}_JV_z=z2 ))
 	}"
 	# K= I cross J
 	eval "${1}_RegenKV() {
-		(( x2=(${1}_IV_y*${1}_JV_z - ${1}_IV_z*${1}_JV_y)/$FixedPt, y2=(${1}_IV_z*${1}_JV_x - ${1}_IV_x*${1}_JV_z)/$FixedPt, z2=(${1}_IV_x*${1}_JV_y - ${1}_IV_y*${1}_JV_x)/$FixedPt ))
+		(( x2=(${1}_IV_y*${1}_JV_z - ${1}_IV_z*${1}_JV_y)/$Geom_FixedPt, y2=(${1}_IV_z*${1}_JV_x - ${1}_IV_x*${1}_JV_z)/$Geom_FixedPt, z2=(${1}_IV_x*${1}_JV_y - ${1}_IV_y*${1}_JV_x)/$Geom_FixedPt ))
 		(( ${1}_KV_x=x2, ${1}_KV_y=y2, ${1}_KV_z=z2 ))
 	}"
 }

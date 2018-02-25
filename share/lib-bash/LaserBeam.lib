@@ -1,9 +1,4 @@
-CmdlineGL_LoadLib FixedPt
-
 LaserBeam_InitGfx() {
-	# turn off fixed point mechanisms
-	cglFixedPt 1
-
 	glNewList LaserBeam GL_COMPILE
 
 	# Front
@@ -32,9 +27,6 @@ LaserBeam_InitGfx() {
 
 	glEndList
 
-	# restore previous fixed point mechanism
-	cglFixedPt $FixedPt
-	
 	LaserBeam() { glCallList LaserBeam; }
 }
 
