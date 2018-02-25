@@ -3,27 +3,20 @@
 
 # Define our handy die function
 die() { echo "$@" >&2; exit 2; }
-set -ux
+set -u
 # Load bash libraries
 source "${BASH_SOURCE%/*}/../share/CmdlineGL.lib" || die "Can't find ../share directory (from $PWD via ${BASH_SOURCE%/*})";
 
-FixedPt=1000
 CmdlineGL_LoadLib RenderLoop Geom Ship LaserBeam Cube
+FixedPt=$Geom_FixedPt
 
-let MAX_LASER_TRAVEL=100*$FixedPt
+let MAX_LASER_TRAVEL=100*$Geom_FixedPt
 LASER_SPEED=100
 SHOOT_PERIOD=200
 MAX_LASERS=100
 HighestInitLaser=-1
 
 Init() {
-	glEnable GL_NORMALIZE
-	glEnable GL_DEPTH_TEST
-	glEnable GL_TEXTURE_2D
-	glEnable GL_CULL_FACE
-	glShadeModel GL_SMOOTH
-	glClear GL_COLOR_BUFFER_BIT GL_DEPTH_BUFFER_BIT
-
 	echo "Loading models..." >&2
 	LaserBeam_InitGfx
 	Ship_InitGfx
@@ -34,25 +27,25 @@ Init() {
 	SetLights
 	glEnable GL_NORMALIZE
 	glEnable GL_DEPTH_TEST
-	glEnable GL_TEXTURE_2D
 	glEnable GL_CULL_FACE
+	glShadeModel GL_SMOOTH
 	glFog GL_FOG_MODE GL_LINEAR
 	glFog GL_FOG_COLOR '#333333'
 	glClearColor '#333333'
-	glFog GL_FOG_START 10000
-	glFog GL_FOG_END 100001
-	glFog GL_FOG_DENSITY 100
+	glFog GL_FOG_START 10
+	glFog GL_FOG_END 100
+	glFog GL_FOG_DENSITY .1
 	glEnable GL_FOG
 	glEnable GL_LIGHTING
 
 	InitCoordSys Ship
 	InitCoordSys Cam
-	Ship_IV_Scale -1000
-	Ship_JV_Scale -1000
-	Ship_KV_Scale -1000
+	Ship_IV_Scale -$Geom_FixedPt
+	Ship_JV_Scale -$Geom_FixedPt
+	Ship_KV_Scale -$Geom_FixedPt
 	InitVec CamTrail 0 0 0
 	ShipSpeed=1
-	((CamDist=6*FixedPt))
+	((CamDist=6*Geom_FixedPt))
 	CamFollowHeight=1
 	ResetCam
 	InpAimLf=0
@@ -73,26 +66,26 @@ SetLights() {
 	glEnable GL_LIGHTING
 	glEnable GL_COLOR_MATERIAL
 	glEnable GL_LIGHT0
-	glLight GL_LIGHT0 GL_AMBIENT 0800 0800 0800 0
- 	glLight GL_LIGHT0 GL_DIFFUSE 1000 0800 0800 0
-	glLight GL_LIGHT0 GL_SPECULAR 0800 0800 0800 0
-	glLight GL_LIGHT0 GL_POSITION 10000 10000 10000 1000
+	glLight GL_LIGHT0 GL_AMBIENT  .8 .8 .8 0
+ 	glLight GL_LIGHT0 GL_DIFFUSE  1  .8 .8 0
+	glLight GL_LIGHT0 GL_SPECULAR .8 .8 .8 0
+	glLight GL_LIGHT0 GL_POSITION 10 10 10 1
 }
 
 BuildCubeField() {
 	glNewList CubeField GL_COMPILE
-	glTranslate -25000 -25000 -25000
+	glTranslate -22.5 -22.5 -22.5
 	for (( x=0; x<10; x++)); do
 		for (( y=0; y<10; y++)); do
 			for (( z=0; z<10; z++)); do
 				Cube
-				glTranslate 0 0 5000
+				glTranslate 0 0 5
 			done
-			glTranslate 0 0 -50000
-			glTranslate 0 5000 0
+			glTranslate 0 0 -50
+			glTranslate 0 5 0
 		done
-		glTranslate 0 -50000 0
-		glTranslate 5000 0 0
+		glTranslate 0 -50 0
+		glTranslate 5 0 0
 	done
 	glEndList
 }
@@ -100,13 +93,13 @@ BuildCubeField() {
 DrawCoordinates() {
 	glBegin GL_LINES
 	glColor "#FF0000"
-	glVertex 1000 0 0
+	glVertex 1 0 0
 	glVertex 0 0 0
 	glColor "#00FF00"
-	glVertex 0 1000 0
+	glVertex 0 1 0
 	glVertex 0 0 0
 	glColor "#0000FF"
-	glVertex 0 0 1000
+	glVertex 0 0 1
 	glVertex 0 0 0
 	glEnd
 }
@@ -125,7 +118,7 @@ AddLaser() {
 
 CloneLaser() {
 	CoordSys_Clone $1 $2
-	((Laser${1}_Travel=Laser${2}_Travel))
+	((${1}_Travel=${2}_Travel))
 }
 
 RemoveLaser() {
@@ -160,9 +153,9 @@ DrawLasers() {
 Shoot() {
 	local x y z xOfs yOfs zOfs
 	((xOfs=Ship_GunXOffset[NextGun], yOfs=Ship_GunYOffset, zOfs=Ship_GunZOffset,
-	 x=Ship_Pos_x+(Ship_IV_x*xOfs+Ship_JV_x*yOfs+Ship_KV_x*zOfs)/FIXEDPT,
-	 y=Ship_Pos_y+(Ship_IV_y*xOfs+Ship_JV_y*yOfs+Ship_KV_y*zOfs)/FIXEDPT,
-	 z=Ship_Pos_z+(Ship_IV_z*xOfs+Ship_JV_z*yOfs+Ship_KV_z*zOfs)/FIXEDPT))
+	 x=Ship_Pos_x+(Ship_IV_x*xOfs+Ship_JV_x*yOfs+Ship_KV_x*zOfs)/Geom_FixedPt,
+	 y=Ship_Pos_y+(Ship_IV_y*xOfs+Ship_JV_y*yOfs+Ship_KV_y*zOfs)/Geom_FixedPt,
+	 z=Ship_Pos_z+(Ship_IV_z*xOfs+Ship_JV_z*yOfs+Ship_KV_z*zOfs)/Geom_FixedPt))
 	AddLaser $x $y $z Ship
 #	cat ${SOUNDDIR:-.}/laser.dsp >/dev/dsp &
 	((NextGun++, NextGun>3?NextGun=0:0))
@@ -175,8 +168,8 @@ Shoot() {
 #
 UpdateShip() {
 	local dT=Timing_dT Dist
-	if ((InpAimLf)); then Ship_RelativeYaw $((dT*3)); Ship_RelativeRoll $((-dT*2)); fi
-	if ((InpAimRt)); then Ship_RelativeYaw $((-dT*3)); Ship_RelativeRoll $((dT*2)); fi
+	if ((InpAimLf)); then Ship_RelativeYaw $((-dT*3)); Ship_RelativeRoll $((-dT*2)); fi
+	if ((InpAimRt)); then Ship_RelativeYaw $((dT*3)); Ship_RelativeRoll $((dT*2)); fi
 	if ((InpAimUp)); then Ship_RelativePitch $((dT*6));  fi
 	if ((InpAimDn)); then Ship_RelativePitch $((-dT*6)); fi
 	Ship_Normalize
@@ -252,20 +245,24 @@ RenderLoop_Render() {
 	UpdateShip
 	UpdateCam
 	
+	glClear GL_COLOR_BUFFER_BIT GL_DEPTH_BUFFER_BIT
 	glLoadIdentity
 	Cam_ExitCS
 	glPushMatrix
 		glLight GL_LIGHT0 GL_POSITION 0 0 1 0
-		glScale 5000 5000 5000
+		glScale 5
+		glColor '#FFFFFF'
 		glCallList CubeField
 	glPopMatrix
 	glPushMatrix
 		Ship_EnterCS
-	#	glTranslate 0 -1000 -5000
+		glTranslate 0 -1 -5
 		Ship
 	glPopMatrix
 	DrawLasers
-	sleep 1;
+	glFlush
+	cglSwapBuffers
+	sleep .1;
 }
 
 main() {

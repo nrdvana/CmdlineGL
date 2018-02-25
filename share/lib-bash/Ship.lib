@@ -4,10 +4,13 @@
 # I just rotate 180 before drawing it.
 #
 
-CmdlineGL_LoadLib Trig
+CmdlineGL_LoadLib Trig Geom
 
 Ship_Throttle=0
 Ship_Initialized=0
+Ship_GunXOffset=( -$((12*Geom_FixedPt/10)) $((12*Geom_FixedPt/10)) -$((16*Geom_FixedPt/10)) $((16*Geom_FixedPt/10)) )
+Ship_GunYOffset=$((3*Geom_FixedPt/10))
+Ship_GunZOffset=$((9*Geom_FixedPt/10))
 
 Ship_WingShield() {
 	#inside

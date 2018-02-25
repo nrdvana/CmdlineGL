@@ -4,7 +4,7 @@
 CmdlineGL_LoadLib Trig
 
 : ${Geom_FixedPt:=1000}
-(( Geom_FixedPt= Geom_Fixed_pt )) # ensure integer, so it's safe to eval
+(( Geom_FixedPt= Geom_FixedPt )) # ensure integer, so it's safe to eval
 declare -r Geom_FixedPt=$Geom_FixedPt
 
 ## Calculate the magnitude of a vector
