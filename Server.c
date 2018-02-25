@@ -6,6 +6,7 @@
 #include <stdlib.h>
 #include <errno.h>
 #include <string.h>
+#include <assert.h>
 #include "GlHeaders.h"
 #include <SDL/SDL.h>
 #include "Version.h"
@@ -16,6 +17,7 @@
 
 #include "Server.h"
 #include "ProcessInput.h"
+#include "ParseGL.h"
 
 bool Shutdown= false;
 
@@ -27,10 +29,10 @@ typedef struct {
 	bool NeedHelp;
 	bool VersionOnly;
 	char *WndTitle;
-	bool NoUIMessages;
+	bool NoEmitEvents;
 	bool ManualSDLSetup;
-	bool ManualGLSetup;
-	bool ManualResizeCode;
+	bool ManualViewport;
+	bool ManualProjection;
 	int Width;
 	int Height;
 	int Bpp;
@@ -41,12 +43,12 @@ void ReadParams(char **args, CmdlineOptions *Options);
 void PrintUsage(bool error);
 void CheckInput();
 void CheckSDLEvents();
-
-void InitGL();
-void HandleResize(int w, int h);
-void EmitMouseMotion(const SDL_MouseMotionEvent *E);
-void EmitMouseButton(const SDL_MouseButtonEvent *E);
+void InitGL(int, int);
 void EmitKey(const SDL_KeyboardEvent *E);
+
+bool PendingResize= false;
+int Resize_w, Resize_h;
+void FinishResize();
 
 char Buffer[1024];
 #ifndef _WIN32
@@ -128,11 +130,11 @@ int main(int Argc, char**Args) {
 			exit(5);
 		}
 
+		SDL_EnableUNICODE(1);
 		if (SDL_EnableKeyRepeat(0, 0) < 0)
 			fprintf(stderr, "Can't disable key repeat. %s\n", SDL_GetError());
 
-		if (!Options.ManualGLSetup)
-			InitGL(Options.Width, Options.Height);
+		InitGL(Options.Width, Options.Height);
 	}
 
 	DEBUGMSG(("Recording time\n"));
@@ -196,7 +198,9 @@ void ReadParams(char **Args, CmdlineOptions *Options) {
 			if (strcmp(*NextArg, "--help") == 0) { Options->WantHelp= true; break; }
 			if (strcmp(*NextArg, "--showcmds") == 0) { Options->ShowCmds= true; break; }
 			if (strcmp(*NextArg, "--showconsts") == 0) { Options->ShowConsts= true; break; }
-			if (strcmp(*NextArg, "--nouimsg") == 0) { Options->NoUIMessages= true; break; }
+			if (strcmp(*NextArg, "--nouimsg") == 0) { Options->NoEmitEvents= true; break; }
+			if (strcmp(*NextArg, "--manual-viewport") == 0) { Options->ManualViewport= true; break; }
+			if (strcmp(*NextArg, "--manual-projection") == 0) { Options->ManualProjection= true; break; }
 			if (strcmp(*NextArg, "--title") == 0) {
 				Options->WndTitle= *++NextArg;
 				if (!Options->WndTitle) {
@@ -223,16 +227,18 @@ void PrintUsage(bool error) {
 	"     Reads commands from stdin, and writes user input to stdout.\n"
 	"\n"
 	"Options:\n"
-	"  -h              Display this help message.\n"
-	"  -t              Terminate after receiving EOF.\n"
-	"  -v --version    Display version and exit.\n"
+	"  -t                     Terminate after a zero-length read (EOF).\n"
+	"     --manual-viewport   No automatic glViewport on window resize\n"
+	"     --manual-projection No default GL_PROJECTION matrix\n"
 	#ifndef WIN32
-	"  -f <fifo>       Create the named fifo (file path+name) and read from it.\n"
+	"  -f <fifo>              Create the named fifo (file path+name) and read from it.\n"
 	#endif
-	"  --showcmds      List all the available commands in this version of CmdlineGL.\n"
-	"  --showconsts    List all the constants (GL_xxxx) that are available.\n"
-	"  --title <text>  Set the title of the window to \"text\".\n"
-	"  --nouimsg       Don't print any user activity messages to stdout.\n"
+	"  --showcmds             List all the available commands in this version of CmdlineGL.\n"
+	"  --showconsts           List all the constants (GL_xxxx) that are available.\n"
+	"  --title <text>         Set the title of the window to \"text\".\n"
+	"  --noevents             Don't print any input event messages to stdout.\n"
+	"  -v --version           Print version and exit.\n"
+	"  -h                     Display this help message.\n"
 	"\n"
 	"Note: Each line of input is broken on space characters and treated as a\n"
  	"      command.  There is currently no escaping mechanism, although I'm not\n"
@@ -299,7 +305,7 @@ void CheckInput() {
 
 	errno= 0;
 	CmdCount= 0;
-	while ((CmdCount < MAX_COMMAND_BATCH || IsGlBegun) && (Line= ReadLine())) {
+	while ((CmdCount < MAX_COMMAND_BATCH || PointsInProgress) && (Line= ReadLine())) {
 		DEBUGMSG(("%s\n", Line));
 		if (ParseLine(Line, &TokenCount, TokenPointers))
 			ProcessCommand(TokenPointers, TokenCount);
@@ -320,81 +326,141 @@ void CheckSDLEvents() {
 		switch (Event.type) {
 			case SDL_KEYDOWN:
 			case SDL_KEYUP:
-				EmitKey(&Event.key);
+				if (!Options.NoEmitEvents)
+					EmitKey(&Event.key);
 				break;
 			case SDL_MOUSEMOTION:
-				EmitMouseMotion(&Event.motion);
+				if (!Options.NoEmitEvents)
+					printf("M @ %d %d %d %d\n", Event.motion.x, Event.motion.y,
+						Event.motion.xrel, Event.motion.yrel);
 				break;
 			case SDL_MOUSEBUTTONDOWN:
 			case SDL_MOUSEBUTTONUP:
-				EmitMouseButton(&Event.button);
+				if (!Options.NoEmitEvents)
+					printf("M %c %d %d %d\n", (Event.button.state == SDL_PRESSED)? '+':'-',
+						Event.button.button, Event.button.x, Event.button.y);
 				break;
 			case SDL_VIDEORESIZE:
-				HandleResize(Event.resize.w, Event.resize.h);
+				Resize_w= Event.resize.w;
+				Resize_h= Event.resize.h;
+				// Can't resize if user is in the middle of rendering
+				if (FrameInProgress)
+					PendingResize= true;
+				else
+					FinishResize();
+				break;
+			case SDL_ACTIVEEVENT:
+				if (!Options.NoEmitEvents) {
+					if (Event.active.state | SDL_APPMOUSEFOCUS)
+						printf("W MOUSEFOCUS %c\n", Event.active.gain? '+':'-');
+					// On Linux, MOUSEFOCUS is the only one that is accurate.  All three bits
+					// seem to alays be set whenever the mouse enters the window, even when
+					// it doesn't have keyboard focus.  Also 'ACTIVE -' occurs even when the
+					// window is still visible...?
+					//if (Event.active.state | SDL_APPINPUTFOCUS)
+					//	printf("W INPUTFOCUS %c\n", Event.active.gain? '+':'-');
+					//if (Event.active.state | SDL_APPACTIVE)
+					//	printf("W SHOW %c\n", Event.active.gain? '+':'-');
+				}
 				break;
 			case SDL_QUIT:
+				if (!Options.NoEmitEvents)
+					printf("W QUIT\n");
 				Shutdown= true;
 				break;
 		}
+	if (!Options.NoEmitEvents)
+		fflush(stdout);
+}
+
+// This should only be called when FrameInProgress is false
+// Might get called from ParseGL.c, so args are stored in globals.
+void FinishResize() {
+	assert(!FrameInProgress);
+	MainWnd= SDL_SetVideoMode(Resize_w, Resize_h, Options.Bpp, DefaultSDLFlags);
+	if (!Options.NoEmitEvents) {
+		printf("W RESIZE %d %d\n", Resize_w, Resize_h);
+		fflush(stdout);
+	}
+	PendingResize= false;
+	InitGL(Resize_w, Resize_h);
 }
 
 void InitGL(int w, int h) {
-	GLfloat top, bottom, left, right, dist;
-	dist= 20; // 20 units from near clipping plane to the origin
+	GLfloat top, bottom, left, right;
+	GLfloat dist= 20; // 20 units from near clipping plane to the origin
+	assert(!FrameInProgress);
 
-	// Use the entire window
-	glViewport(0, 0, w, h);
-	// Recalculate the projection matrix
-	glMatrixMode(GL_PROJECTION);
-	glLoadIdentity();
+	if (!Options.ManualViewport)
+		// Use the entire window
+		glViewport(0, 0, w, h);
 
-	if (w<h) {
-		// if the width is less than the height, make the viewable width
-		// 20 world units wide, and calculate the viewable height assuming
-		// an aspect ratio of "1".
-		left= -10;
-		right= 10;
-		bottom= -10.0 * ((GLfloat)h) / w;
-		top= 10.0 * ((GLfloat)h) / w;
-	}
-	else {
-		// if the height is less than the width, make the viewable height
-		// 20 world units tall, and calculate the viewable width assuming
-		// an aspect ratio of "1".
-		left= -10.0 * ((GLfloat)w) / h;
-		right= 10.0 * ((GLfloat)w) / h;
-		bottom= -10;
-		top= 10;
-	}
+	if (!Options.ManualProjection) {
+		// Recalculate the projection matrix
+		glMatrixMode(GL_PROJECTION);
+		glLoadIdentity();
 
-	glFrustum(left/dist, right/dist, bottom/dist, top/dist, 1, 1000);
-	glTranslated(0, 0, -dist);
-	glMatrixMode(GL_MODELVIEW);
-}
+		if (w<h) {
+			// if the width is less than the height, make the viewable width
+			// 20 world units wide, and calculate the viewable height assuming
+			// an aspect ratio of "1".
+			left= -10;
+			right= 10;
+			bottom= -10.0 * ((GLfloat)h) / w;
+			top= 10.0 * ((GLfloat)h) / w;
+		}
+		else {
+			// if the height is less than the width, make the viewable height
+			// 20 world units tall, and calculate the viewable width assuming
+			// an aspect ratio of "1".
+			left= -10.0 * ((GLfloat)w) / h;
+			right= 10.0 * ((GLfloat)w) / h;
+			bottom= -10;
+			top= 10;
+		}
 
-void HandleResize(int w, int h) {
-	if (!Options.ManualResizeCode) {
-		MainWnd= SDL_SetVideoMode(w, h, Options.Bpp, SDL_OPENGL | SDL_ANYFORMAT);
-		InitGL(w, h);
-	}
-	else {
-		printf("RESIZE %d %d\n", w, h);
-		fflush(stdout);
+		glFrustum(left/dist, right/dist, bottom/dist, top/dist, 1, 1000);
+		glTranslated(0, 0, -dist);
+		glMatrixMode(GL_MODELVIEW);
 	}
 }
 
-void EmitMouseMotion(const SDL_MouseMotionEvent *E) {
-	printf("M @ %d %d %d %d\n", E->x, E->y, E->xrel, E->yrel);
-	fflush(stdout);
-}
-
-void EmitMouseButton(const SDL_MouseButtonEvent *E) {
-	printf("M %c %d %d %d\n", (E->state == SDL_PRESSED)? '+':'-', E->button, E->x, E->y);
-	fflush(stdout);
-}
-
+void encode_utf8(char *buffer, unsigned codepoint);
 void EmitKey(const SDL_KeyboardEvent *E) {
-	printf("K %c %s\n", (E->state == SDL_PRESSED)? '+':'-', SDL_GetKeyName(E->keysym.sym));
-	fflush(stdout);
+	char kname[64], uni[5], *c;
+	unsigned int codepoint= E->keysym.unicode;
+	strncpy(kname, SDL_GetKeyName(E->keysym.sym), sizeof(kname));
+	kname[sizeof(kname)-1]= '\0';
+	// remove any whitespace in the key name
+	for (c= kname; *c; c++)
+		if (*c <= ' ') *c= '_';
+	// If unicode available, encode as utf8
+	if (codepoint > (unsigned) ' ')
+		encode_utf8(uni, codepoint);
+	else
+		uni[0]= 0;
+	printf("K %c %s %d %04x %s\n", (E->state == SDL_PRESSED)? '+':'-', kname,
+		E->keysym.scancode, codepoint, uni);
 }
 
+// Yeah this exists elsewhere but I don't feel like depending on a lib for just this one function
+void encode_utf8(char *buffer, unsigned codepoint) {
+	if (codepoint < 0x80)
+		*buffer++= (char) codepoint;
+	else if (codepoint < 0x800) {
+		*buffer++= (char) 0xC0 | ((codepoint >> 6) & 0x1F);
+		*buffer++= (char) 0x80 | ((codepoint     ) & 0x3F);
+	}
+	else if (codepoint < 0x10000) {
+		*buffer++= (char) 0xE0 | ((codepoint >> 12) & 0x0F);
+		*buffer++= (char) 0x80 | ((codepoint >>  6) & 0x3F);
+		*buffer++= (char) 0x80 | ((codepoint      ) & 0x3F);
+	}
+	else if (codepoint < 0x110000) {
+		*buffer++= (char) 0xF0 | ((codepoint >> 18) & 0x07);
+		*buffer++= (char) 0x80 | ((codepoint >> 12) & 0x3F);
+		*buffer++= (char) 0x80 | ((codepoint >>  6) & 0x3F);
+		*buffer++= (char) 0x80 | ((codepoint      ) & 0x3F);
+	}
+	*buffer= 0;
+}

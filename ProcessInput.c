@@ -6,6 +6,7 @@
 #endif
 #include <stdio.h>
 #include "ProcessInput.h"
+#include "ParseGL.h"
 #include "SymbolHash.h"
 
 #define READ_BUFFER_SIZE 1024
@@ -36,7 +37,7 @@ int ProcessCommand(char **TokenPointers, int TokenCount) {
 		Result= Cmd->Value(TokenCount-1, TokenPointers+1); // run command
 		switch (Result) {
 		case 0:
-			if (IsGlBegun) // can't check command success
+			if (PointsInProgress) // can't check command success
 				return 0;
 			GLErr= glGetError();
 			if (!GLErr) // command was successful

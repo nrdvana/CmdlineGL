@@ -5,6 +5,7 @@
 #include <SDL.h>
 #include "GlHeaders.h"
 #include "ParseGL.h"
+#include "Server.h"
 #include "SymbolHash.h"
 #include "ImageLoader.h"
 #include "Font.h"
@@ -34,6 +35,9 @@ bool ParseSymbVar(const char* Text, const SymbVarEntry **Result, int Type);
 const SymbVarEntry* CreateNamedObj(const char* Name, int Type);
 int ReportMissingObj(const char *Name);
 
+bool PointsInProgress= false; // Whenever glBegin is active, until glEnd
+bool FrameInProgress= false;  // True after any gl command, until cglSwapBuffers
+
 //----------------------------------------------------------------------------
 // CmdlineGL Functions
 //
@@ -62,6 +66,9 @@ PUBLISHED(cglPopDivisor, DoPopDivisor) {
 PUBLISHED(cglSwapBuffers,DoSwapBuffers) {
 	if (argc != 0) return ERR_PARAMCOUNT;
 	SDL_GL_SwapBuffers();
+	FrameInProgress= false;
+	// If we were waiting to resize the window, now is the time
+	if (PendingResize) FinishResize();
 	return 0;
 }
 
@@ -104,6 +111,7 @@ PUBLISHED(glClear, DoClear) {
 	while (argc--)
 		flags|= ParseResult.Ints[argc];
 	glClear(flags);
+	FrameInProgress= true;
 	return 0;
 }
 PUBLISHED(glClearColor, DoClearColor) {
@@ -121,18 +129,19 @@ PUBLISHED(glClearDepth, DoClearDepth) {
 PUBLISHED(glBegin, DoBegin) {
 	if (argc != 1) return ERR_PARAMCOUNT;
 	if (!ScanParams("i", argv, &ParseResult)) return ERR_PARAMPARSE;
-	if (IsGlBegun)
+	if (PointsInProgress)
 		fprintf(stderr, "Error: multiple calls to glBegin without glEnd\n");
 	glBegin(ParseResult.Ints[0]);
-	IsGlBegun= true;
+	PointsInProgress= true;
+	FrameInProgress= true;
 	return 0;
 }
 PUBLISHED(glEnd, DoEnd) {
 	if (argc != 0) return ERR_PARAMCOUNT;
-	if (!IsGlBegun)
+	if (!PointsInProgress)
 		fprintf(stderr, "Error: glEnd without glBegin\n");
 	glEnd();
-	IsGlBegun= false;
+	PointsInProgress= false;
 	return 0;
 }
 PUBLISHED(glFlush, DoFlush) {
@@ -492,6 +501,7 @@ PUBLISHED(gluCylinder, DoCylinder) {
 	if (!ScanParams("Qdddii", argv, &ParseResult)) return ERR_PARAMPARSE;
 	if (!ParseResult.Symbolics[0]) return ReportMissingObj(argv[0]);
 	gluCylinder((GLUquadric*)ParseResult.Symbolics[0]->Data, ParseResult.Doubles[0], ParseResult.Doubles[1], ParseResult.Doubles[2], ParseResult.Ints[0], ParseResult.Ints[1]);
+	FrameInProgress= true;
 	return 0;
 }
 PUBLISHED(gluSphere, DoSphere) {
@@ -499,6 +509,7 @@ PUBLISHED(gluSphere, DoSphere) {
 	if (!ScanParams("Qdii", argv, &ParseResult)) return ERR_PARAMPARSE;
 	if (!ParseResult.Symbolics[0]) return ReportMissingObj(argv[0]);
 	gluSphere((GLUquadric*)ParseResult.Symbolics[0]->Data, ParseResult.Doubles[0], ParseResult.Ints[0], ParseResult.Ints[1]);
+	FrameInProgress= true;
 	return 0;
 }
 PUBLISHED(gluDisk, DoDisk) {
@@ -506,6 +517,7 @@ PUBLISHED(gluDisk, DoDisk) {
 	if (!ScanParams("Qddii", argv, &ParseResult)) return ERR_PARAMPARSE;
 	if (!ParseResult.Symbolics[0]) return ReportMissingObj(argv[0]);
 	gluDisk((GLUquadric*)ParseResult.Symbolics[0]->Data, ParseResult.Doubles[0], ParseResult.Doubles[1], ParseResult.Ints[0], ParseResult.Ints[1]);
+	FrameInProgress= true;
 	return 0;
 }
 PUBLISHED(gluPartialDisk, DoPartialDisk) {
@@ -513,6 +525,7 @@ PUBLISHED(gluPartialDisk, DoPartialDisk) {
 	if (!ScanParams("Qddiidd", argv, &ParseResult)) return ERR_PARAMPARSE;
 	if (!ParseResult.Symbolics[0]) return ReportMissingObj(argv[0]);
 	gluPartialDisk((GLUquadric*)ParseResult.Symbolics[0]->Data, ParseResult.Doubles[0], ParseResult.Doubles[1], ParseResult.Ints[0], ParseResult.Ints[1], ParseResult.Doubles[2], ParseResult.Doubles[3]);
+	FrameInProgress= true;
 	return 0;
 }
 

@@ -16,6 +16,8 @@ typedef struct ScanParamsResult_t {
 } ScanParamsResult;
 
 bool ScanParams(const char* ParamType, char** Args, ScanParamsResult* Result);
+extern bool PointsInProgress; // Whenever glBegin is active, until glEnd
+extern bool FrameInProgress;  // True after any gl command, until cglSwapBuffers
 
 //----------------------------------------------------------------------------
 // CmdlineGL Functions

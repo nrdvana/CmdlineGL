@@ -1,8 +1,5 @@
 #include "Global.h"
 
-// used to detect errors involving multiple/missing glBegin/glEnd
-bool IsGlBegun= false;
-
 #ifdef _WIN32
 #include <stdio.h>
 void WinPerror(char *msg) {

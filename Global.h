@@ -44,6 +44,4 @@
 void WinPerror(char *msg);
 #endif
 
-extern bool IsGlBegun; // indicates status of glBegin/glEnd
-
 #endif

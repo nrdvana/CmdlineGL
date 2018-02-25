@@ -10,4 +10,7 @@ PUBLISHED(cglSync,DoSync);
 PUBLISHED(cglSleep, DoSleep);
 PUBLISHED(cglEcho,DoEcho);
 
+extern bool PendingResize;
+extern void FinishResize();
+
 #endif
