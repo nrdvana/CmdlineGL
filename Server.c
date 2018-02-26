@@ -354,16 +354,12 @@ void CheckSDLEvents() {
 				break;
 			case SDL_ACTIVEEVENT:
 				if (!Options.NoEmitEvents) {
-					if (Event.active.state | SDL_APPMOUSEFOCUS)
+					if (Event.active.state & SDL_APPMOUSEFOCUS)
 						printf("W MOUSEFOCUS %c\n", Event.active.gain? '+':'-');
-					// On Linux, MOUSEFOCUS is the only one that is accurate.  All three bits
-					// seem to alays be set whenever the mouse enters the window, even when
-					// it doesn't have keyboard focus.  Also 'ACTIVE -' occurs even when the
-					// window is still visible...?
-					//if (Event.active.state | SDL_APPINPUTFOCUS)
-					//	printf("W INPUTFOCUS %c\n", Event.active.gain? '+':'-');
-					//if (Event.active.state | SDL_APPACTIVE)
-					//	printf("W SHOW %c\n", Event.active.gain? '+':'-');
+					if (Event.active.state & SDL_APPINPUTFOCUS)
+						printf("W INPUTFOCUS %c\n", Event.active.gain? '+':'-');
+					if (Event.active.state & SDL_APPACTIVE)
+						printf("W ACTIVE %c\n", Event.active.gain? '+':'-');
 				}
 				break;
 			case SDL_QUIT:
