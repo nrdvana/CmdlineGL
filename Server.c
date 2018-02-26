@@ -100,6 +100,9 @@ int main(int Argc, char**Args) {
 		}
 		close(0); // Done with stdin.
 	}
+	else if (isatty(InputFD)) {
+		fprintf(stderr, "Warning: STDIN is a terminal; will use blocking reads");
+	}
 	else {
 		DEBUGMSG(("Enabling nonblocking mode on stdin\n"));
 		if (fcntl(InputFD, F_SETFL, O_NONBLOCK) < 0) {
