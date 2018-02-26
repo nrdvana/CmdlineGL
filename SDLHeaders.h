@@ -4,6 +4,6 @@
 #endif
 
 #include <SDL/SDL.h>
-#ifdef HAVE_SDL_IMAGE
+#ifdef HAVE_LIBSDL_IMAGE
 #include <SDL/SDL_image.h>
 #endif
