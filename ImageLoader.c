@@ -3,27 +3,7 @@
 #include "ImageLoader.h"
 #include "GlHeaders.h"
 #include "SDLHeaders.h"
-#ifndef _WIN32
-#include <sys/stat.h>
-#endif
-
-// a separate function so that not so much stack gets allocated on calls to LoadImg
-void ReportImgNotLoadable(const char *FName) {
-	char buffer[512];
-	#ifndef _WIN32
-	struct stat st;
-	if (0 != stat(FName, &st)) {
-		getcwd(buffer, sizeof(buffer)-1);
-		buffer[sizeof(buffer)-1]= '\0';
-		fprintf(stderr, "No such image '%s' (cur dir = '%s')\n", FName, buffer);
-	}
-	#endif
-	fprintf(stderr, "Error loading image '%s'"
-	#ifndef HAVE_LIBSDL_IMAGE
-		"; SDL_image not available, so file must be plain bitmap"
-	#endif
-		, FName);
-}
+#include "ProcessInput.h"
 
 bool UsableByGL(SDL_Surface *Img) {
 	int dim;
@@ -59,9 +39,13 @@ SDL_Surface* LoadImg(const char *FName) {
 	Img= SDL_LoadBMP(FName);
 #endif
 	if (!Img)
-		ReportImgNotLoadable(FName);
+		fprintf(stderr, "Error loading image '%s'"
+		#ifndef HAVE_LIBSDL_IMAGE
+			"; SDL_image not available, so file must be plain bitmap"
+		#endif
+			, FName);
 	else if (!UsableByGL(Img)) {
-		fprintf(stderr, "Unable to use image %s\n", FName);
+		fprintf(stderr, "Unable to use image '%s'\n", FName);
 		SDL_FreeSurface(Img);
 		Img= NULL;
 	}
@@ -117,20 +101,17 @@ bool LoadImgIntoTexture(SDL_Surface *Img) {
 	return true;
 }
 
-PUBLISHED(cglLoadImage2D, DoLoadImage2D) {
+COMMAND(cglLoadImage2D, "/") {
 	int i, j, success;
 	SDL_Surface *Img;
-	ScanParamsResult ScanResult;
-	if (argc < 1) return ERR_PARAMCOUNT;
-	if (!ScanParams("N", argv, &ScanResult)) return ERR_PARAMPARSE;
-	// Now load the image
-	Img= LoadImg(ScanResult.FName);
-	if (!Img) return ERR_EXEC;
+
+	if (!(Img= LoadImg(argv[0].as_str)))
+		return false;
 	// Then, load the image data into OpenGL
 	SDL_LockSurface(Img);
 	success= LoadImgIntoTexture(Img);
 	SDL_UnlockSurface(Img);
 	SDL_FreeSurface(Img);
-	return success? 0 : ERR_EXEC;
+	return success;
 }
 

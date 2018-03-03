@@ -2,18 +2,22 @@
 #define SYMBOL_HASH_H
 
 #include <stdio.h>
+#include "ProcessInput.h"
 
 typedef struct {
-	const char* Key;
-	int (*Value)(int,char**);
+	const char* Name;
+	const char* ArgFormat;
+	bool (*Handler)(int argc, ParamUnion *argv);
 } CmdHashEntry;
 
 typedef struct {
-	const char* Key;
+	const char* Name;
 	int Value;
 } IntConstHashEntry;
 
+#ifndef SYMB_VAR_MAX_LEN
 #define SYMB_VAR_MAX_LEN 32
+#endif
 #include "Contained_RBTree.h"
 typedef struct SymbVarEntry_t {
 	int Hash;
@@ -33,24 +37,16 @@ typedef struct SymbVarEntry_t {
 
 extern const char *SymbVarTypeName[];
 
-const CmdHashEntry *GetCmd(const char *Key);
-void DumpCommandList(FILE* DestStream);
+extern const CmdHashEntry *GetCmd(const char *Name);
+extern void DumpCommandList(FILE* DestStream);
 
-const IntConstHashEntry *GetIntConst(const char *Key);
-void DumpConstList(FILE* DestStream);
+extern const IntConstHashEntry *GetIntConst(const char *Name);
+extern void DumpConstList(FILE* DestStream);
 
-SymbVarEntry *CreateSymbVar(const char *Name);
-const SymbVarEntry *GetSymbVar(const char *Name);
-void DeleteSymbVar(SymbVarEntry *Entry); // does not free contents of the variable!!
-void DumpVarList(FILE* DestStream);
-
-#define CmdLookupSize 64
-struct CmdLookupBucket { int EntryCount; CmdHashEntry *Entries; };
-extern const struct CmdLookupBucket CmdLookup[CmdLookupSize];
-
-#define IntConstLookupSize 1024
-struct IntConstLookupBucket { int EntryCount; IntConstHashEntry *Entries; };
-extern const struct IntConstLookupBucket IntConstLookup[IntConstLookupSize];
+extern SymbVarEntry *CreateSymbVar(const char *Name, int Type);
+extern SymbVarEntry *GetSymbVar(const char *Name, int Type);
+extern void DeleteSymbVar(SymbVarEntry *Entry); // does not free contents of the variable!!
+extern void DumpVarList(FILE* DestStream);
 
 #endif
 

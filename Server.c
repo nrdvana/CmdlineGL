@@ -17,6 +17,7 @@
 
 #include "Server.h"
 #include "ProcessInput.h"
+#include "SymbolHash.h"
 #include "ParseGL.h"
 
 bool Shutdown= false;
@@ -253,56 +254,82 @@ void PrintUsage(bool error) {
 	);
 }
 
-PUBLISHED(cglExit,DoQuit) {
+/*
+=item cglEcho ANY_TEXT
+
+Repeat a string of text on stdout (may be confused for user input events,
+but maybe that's what you want)
+
+=cut
+*/
+COMMAND(cglEcho, "b") {
+	printf("%s\n", argv[0].as_str);
+	fflush(stdout);
+	return true;
+}
+
+/*
+=item cglExit
+
+Cause CmdlineGL to terminate (with error code 0)
+
+=cut
+*/
+COMMAND(cglExit, "") {
 	Shutdown= true;
 	return 0;
 }
 
-PUBLISHED(cglGetTime,DoGetTime) {
-	long t;
-	if (argc != 0) return ERR_PARAMCOUNT;
-	t= SDL_GetTicks() - StartTime;
-	printf("t=%d\n", (int) t);
+/*
+=item cglGetTime
+
+Return the number of milliseconds since start of the program.
+
+=item cglSleep DELAY_MS
+
+Sleep for a number of milliseconds from when the command is received
+
+=item cglSync UNTIL_TIME_MS
+
+Sleep until the specified time, measured as milliseconds from start of program.
+
+=cut
+*/
+COMMAND(cglGetTime, "") {
+	long t= SDL_GetTicks() - StartTime;
+	printf("t=%ld\n", t);
 	fflush(stdout);
 	return 0;
 }
 
-PUBLISHED(cglSync,DoSync) {
-	long target, t;
-	char *endptr;
-	
-	if (argc != 1) return ERR_PARAMCOUNT;
-	target= strtol(argv[0], &endptr, 10);
-	if (*endptr != '\0') return ERR_PARAMPARSE;
-	
-	t= SDL_GetTicks() - StartTime;
+COMMAND(cglSleep, "l") {
+	SDL_Delay(argv[0].as_long);
+	return true;
+}
+
+COMMAND(cglSync, "l") {
+	long target= argv[0].as_long;
+	long t= SDL_GetTicks() - StartTime;
 	if (target - t > 0)
 		SDL_Delay(target - t);
-	return 0;
+	return true;
 }
 
-PUBLISHED(cglSleep, DoSleep) {
-	long t;
-	char *endptr;
+/*
+=item cglSwapBuffers
 
-	if (argc != 1) return ERR_PARAMCOUNT;
-	t= strtol(argv[0], &endptr, 10);
-	if (*endptr != '\0' || t <= 0) return ERR_PARAMPARSE;
-	SDL_Delay(t);
-	return 0;
-}
+Swap front and back buffer, showing the frame you were drawing and beginning
+a new frame.  (you still need to call glClear yourself)
+If a window resize is pending, it will be performed at this point.
 
-PUBLISHED(cglEcho,DoEcho) {
-	int i;
-	if (argc == 0)
-		printf("\n");
-	else {
-		for (i=0; i<argc-1; i++)
-			printf("%s ", argv[i]);
-		printf("%s\n", argv[argc-1]);
-	}
-	fflush(stdout);
-	return 0;
+=cut
+*/
+COMMAND(cglSwapBuffers, "") {
+	SDL_GL_SwapBuffers();
+	FrameInProgress= false;
+	// If we were waiting to resize the window, now is the time
+	if (PendingResize) FinishResize();
+	return true;
 }
 
 void CheckInput() {
@@ -312,12 +339,10 @@ void CheckInput() {
 	errno= 0;
 	CmdCount= 0;
 	while ((CmdCount < MAX_COMMAND_BATCH || PointsInProgress) && (Line= ReadLine())) {
-		DEBUGMSG(("%s\n", Line));
-		if (ParseLine(Line, &TokenCount, TokenPointers))
-			ProcessCommand(TokenPointers, TokenCount);
-		else
-			DEBUGMSG(("Empty line ignored\n"));
-		CmdCount++;
+		if (*Line && *Line != '#') {
+			ProcessCommand(Line);
+			CmdCount++;
+		}
 	}
 	if (CmdCount < MAX_COMMAND_BATCH && errno != EAGAIN) {
 		DEBUGMSG(("Received EOF.\n"));

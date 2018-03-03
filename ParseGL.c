@@ -10,717 +10,458 @@
 #include "ImageLoader.h"
 #include "Font.h"
 
-/* For anyone who wants to reuse code from this file, or even just make it
- *   thread-safe, (heaven help you ;-) you will need to make a non-static
- *   instance of ScanParamsResult, and edit ScanParams so it takes that as a
- *   parameter.  you will also need to edit all the functions so that they
- *   use the return value of ScanParams.
- */
-ScanParamsResult ParseResult;
-
-/* CmdlineGL supports fixed-point numbers on stdin, by multiplying
- * all float values by this multiplier.  Naturally, it defaults to 1.0
- */
-double FixedPtMultiplier= 1.0;
-double DivisorStack[16];
-int DivisorStackPos= -1;
-const int DivisorStackMax= sizeof(DivisorStack)/sizeof(double) - 1;
-
-bool ParseInt(const char* Text, GLint *Result);
-bool ParseFloat(const char* Text, GLfloat *Result);
-bool ParseDouble(const char* Text, GLdouble *Result);
-bool ParseColor(const char* Text, GLubyte *Result);
-bool ParseSymbVar(const char* Text, const SymbVarEntry **Result, int Type);
-
-const SymbVarEntry* CreateNamedObj(const char* Name, int Type);
-int ReportMissingObj(const char *Name);
-
 bool PointsInProgress= false; // Whenever glBegin is active, until glEnd
 bool FrameInProgress= false;  // True after any gl command, until cglSwapBuffers
 
 //----------------------------------------------------------------------------
-// CmdlineGL Functions
-//
-PUBLISHED(cglPushDivisor, DoPushDivisor) {
-	char *EndPtr;
-	double newval;
-	if (argc != 1) return ERR_PARAMCOUNT;
-	if (DivisorStackPos >= DivisorStackMax) return ERR_EXEC;
-	// We don't want to scale the new scale... so don't use ScanParams("d").
-	// That was a fun bug, lol.
-	newval= strtod(argv[0], &EndPtr);
-	if (*EndPtr != '\0') return ERR_PARAMPARSE;
-	DivisorStack[++DivisorStackPos]= newval;
-	FixedPtMultiplier= 1.0 / newval;
-	return 0;
-}
-
-PUBLISHED(cglPopDivisor, DoPopDivisor) {
-	if (argc != 0) return ERR_PARAMCOUNT;
-	if (DivisorStackPos < 0) return ERR_EXEC;
-	FixedPtMultiplier= (--DivisorStackPos >= 0)? 1.0 / DivisorStack[DivisorStackPos] : 1.0;
-	return 0;
-}
-
-//----------------------------------------------------------------------------
-PUBLISHED(cglSwapBuffers,DoSwapBuffers) {
-	if (argc != 0) return ERR_PARAMCOUNT;
-	SDL_GL_SwapBuffers();
-	FrameInProgress= false;
-	// If we were waiting to resize the window, now is the time
-	if (PendingResize) FinishResize();
-	return 0;
-}
-
-//----------------------------------------------------------------------------
 // Setup Functions
 //
-PUBLISHED(glMatrixMode, DoMatrixMode) {
-	if (argc != 1) return ERR_PARAMCOUNT;
-	if (!ScanParams("i", argv, &ParseResult)) return ERR_PARAMPARSE;
-	glMatrixMode(ParseResult.Ints[0]);
-	return 0;
+COMMAND(glMatrixMode, "i") {
+	glMatrixMode((GLint) argv[0].as_long);
+	return true;
 }
-PUBLISHED(glEnable, DoEnable) {
+COMMAND(glEnable, "i*") {
 	int i;
-	if (argc < 1 || argc >= MAX_GL_PARAMS) return ERR_PARAMCOUNT;
-	if (!ScanParams("i*", argv, &ParseResult)) return ERR_PARAMPARSE;
 	for (i=0; i<argc; i++)
-		glEnable(ParseResult.Ints[i]);
-	return 0;
+		glEnable(argv[i].as_long);
+	return true;
 }
-PUBLISHED(glDisable, DoDisable) {
+COMMAND(glDisable, "i*") {
 	int i;
-	if (argc < 1 || argc >= MAX_GL_PARAMS) return ERR_PARAMCOUNT;
-	if (!ScanParams("i*", argv, &ParseResult)) return ERR_PARAMPARSE;
 	for (i=0; i<argc; i++)
-		glDisable(ParseResult.Ints[i]);
-	return 0;
+		glDisable(argv[i].as_long);
+	return true;
 }
-PUBLISHED(glHint, DoHint) {
-	if (argc != 2) return ERR_PARAMCOUNT;
-	if (!ScanParams("ii", argv, &ParseResult)) return ERR_PARAMPARSE;
-	glHint(ParseResult.Ints[0], ParseResult.Ints[1]);
-	return 0;
+COMMAND(glHint, "ii") {
+	glHint(argv[0].as_long, argv[1].as_long);
+	return true;
 }
-PUBLISHED(glClear, DoClear) {
-	int flags;
-	if (argc < 1 || argc >= MAX_GL_PARAMS) return ERR_PARAMCOUNT;
-	if (!ScanParams("i*", argv, &ParseResult)) return ERR_PARAMPARSE;
-	flags= 0;
+COMMAND(glClear, "i*") {
+	int flags= 0;
 	while (argc--)
-		flags|= ParseResult.Ints[argc];
+		flags|= argv[argc].as_long;
 	glClear(flags);
 	FrameInProgress= true;
-	return 0;
+	return true;
 }
-PUBLISHED(glClearColor, DoClearColor) {
-	if (argc != 1 && argc != 3 && argc != 4) return ERR_PARAMCOUNT;
-	if (!ScanParams("c", argv, &ParseResult)) return ERR_PARAMPARSE;
-	glClearColor(ParseResult.Floats[0], ParseResult.Floats[1], ParseResult.Floats[2], ParseResult.Floats[3]);
-	return 0;
+COMMAND(glClearColor, "c") {
+	glClearColor(argv[0].as_color[0], argv[0].as_color[1], argv[0].as_color[2], argv[0].as_color[3]);
+	return true;
 }
-PUBLISHED(glClearDepth, DoClearDepth) {
-	if (argc != 1) return ERR_PARAMCOUNT;
-	if (!ScanParams("f", argv, &ParseResult)) return ERR_PARAMPARSE;
-	glClearDepth(ParseResult.Floats[0]);
-	return 0;
+COMMAND(glClearDepth, "f") {
+	glClearDepth(argv[0].as_double);
+	return true;
 }
-PUBLISHED(glBegin, DoBegin) {
-	if (argc != 1) return ERR_PARAMCOUNT;
-	if (!ScanParams("i", argv, &ParseResult)) return ERR_PARAMPARSE;
-	if (PointsInProgress)
+COMMAND(glBegin, "i") {
+	if (PointsInProgress) {
 		fprintf(stderr, "Error: multiple calls to glBegin without glEnd\n");
-	glBegin(ParseResult.Ints[0]);
+		return false;
+	}
+	glBegin(argv[0].as_long);
 	PointsInProgress= true;
 	FrameInProgress= true;
-	return 0;
+	return true;
 }
-PUBLISHED(glEnd, DoEnd) {
-	if (argc != 0) return ERR_PARAMCOUNT;
-	if (!PointsInProgress)
+COMMAND(glEnd, "") {
+	if (!PointsInProgress) {
 		fprintf(stderr, "Error: glEnd without glBegin\n");
+		return false;
+	}
 	glEnd();
 	PointsInProgress= false;
-	return 0;
+	return true;
 }
-PUBLISHED(glFlush, DoFlush) {
-	if (argc != 0) return ERR_PARAMCOUNT;
+COMMAND(glFlush, "") {
 	glFlush();
-	return 0;
+	return true;
 }
 
 //----------------------------------------------------------------------------
 // Vertex Functions
 //
-PUBLISHED(glVertex, DoVertex) {
-	if (!ScanParams("d*", argv, &ParseResult)) return ERR_PARAMPARSE;
+COMMAND(glVertex, "ddd?d?") {
 	switch (argc) {
-	case 2: glVertex2dv(ParseResult.Doubles); break;
-	case 3: glVertex3dv(ParseResult.Doubles); break;
-	case 4: glVertex4dv(ParseResult.Doubles); break;
+	case 2: glVertex2d(argv[0].as_double, argv[1].as_double); break;
+	case 3: glVertex3d(argv[0].as_double, argv[1].as_double, argv[2].as_double); break;
+	case 4: glVertex4d(argv[0].as_double, argv[1].as_double, argv[2].as_double, argv[3].as_double); break;
 	default:
-		return ERR_PARAMCOUNT;
+		return false;
 	}
-	return 0;
+	return true;
 }
-PUBLISHED(glNormal, DoNormal) {
-	if (argc != 3) return ERR_PARAMCOUNT;
-	if (!ScanParams("ddd", argv, &ParseResult)) return ERR_PARAMPARSE;
-	glNormal3dv(ParseResult.Doubles);
-	return 0;
+COMMAND(glNormal, "ddd") {
+	glNormal3d(argv[0].as_double, argv[1].as_double, argv[2].as_double);
+	return true;
 }
 
 //----------------------------------------------------------------------------
 // Color Functions
 //
-PUBLISHED(glColor, DoColor) {
-	if (argc != 1 && argc != 3 && argc != 4) return ERR_PARAMCOUNT;
-	if (!ScanParams("c", argv, &ParseResult)) return ERR_PARAMPARSE;
-	glColor4fv(ParseResult.Floats);
-	return 0;
+COMMAND(glColor, "c") {
+	glColor4fv(argv[0].as_color);
+	return true;
 }
-PUBLISHED(glFog, DoFog) {
-	int mode, iTemp;
-	float fTemp;
-	if (argc < 2) return ERR_PARAMCOUNT;
+COMMAND(glFog, "ib") {
+	int mode= argv[0].as_long, n_params= 1;
+	ParamUnion pTemp[1];
+
 	// The parameter to this one really matters, since floats get fixed-point
 	//  multiplied, and colors need special treatment.
-	if (!ParseInt(argv[0], &mode)) return ERR_PARAMPARSE;
 	switch (mode) {
 	case GL_FOG_MODE:
 	case GL_FOG_INDEX:
-		if (!ParseInt(argv[1], &iTemp)) return ERR_PARAMPARSE;
-		glFogi(mode, iTemp);
-		break;
+		if (!ParseParams("glFog", argv[1].as_str, "i", pTemp, &n_params))
+			return false;
+		glFogi(mode, pTemp[0].as_long);
+		return true;
 	case GL_FOG_DENSITY:
 	case GL_FOG_START:
 	case GL_FOG_END:
-		if (!ParseFloat(argv[1], &fTemp)) return ERR_PARAMPARSE;
-		glFogf(mode, fTemp);
-		break;
+		if (!ParseParams("glFog", argv[1].as_str, "f", pTemp, &n_params))
+			return false;
+		glFogf(mode, pTemp[0].as_double);
+		return true;
 	case GL_FOG_COLOR:
-		if (argc != 2 && argc != 4 && argc != 5) return ERR_PARAMCOUNT;
-		if (!ScanParams("c", argv+1, &ParseResult)) return ERR_PARAMPARSE;
-		glFogfv(mode, ParseResult.Floats);
-		break;
+		if (!ParseParams("glFog", argv[1].as_str, "c", pTemp, &n_params))
+			return false;
+		glFogfv(mode, pTemp[0].as_color);
+		return true;
+	default:
+		fprintf(stderr, "Unsupported mode constant for glFog: %d", mode);
+		fflush(stderr);
 	}
-	return 0;
+	return false;
 }
-PUBLISHED(glLight, DoLight) {
-	int mode, light;
-	if (argc < 3) return ERR_PARAMCOUNT;
-	if (!ParseInt(argv[0], &light)) return ERR_PARAMPARSE;
-	if (!ParseInt(argv[1], &mode)) return ERR_PARAMPARSE;
-	argc-=2;
+COMMAND(glLight, "iib") {
+	int mode= argv[0].as_long, light= argv[1].as_long, n_params= 4, i;
+	ParamUnion pTemp[4];
+	float fTemp[4];
+
 	switch (mode) {
 	case GL_AMBIENT:
 	case GL_DIFFUSE:
 	case GL_SPECULAR:
-		if (argc != 1 && argc != 3 && argc != 4) return ERR_PARAMCOUNT;
-		if (!ScanParams("c", argv+2, &ParseResult)) return ERR_PARAMPARSE;
-		glLightfv(light, mode, ParseResult.Floats);
-		break;
+		if (!ParseParams("glLight", argv[2].as_str, "c", pTemp, &n_params))
+			return false;
+		glLightfv(light, mode, pTemp[0].as_color);
+		return true;
 	case GL_POSITION:
-		// take care of the situation where the user only passes 3 params for the point
-		// if they screw it up any worse than that, its their own fault.
-		ParseResult.Floats[3]= 0.0f;
+	#ifdef GL_SPOT_DIRECTION
+	case GL_SPOT_DIRECTION:
+	#endif
+		if (!ParseParams("glLight", argv[2].as_str, "ffff*", pTemp, &n_params))
+			return false;
+		break;
+	#ifdef GL_SPOT_EXPONENT
+	case GL_SPOT_EXPONENT:
+	case GL_SPOT_CUTOFF:
+	#endif
+	#ifdef GL_CONSTANT_ATTENUATION
+	case GL_CONSTANT_ATTENUATION:
+	case GL_LINEAR_ATTENUATION:
+	case GL_QUADRATIC_ATTENUATION:
+	#endif
+		if (!ParseParams("glLight", argv[2].as_str, "f", pTemp, &n_params))
+			return false;
 	default:
-		if (!ScanParams("f*", argv+2, &ParseResult)) return ERR_PARAMPARSE;
-		glLightfv(light, mode, ParseResult.Floats);
+		fprintf(stderr, "Unsupported mode constant for glLight: %d", mode);
+		fflush(stderr);
+		return false;
+	}
+	for (i= 0; i < 4; i++)
+		fTemp[i]= i < n_params? pTemp[i].as_double : 0.0;
+	glLightfv(light, mode, fTemp);
+	return true;
+}
+COMMAND(glLightModel, "ib") {
+	ParamUnion pTemp[4];
+	GLint iTemp[1];
+	int pname= argv[0].as_long, n_params= 4;
+
+	switch (pname) {
+	case GL_LIGHT_MODEL_AMBIENT:
+		if (!ParseParams("glLightModel", argv[1].as_str, "c", pTemp, &n_params))
+			return false;
+		glLightModelfv(pname, pTemp[0].as_color);
+		return true;
+	#ifdef GL_LIGHT_MODEL_COLOR_CONTROL
+	case GL_LIGHT_MODEL_COLOR_CONTROL:
+	#endif
+	case GL_LIGHT_MODEL_LOCAL_VIEWER:
+	case GL_LIGHT_MODEL_TWO_SIDE:
+		if (!ParseParams("glLightModel", argv[1].as_str, "i", pTemp, &n_params))
+			return false;
+		iTemp[0]= pTemp[0].as_long;
+		glLightModeliv(pname, iTemp);
+		return true;
+	default:
+		fprintf(stderr, "Unsupported pname constant for glLightModel: %d", pname);
+		fflush(stderr);
+	}
+	return false;
+}
+COMMAND(glShadeModel, "i") {
+	glShadeModel(argv[0].as_long);
+	return true;
+}
+COMMAND(glMaterial, "iib") {
+	GLint iTemp[4];
+	GLfloat fTemp[4];
+	ParamUnion pTemp[4];
+	int face= argv[0].as_long, pname= argv[1].as_long, n_params= 4, i;
+	
+	switch (pname) {
+	case GL_COLOR_INDEXES:
+		if (!ParseParams("glMaterial", argv[2].as_str, "iii", pTemp, &n_params))
+			return false;
+		for (i= 0; i < 3; i++) iTemp[i]= pTemp[i].as_long;
+		glMaterialiv(face, pname, iTemp);
+		return true;
+	case GL_AMBIENT:
+	case GL_DIFFUSE:
+	case GL_AMBIENT_AND_DIFFUSE:
+	case GL_SPECULAR:
+	case GL_EMISSION:
+		if (!ParseParams("glMaterial", argv[2].as_str, "c", pTemp, &n_params))
+			return false;
+		glMaterialfv(face, pname, pTemp[0].as_color);
+		return true;
+	case GL_SHININESS:
+		if (!ParseParams("glMaterial", argv[2].as_str, "f", pTemp, &n_params))
+			return false;
+		fTemp[0]= pTemp[0].as_double;
+		glMaterialfv(face, pname, fTemp);
+		return true;
+	default:
+		fprintf(stderr, "Unsupported pname constant for glMaterial: %d", pname);
+		fflush(stderr);
 	}
 	return 0;
 }
-PUBLISHED(glLightModel, DoLightModel) {
-	if (argc < 1) return ERR_PARAMCOUNT;
-	if (!ScanParams("i", argv, &ParseResult)) return ERR_PARAMPARSE;
-	if (ParseResult.Ints[0] == GL_LIGHT_MODEL_AMBIENT) {
-		if (!ScanParams("c", argv+1, &ParseResult)) return ERR_PARAMPARSE;
-	}
-	else
-		if (!ScanParams("f*", argv+1, &ParseResult)) return ERR_PARAMPARSE;
-	glLightModelfv(ParseResult.Ints[0], ParseResult.Floats);
-	return 0;
+COMMAND(glColorMaterial, "ii") {
+	glColorMaterial(argv[0].as_long, argv[1].as_long);
+	return true;
 }
-PUBLISHED(glShadeModel, DoShadeModel) {
-	if (argc != 1) return ERR_PARAMCOUNT;
-	if (!ScanParams("i", argv, &ParseResult)) return ERR_PARAMPARSE;
-	glShadeModel(ParseResult.Ints[0]);
-	return 0;
-}
-PUBLISHED(glMaterial, DoMaterial) {
-	int face;
-	if (argc <= 2) return ERR_PARAMCOUNT;
-	if (!ScanParams("ii", argv, &ParseResult)) return ERR_PARAMPARSE;
-	if (ParseResult.Ints[1] == GL_COLOR_INDEXES) {
-		// Handle color indicies as 3 mandatory integers
-		face= ParseResult.Ints[0];
-		if (argc != 5) return ERR_PARAMCOUNT;
-		if (!ScanParams("iii", argv+2, &ParseResult)) return ERR_PARAMPARSE;
-		glMaterialiv(face, GL_COLOR_INDEXES, ParseResult.Ints);
-	}
-	else {
-		// Handle everything else as a color.
-		if (argc != 3 && argc != 5 && argc != 6) return ERR_PARAMCOUNT;
-		if (!ScanParams("c", argv+2, &ParseResult)) return ERR_PARAMPARSE;
-		glMaterialfv(ParseResult.Ints[0], ParseResult.Ints[1], ParseResult.Floats);
-	}
-	return 0;
-}
-PUBLISHED(glColorMaterial, DoColorMaterial) {
-	if (argc != 2) return ERR_PARAMCOUNT;
-	if (!ScanParams("ii", argv, &ParseResult)) return ERR_PARAMPARSE;
-	glLightModelf(ParseResult.Ints[0], ParseResult.Ints[1]);
-	return 0;
-}
-PUBLISHED(glBlendFunc, DoBlendFunc) {
-	if (argc != 2) return ERR_PARAMCOUNT;
-	if (!ScanParams("ii", argv, &ParseResult)) return ERR_PARAMPARSE;
-	glBlendFunc(ParseResult.Ints[0], ParseResult.Ints[1]);
-	return 0;
+COMMAND(glBlendFunc, "ii") {
+	glBlendFunc(argv[0].as_long, argv[1].as_long);
+	return true;
 }
 
 //----------------------------------------------------------------------------
 // Texture Functions
 //
-PUBLISHED(glBindTexture, DoBindTexture) {
-	const SymbVarEntry* NamedObj;
-	if (argc != 2) return ERR_PARAMCOUNT;
-	if (!ScanParams("iT", argv, &ParseResult)) return ERR_PARAMPARSE;
-	NamedObj= ParseResult.Symbolics[0];
-	if (!NamedObj) NamedObj= CreateNamedObj(argv[1], NAMED_TEXTURE);
-	glBindTexture(ParseResult.Ints[0], NamedObj->Value);
-	return 0;
+COMMAND(glBindTexture, "iT!") {
+	glBindTexture(argv[0].as_long, argv[1].as_sym->Value);
+	return true;
 }
-PUBLISHED(glTexParameter, DoTexParameter) {
-	const int FIXED_PARAMS= 2;
-	if (argc <= FIXED_PARAMS || argc >= MAX_GL_PARAMS) return ERR_PARAMCOUNT;
-	if (argc == 3)
-		if (ScanParams("iii", argv, &ParseResult)) {
-			glTexParameteri(ParseResult.Ints[0], ParseResult.Ints[1], ParseResult.Ints[2]);
-			return 0;
-		}
-	// 3-integer conversion failed, so maybe it's an array of floats
-	if (ScanParams("ii", argv, &ParseResult) && ScanParams("f*", argv+FIXED_PARAMS, &ParseResult))
-		glTexParameterfv(ParseResult.Ints[0], ParseResult.Ints[1], ParseResult.Floats);
-	else
-		return ERR_PARAMPARSE;
-	return 0;
-}
-PUBLISHED(glTexCoord, DoTexCoord) {
-	if (argc >= 1 && argc <= 4) {
-		if (!ScanParams("d*", argv, &ParseResult)) return ERR_PARAMPARSE;
-		switch (argc) {
-		case 1: glTexCoord1dv(ParseResult.Doubles); break;
-		case 2: glTexCoord2dv(ParseResult.Doubles); break;
-		case 3: glTexCoord3dv(ParseResult.Doubles); break;
-		case 4: glTexCoord4dv(ParseResult.Doubles); break;
-		}
+COMMAND(glTexParameter, "iib") {
+	GLint iTemp[4];
+	GLfloat fTemp[4];
+	ParamUnion pTemp[4];
+	int target= argv[0].as_long, pname= argv[1].as_long, n_params= 4;
+	
+	switch (pname) {
+	/* one enum */
+	case GL_TEXTURE_MIN_FILTER:
+	case GL_TEXTURE_MAG_FILTER:
+	case GL_TEXTURE_WRAP_S:
+	case GL_TEXTURE_WRAP_T:
+	case GL_TEXTURE_WRAP_R:
+	#ifdef GL_TEXTURE_COMPARE_MODE
+	case GL_TEXTURE_COMPARE_MODE:
+	case GL_TEXTURE_COMPARE_FUNC:
+	case GL_DEPTH_TEXTURE_MODE:
+	case GL_GENERATE_MIPMAP:
+	#endif
+	/* one integer */
+	case GL_TEXTURE_BASE_LEVEL:
+	case GL_TEXTURE_MAX_LEVEL:
+		if (!ParseParams("glTexParameter", argv[2].as_str, "i", pTemp, &n_params))
+			return false;
+		glTexParameteri(target, pname, pTemp->as_long);
+		return true;
+
+	/* one float */
+	#ifdef GL_TEXTURE_MIN_LOD
+	case GL_TEXTURE_MIN_LOD:
+	case GL_TEXTURE_MAX_LOD:
+	#endif
+	case GL_TEXTURE_PRIORITY:
+		if (!ParseParams("glTexParameter", argv[2].as_str, "f", pTemp, &n_params))
+			return false;
+		glTexParameterf(target, pname, pTemp->as_double);
+		return true;
+
+	/* one color */
+	case GL_TEXTURE_BORDER_COLOR:
+		if (!ParseParams("glTexParameter", argv[2].as_str, "c", pTemp, &n_params))
+			return false;
+		glTexParameterfv(target, pname, pTemp->as_color);
+		return true;
+	default:
+		fprintf(stderr, "Unsupported pname constant for glTexparameter: %d", pname);
+		fflush(stderr);
 	}
-	else return ERR_PARAMCOUNT;
-	return 0;
+	return false;
 }
-PUBLISHED(cglNewFont, DoNewFont) {
-	const SymbVarEntry* NamedObj;
-	SDL_Surface *Img;
-	bool Success;
-	if (argc < 3) return ERR_PARAMCOUNT;
-	if (!ScanParams("iFN", argv, &ParseResult)) return ERR_PARAMPARSE;
-	if (ParseResult.Ints[0] != CGL_BMPFONT) return ERR_PARAMPARSE;
-	NamedObj= ParseResult.Symbolics[0];
-	if (!NamedObj) NamedObj= CreateNamedObj(argv[1], NAMED_FONT);
-	Img= LoadImg(ParseResult.FName);
-	if (!Img) return ERR_EXEC;
-	Success= GenerateFont(Img, (Font*) NamedObj->Data);
-	SDL_FreeSurface(Img);
-	return Success? 0 : ERR_EXEC;
+COMMAND(glTexCoord, "dd*") {
+	GLdouble dTemp[4];
+	int i;
+	for (i= 0; i < 4 && i < argc; i++)
+		dTemp[i]= argv[i].as_double;
+	switch (argc) {
+	case 1: glTexCoord1dv(dTemp); break;
+	case 2: glTexCoord2dv(dTemp); break;
+	case 3: glTexCoord3dv(dTemp); break;
+	case 4: glTexCoord4dv(dTemp); break;
+	default:
+		fprintf(stderr, "incorrect number of arguments to glTexCoord");
+		fflush(stderr);
+		return false;
+	}
+	return true;
 }
 
 //----------------------------------------------------------------------------
 // Matrix Functions
 //
-PUBLISHED(glLoadIdentity, DoLoadIdentity) {
-	if (argc != 0) return ERR_PARAMCOUNT;
+COMMAND(glLoadIdentity, "") {
 	glLoadIdentity();
-	return 0;
+	return true;
 }
-PUBLISHED(glLoadMatrix, DoLoadMatrix) {
-	if (argc != 16) return ERR_PARAMCOUNT;
-	if (!ScanParams("d*", argv, &ParseResult)) return ERR_PARAMPARSE;
-	if (ParseResult.ParamsParsed != 16) return ERR_PARAMPARSE;
-	glLoadMatrixd(ParseResult.Doubles);
-	return 0;
+COMMAND(glLoadMatrix, "dddddddddddddddd") {
+	GLdouble dTemp[16];
+	int i;
+	for (i= 0; i < 16; i++)
+		dTemp[i]= argv[i].as_double;
+	glLoadMatrixd(dTemp);
+	return true;
 }
-PUBLISHED(glPushMatrix, DoPushMatrix) {
-	if (argc != 0) return ERR_PARAMCOUNT;
+COMMAND(glPushMatrix, "") {
 	glPushMatrix();
-	return 0;
+	return true;
 }
-PUBLISHED(glPopMatrix, DoPopMatrix) {
-	if (argc != 0) return ERR_PARAMCOUNT;
+COMMAND(glPopMatrix, "") {
 	glPopMatrix();
-	return 0;
+	return true;
 }
-PUBLISHED(glMultMatrix, DoMultMatrix) {
-	if (argc != 16) return ERR_PARAMCOUNT;
-	if (!ScanParams("d*", argv, &ParseResult)) return ERR_PARAMPARSE;
-	if (ParseResult.ParamsParsed != 16) return ERR_PARAMPARSE;
-	glMultMatrixd(ParseResult.Doubles);
-	return 0;
+COMMAND(glMultMatrix, "dddddddddddddddd") {
+	GLdouble dTemp[16];
+	int i;
+	for (i= 0; i < 16; i++)
+		dTemp[i]= argv[i].as_double;
+	glMultMatrixd(dTemp);
+	return true;
 }
-PUBLISHED(glScale, DoScale) {
+COMMAND(glScale, "dd*") {
+	switch (argc) {
+	case 3: glScaled(argv[0].as_double, argv[1].as_double, argv[2].as_double); break;
+	case 2: glScaled(argv[0].as_double, argv[1].as_double, 1); break;
+	case 1: glScaled(argv[0].as_double, argv[0].as_double, argv[0].as_double); break;
+	default:
+		fprintf(stderr, "incorrect number of arguments to glTexCoord");
+		fflush(stderr);
+		return false;
+	}
+	return true;
+}
+COMMAND(glTranslate, "ddd*") {
 	if (argc == 3) {
-		if (!ScanParams("ddd", argv, &ParseResult)) return ERR_PARAMPARSE;
-		glScaled(ParseResult.Doubles[0], ParseResult.Doubles[1], ParseResult.Doubles[2]);
+		glTranslated(argv[0].as_double, argv[1].as_double, argv[2].as_double);
 	}
 	else if (argc == 2) {
-		if (!ScanParams("dd", argv, &ParseResult)) return ERR_PARAMPARSE;
-		glScaled(ParseResult.Doubles[0], ParseResult.Doubles[1], 1);
+		glTranslated(argv[0].as_double, argv[1].as_double, 0);
 	}
-	else if (argc == 1) {
-		if (!ScanParams("d", argv, &ParseResult)) return ERR_PARAMPARSE;
-		glScaled(ParseResult.Doubles[0], ParseResult.Doubles[0], ParseResult.Doubles[0]);
-	}
-	else return ERR_PARAMCOUNT;
-	return 0;
+	else return false;
+	return true;
 }
-PUBLISHED(glTranslate, DoTranslate) {
-	if (argc == 3) {
-		if (!ScanParams("ddd", argv, &ParseResult)) return ERR_PARAMPARSE;
-		glTranslated(ParseResult.Doubles[0], ParseResult.Doubles[1], ParseResult.Doubles[2]);
-	}
-	else if (argc == 2) {
-		if (!ScanParams("dd", argv, &ParseResult)) return ERR_PARAMPARSE;
-		glTranslated(ParseResult.Doubles[0], ParseResult.Doubles[1], 0);
-	}
-	else return ERR_PARAMCOUNT;
-	return 0;
-}
-PUBLISHED(glRotate, DoRotate) {
-	if (argc != 4) return ERR_PARAMCOUNT;
-	if (!ScanParams("dddd", argv, &ParseResult)) return ERR_PARAMPARSE;
-	glRotated(ParseResult.Doubles[0], ParseResult.Doubles[1], ParseResult.Doubles[2], ParseResult.Doubles[3]);
-	return 0;
+COMMAND(glRotate, "dddd") {
+	glRotated(argv[0].as_double, argv[1].as_double, argv[2].as_double, argv[3].as_double);
+	return true;
 }
 
 //----------------------------------------------------------------------------
 // Projectionview Matrix Functions
 //
-PUBLISHED(glViewport, DoViewport) {
-	if (argc != 4) return ERR_PARAMCOUNT;
-	if (!ScanParams("iiii", argv, &ParseResult)) return ERR_PARAMPARSE;
-	glViewport(ParseResult.Ints[0], ParseResult.Ints[1], ParseResult.Ints[2], ParseResult.Ints[3]);
-	return 0;
+COMMAND(glViewport, "iiii") {
+	glViewport(argv[0].as_long, argv[1].as_long, argv[2].as_long, argv[3].as_long);
+	return true;
 }
-PUBLISHED(glOrtho, DoOrtho) {
-	if (argc != 6) return ERR_PARAMCOUNT;
-	if (!ScanParams("dddddd", argv, &ParseResult)) return ERR_PARAMPARSE;
-	glOrtho(ParseResult.Doubles[0], ParseResult.Doubles[1], ParseResult.Doubles[2], ParseResult.Doubles[3], ParseResult.Doubles[4], ParseResult.Doubles[5]);
-	return 0;
+COMMAND(glOrtho, "dddddd") {
+	glOrtho(argv[0].as_double, argv[1].as_double, argv[2].as_double, argv[3].as_double, argv[4].as_double, argv[5].as_double);
+	return true;
 }
-PUBLISHED(glFrustum, DoFrustum) {
-	if (argc != 6) return ERR_PARAMCOUNT;
-	if (!ScanParams("dddddd", argv, &ParseResult)) return ERR_PARAMPARSE;
-	glFrustum(ParseResult.Doubles[0], ParseResult.Doubles[1], ParseResult.Doubles[2], ParseResult.Doubles[3], ParseResult.Doubles[4], ParseResult.Doubles[5]);
-	return 0;
+COMMAND(glFrustum, "dddddd") {
+	glOrtho(argv[0].as_double, argv[1].as_double, argv[2].as_double, argv[3].as_double, argv[4].as_double, argv[5].as_double);
+	return true;
 }
 
 //----------------------------------------------------------------------------
 // Display List Functions
 //
-PUBLISHED(glNewList, DoNewList) {
-	const SymbVarEntry* NamedObj;
-	if (argc != 2) return ERR_PARAMCOUNT;
-	if (!ScanParams("Li", argv, &ParseResult)) return ERR_PARAMPARSE;
-	NamedObj= ParseResult.Symbolics[0];
-	if (!NamedObj) NamedObj= CreateNamedObj(argv[0], NAMED_LIST);
-	glNewList(NamedObj->Value, ParseResult.Ints[0]);
-	return 0;
+COMMAND(glNewList, "L!i") {
+	glNewList(argv[0].as_sym->Value, argv[1].as_long);
+	return true;
 }
-PUBLISHED(glEndList, DoEndList) {
-	if (argc != 0) return ERR_PARAMCOUNT;
+COMMAND(glEndList, "") {
 	glEndList();
-	return 0;
+	return true;
 }
-PUBLISHED(glCallList, DoCallList) {
-	if (argc != 1) return ERR_PARAMCOUNT;
-	if (!ScanParams("L", argv, &ParseResult)) return ERR_PARAMPARSE;
-	if (!ParseResult.Symbolics[0]) return ReportMissingObj(argv[0]);
-	glCallList(ParseResult.Symbolics[0]->Value);
-	return 0;
+COMMAND(glCallList, "L") {
+	glCallList(argv[0].as_sym->Value);
+	return true;
 }
 
 //----------------------------------------------------------------------------
 // Glu Functions
 //
-PUBLISHED(gluLookAt, DoLookAt) {
-	if (argc != 9) return ERR_PARAMCOUNT;
-	if (!ScanParams("ddddddddd", argv, &ParseResult)) return ERR_PARAMPARSE;
-	gluLookAt(ParseResult.Doubles[0], ParseResult.Doubles[1], ParseResult.Doubles[2],
-		ParseResult.Doubles[3], ParseResult.Doubles[4], ParseResult.Doubles[5],
-		ParseResult.Doubles[6], ParseResult.Doubles[7], ParseResult.Doubles[8]);
-	return 0;
-}
-PUBLISHED(gluNewQuadric, DoNewQuadric) {
-	if (argc != 1) return ERR_PARAMCOUNT;
-	if (!ScanParams("Q", argv, &ParseResult)) return ERR_PARAMPARSE;
-	if (!ParseResult.Symbolics[0])
-		CreateNamedObj(argv[0], NAMED_QUADRIC);
-	return 0;
-}
-PUBLISHED(gluQuadricDrawStyle, DoQuadricDrawStyle) {
-	if (argc != 2) return ERR_PARAMCOUNT;
-	if (!ScanParams("Qi", argv, &ParseResult)) return ERR_PARAMPARSE;
-	if (!ParseResult.Symbolics[0]) return ReportMissingObj(argv[0]);
-	gluQuadricDrawStyle((GLUquadric*)ParseResult.Symbolics[0]->Data, ParseResult.Ints[0]);
-	return 0;
-}
-PUBLISHED(gluQuadricNormals, DoQuadricNormals) {
-	if (argc != 2) return ERR_PARAMCOUNT;
-	if (!ScanParams("Qi", argv, &ParseResult)) return ERR_PARAMPARSE;
-	if (!ParseResult.Symbolics[0]) return ReportMissingObj(argv[0]);
-	gluQuadricNormals((GLUquadric*)ParseResult.Symbolics[0]->Data, ParseResult.Ints[0]);
-	return 0;
-}
-PUBLISHED(gluQuadricOrientation, DoQuadricOrientation) {
-	if (argc != 2) return ERR_PARAMCOUNT;
-	if (!ScanParams("Qi", argv, &ParseResult)) return ERR_PARAMPARSE;
-	if (!ParseResult.Symbolics[0]) return ReportMissingObj(argv[0]);
-	gluQuadricOrientation((GLUquadric*)ParseResult.Symbolics[0]->Data, ParseResult.Ints[0]);
-	return 0;
-}
-PUBLISHED(gluQuadricTexture, DoQuadricTexture) {
-	if (argc != 2) return ERR_PARAMCOUNT;
-	if (!ScanParams("Qi", argv, &ParseResult)) return ERR_PARAMPARSE;
-	if (!ParseResult.Symbolics[0]) return ReportMissingObj(argv[0]);
-	gluQuadricTexture((GLUquadric*)ParseResult.Symbolics[0]->Data, ParseResult.Ints[0]);
-	return 0;
-}
-PUBLISHED(gluCylinder, DoCylinder) {
-	if (argc != 6) return ERR_PARAMCOUNT;
-	if (!ScanParams("Qdddii", argv, &ParseResult)) return ERR_PARAMPARSE;
-	if (!ParseResult.Symbolics[0]) return ReportMissingObj(argv[0]);
-	gluCylinder((GLUquadric*)ParseResult.Symbolics[0]->Data, ParseResult.Doubles[0], ParseResult.Doubles[1], ParseResult.Doubles[2], ParseResult.Ints[0], ParseResult.Ints[1]);
-	FrameInProgress= true;
-	return 0;
-}
-PUBLISHED(gluSphere, DoSphere) {
-	if (argc != 4) return ERR_PARAMCOUNT;
-	if (!ScanParams("Qdii", argv, &ParseResult)) return ERR_PARAMPARSE;
-	if (!ParseResult.Symbolics[0]) return ReportMissingObj(argv[0]);
-	gluSphere((GLUquadric*)ParseResult.Symbolics[0]->Data, ParseResult.Doubles[0], ParseResult.Ints[0], ParseResult.Ints[1]);
-	FrameInProgress= true;
-	return 0;
-}
-PUBLISHED(gluDisk, DoDisk) {
-	if (argc != 5) return ERR_PARAMCOUNT;
-	if (!ScanParams("Qddii", argv, &ParseResult)) return ERR_PARAMPARSE;
-	if (!ParseResult.Symbolics[0]) return ReportMissingObj(argv[0]);
-	gluDisk((GLUquadric*)ParseResult.Symbolics[0]->Data, ParseResult.Doubles[0], ParseResult.Doubles[1], ParseResult.Ints[0], ParseResult.Ints[1]);
-	FrameInProgress= true;
-	return 0;
-}
-PUBLISHED(gluPartialDisk, DoPartialDisk) {
-	if (argc != 7) return ERR_PARAMCOUNT;
-	if (!ScanParams("Qddiidd", argv, &ParseResult)) return ERR_PARAMPARSE;
-	if (!ParseResult.Symbolics[0]) return ReportMissingObj(argv[0]);
-	gluPartialDisk((GLUquadric*)ParseResult.Symbolics[0]->Data, ParseResult.Doubles[0], ParseResult.Doubles[1], ParseResult.Ints[0], ParseResult.Ints[1], ParseResult.Doubles[2], ParseResult.Doubles[3]);
-	FrameInProgress= true;
-	return 0;
-}
-
-//----------------------------------------------------------------------------
-// Parsing Functions
-//
-bool ScanParams(const char* ParamType, char** Args, ScanParamsResult* Result) {
-	GLubyte colorVals[4];
-	GLint *iParam= Result->Ints;
-	GLfloat *fParam= Result->Floats;
-	GLdouble *dParam= Result->Doubles;
-	const SymbVarEntry **sParam= Result->Symbolics;
-	int i;
-	char *ch;
-	Result->ParamsParsed= 0;
-	bool Success= true;
-	while (Success && *Args && *ParamType != '\0') {
-		if (*ParamType == '*') // replay last value, infinitely
-			ParamType--;
-		switch (*ParamType) {
-		// Integer value
-		case 'i': Success= ParseInt(*Args, iParam++); break;
-		// Float value
-		case 'f': Success= ParseFloat(*Args, fParam++); break;
-		// Double value
-		case 'd': Success= ParseDouble(*Args, dParam++); break;
-		// Display list
-		case 'L': Success= ParseSymbVar(*Args, sParam++, NAMED_LIST); break;
-		// Quadric
-		case 'Q': Success= ParseSymbVar(*Args, sParam++, NAMED_QUADRIC); break;
-		// Texture
-		case 'T': Success= ParseSymbVar(*Args, sParam++, NAMED_TEXTURE); break;
-		// Font
-		case 'F': Success= ParseSymbVar(*Args, sParam++, NAMED_FONT); break;
-		// Color, either "#xxxxxx" or 3xFloat or 4xFloat
-		case 'c':
-			if (**Args == '#' && ParseColor(&Args[0][1], colorVals)) {
-				for (i=0; i<4; i++)
-					*fParam++ = ((float)colorVals[i])*(1.0/255);
-			}
-			else {
-				Success= ParseFloat(Args[0], fParam++);
-				for (i=1; i<4 && Success && Args[i]; i++)
-					Success= ParseFloat(Args[i], fParam++);
-				if (i < 3)
-					Success= false;
-				else {
-					if (i==3) *fParam++ = 1.0;
-					Args+= (i-1);
-				}
-			}
-			break;
-		// File Name
-		case 'N':
-			if (ParamType[1] != '\0') {
-				fprintf(stderr, "ScanParams: File names can only be the last argument to read, due to possible embedded spaces.\n");
-				Success= false;
-			}
-			// XXX WARNING!! DANGEROUS AND SINISTER (but fun) KLUGE FOLLOWS! XXX
-			// We know that all the arg strings came from a single string which is
-			//   still in our global read-buffer, so to reconstruct the filename
-			//   with spaces in it, we can simply replace a few NULs with spaces.
-			// (I should enter the IOCCC some day...)
-			else
-				for (Result->FName= *Args++; *Args; Args++)
-					for (ch=*(Args-1); !*ch; *ch--=' ');
-			// Note: if someone feels like fixing this someday, the best thing would be
-			// not to have broken up the original string.  In other words, let each one
-			// of these 'Do' functions parse its own stuff out of one single string.  It
-			// would even be more efficient since the string would then only get scanned
-			// once.  This, however, would require a lot of rewriting...  wish I'd
-			// thought of it sooner.
-			break;
-		// Catch programming errors
-		default:
-			fprintf(stderr, "ScanParams: Unknown param type '%c'!  (bug)\n", *ParamType);
-			Success= false;
-		}
-		Args++;
-		Result->ParamsParsed++;
-		ParamType++;
-	}
-	return Success;
-}
-
-bool ParseInt(const char* Text, GLint *Result) {
-	const IntConstHashEntry *SymConst;
-	char *EndPtr;
-	
-	if ((Text[0] == 'G' && Text[1] == 'L')
-		|| (Text[0] == 'C' && Text[1] == 'G' && Text[2] == 'L'))
-	{
-		DEBUGMSG(("Searching for %s...", Text));
-		SymConst= GetIntConst(Text);
-		if (SymConst) {
-			DEBUGMSG((" Found: %i\n", SymConst->Value));
-			*Result= SymConst->Value;
-			return true;
-		}
-		else {
-			DEBUGMSG(("not found.\n"));
-			return false;
-		}
-	}
-	else if (Text[0] == '0' && Text[1] == 'x') {
-		*Result= strtol(Text, &EndPtr, 16);
-		return (*EndPtr == '\0');
-	}
-	else {
-		*Result= strtol(Text, &EndPtr, 10);
-		DEBUGMSG((*EndPtr == '\0'? "" : "%s is not a constant.\n", Text));
-		return (*EndPtr == '\0');
-	}
-}
-
-bool ParseSymbol(const char* Text, int *Result) {
-	const SymbVarEntry *SymbVar;
-	SymbVar= GetSymbVar(Text);
-	if (SymbVar) {
-		*Result= SymbVar->Value;
-		return true;
-	}
-	else return false;
-}
-
-bool ParseFloat(const char* Text, GLfloat *Result) {
-	double val;
-	bool status= ParseDouble(Text, &val);
-	if (status) *Result= val;
-	return status;
-}
-
-bool ParseDouble(const char* Text, GLdouble *Result) {
-	char *EndPtr;
-	double num, denom;
-	if (Text[0] == '-' && Text[1] == '-') Text+= 2; // be nice about double negatives
-	num= strtod(Text, &EndPtr);
-	if (*EndPtr == '/') {
-		denom= strtod(EndPtr+1, &EndPtr);
-		if (!denom) return 0;
-		*Result= num / denom;
-	} else {
-		*Result= num * FixedPtMultiplier;
-	}
-	return (*EndPtr == '\0');
-}
-
-bool ParseColor(const char* Text, GLubyte *Result) {
-	int i, hexval;
-	char *StopPos;
-	hexval= strtol(Text, &StopPos, 16);
-	// Check for alpha component
-	switch (StopPos-Text) {
-	case 8: // has an alpha.
-		Result[3]= hexval & 0xFF;
-		hexval>>= 8;
-		break;
-	case 6: // no alpha, so default to 1.0
-		Result[3]= 0xFF;
-		break;
-	default: // invalid number of hex chars
-		return false;
-	}
-	Result[2]= hexval & 0xFF;
-	Result[1]= (hexval>>8) & 0xFF;
-	Result[0]= (hexval>>16) & 0xFF;
+COMMAND(gluLookAt, "ddddddddd") {
+	gluLookAt(
+		argv[0].as_double, argv[1].as_double, argv[2].as_double,
+		argv[3].as_double, argv[4].as_double, argv[5].as_double,
+		argv[6].as_double, argv[7].as_double, argv[8].as_double
+	);
 	return true;
 }
-
-bool ParseSymbVar(const char* Text, const SymbVarEntry **Result, int Type) {
-	const SymbVarEntry *Entry= GetSymbVar(Text);
-
-	if (Entry && Entry->Type != Type) {
-		fprintf(stdout, "Named object \"%s\" is not of type %s (it's a %s)\n", Text, SymbVarTypeName[Type], SymbVarTypeName[Entry->Type]);
-		return false;
-	}
-	*Result= Entry;
+COMMAND(gluNewQuadric, "Q!") {
 	return true;
 }
-
-const SymbVarEntry* CreateNamedObj(const char* Name, int Type) {
-	SymbVarEntry *NewEntry;
-	NewEntry= CreateSymbVar(Name); // entry is added to RB tree at this point
-	NewEntry->Type= Type;
-	switch (Type) {
-	case NAMED_LIST: NewEntry->Value= glGenLists(1); break;
-	case NAMED_QUADRIC: NewEntry->Data= gluNewQuadric(); break;
-	case NAMED_TEXTURE: glGenTextures(1, &(NewEntry->Value)); break;
-	case NAMED_FONT: NewEntry->Data= Font_Initialize(malloc(sizeof(Font))); break;
-	}
-	DEBUGMSG(("Created named object %s = %d\n", Name, NewEntry->Value));
-	return NewEntry;
+COMMAND(gluQuadricDrawStyle, "Qi") {
+	gluQuadricDrawStyle((GLUquadric*)argv[0].as_sym->Data, argv[1].as_long);
+	return true;
 }
-
-int ReportMissingObj(const char *Name) {
-	fprintf(stdout, "Named object: \"%s\" does not exist.\n", Name);
-	return ERR_PARAMPARSE;
+COMMAND(gluQuadricNormals, "Qi") {
+	gluQuadricNormals((GLUquadric*)argv[0].as_sym->Data, argv[1].as_long);
+	return true;
+}
+COMMAND(gluQuadricOrientation, "Qi") {
+	gluQuadricOrientation((GLUquadric*)argv[0].as_sym->Data, argv[1].as_long);
+	return true;
+}
+COMMAND(gluQuadricTexture, "Qi") {
+	gluQuadricTexture((GLUquadric*)argv[0].as_sym->Data, argv[1].as_long);
+	return true;
+}
+COMMAND(gluCylinder, "Qdddii") {
+	gluCylinder((GLUquadric*)argv[0].as_sym->Data,
+		argv[1].as_double, argv[2].as_double, argv[3].as_double,
+		argv[4].as_long, argv[5].as_long);
+	FrameInProgress= true;
+	return true;
+}
+COMMAND(gluSphere, "Qdii") {
+	gluSphere((GLUquadric*)argv[0].as_sym->Data, argv[1].as_double, argv[2].as_long, argv[3].as_long);
+	FrameInProgress= true;
+	return true;
+}
+COMMAND(gluDisk, "Qddii") {
+	gluDisk((GLUquadric*)argv[0].as_sym->Data, argv[1].as_double, argv[2].as_double, argv[3].as_long, argv[4].as_long);
+	FrameInProgress= true;
+	return true;
+}
+COMMAND(gluPartialDisk, "Qddiidd") {
+	gluPartialDisk((GLUquadric*)argv[0].as_sym->Data, argv[1].as_double, argv[2].as_double,
+		argv[3].as_long, argv[4].as_long, argv[5].as_double, argv[6].as_double);
+	FrameInProgress= true;
+	return true;
 }
