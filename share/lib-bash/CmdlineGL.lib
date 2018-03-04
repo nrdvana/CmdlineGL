@@ -119,9 +119,16 @@ CmdlineGL_Start() {
 		CmdlineGL_Mode=w
 		CmdlineGL_Recv(){ return 1; }
 	fi
-	CmdlineGL_Send(){ echo "$@" >&$CmdlineGL_Out; };
-	# Performance optimization! whee!
-	for cmd in ${CmdlineGL_Commands[@]}; do eval "$cmd(){ echo $cmd \"\$@\" >&$CmdlineGL_Out; }"; done
+	CmdlineGL_Send(){
+		# Quote each argument, replacing occurrences of \ with \\, newline with \n and " with \"
+		{ echo -n "$1"; shift; for x; do x="${x//\\/\\\\}"; x="${x//$'\n'/\\n}"; echo -n ' "'"${x//\"/\\\"}"'"'; done; echo; } >&$CmdlineGL_Out;
+	};
+	# Performance optimization! whee!  But not for the functions that need quoted arguments...
+	for cmd in ${CmdlineGL_Commands[@]}; do
+		if [[ "$cmd" != ftgl* && "$cmd" != cglEcho && "$cmd" != cglLoadImage2D  ]]; then
+			eval "$cmd(){ echo $cmd \"\$@\" >&$CmdlineGL_Out; }";
+		fi
+	done
 }
 
 CmdlineGL_CreateFifo() {

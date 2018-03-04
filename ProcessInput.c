@@ -167,16 +167,16 @@ char* ReadLine(/* LineBuffer *this */) {
 }
 
 char * next_token(char **input) {
-	char q, *out, *in;
+	char q, *out, *in, *rewrite;
 	if (!input) return NULL;
 	in= *input;
 	/* skip delim characters */
 	while (*in == ' ' || *in == '\t') in++;
 	/* quoting support */
-	out= in;
 	if (*in == '\'' || *in == '"') {
 		q= *in++;
-		while (*in != '\0' && *in != q) {
+		out= rewrite= in;
+		while (*in && *in != q) {
 			if (*in == '\\') {
 				switch (* ++in) {
 				case 'n': *in= '\n'; break;
@@ -185,12 +185,15 @@ char * next_token(char **input) {
 				default: 0; /* every other value remains itself */
 				}
 			}
-			*out++ = *in++;
+			*rewrite++ = *in++;
 		}
-		*out= '\0';
+		if (*in) in++; /* advance past the end-quote, if not end of string */
+		*rewrite= '\0';
+		/* always consider a token found, even if empty or missing end quote */
 	}
 	/* else just look for end of token */
 	else {
+		out= in;
 		while (*in && *in != ' ' && *in != '\t') in++;
 		if (*in) *in++= '\0';
 		if (!*out) out= NULL; /* return null unless found a token */
