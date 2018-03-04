@@ -4,16 +4,18 @@
 #include <stdio.h>
 #include "ProcessInput.h"
 
+struct ParseParamsResult;
+
 typedef struct {
 	const char* Name;
 	const char* ArgFormat;
-	bool (*Handler)(int argc, ParamUnion *argv);
-} CmdHashEntry;
+	bool (*Handler)(struct ParseParamsResult *parsed);
+} CmdListEntry;
 
 typedef struct {
 	const char* Name;
 	int Value;
-} IntConstHashEntry;
+} IntConstListEntry;
 
 #ifndef SYMB_VAR_MAX_LEN
 #define SYMB_VAR_MAX_LEN 32
@@ -30,17 +32,17 @@ typedef struct SymbVarEntry_t {
 	RBTreeNode node;
 } SymbVarEntry;
 
-#define NAMED_LIST 0
-#define NAMED_QUADRIC 1
-#define NAMED_TEXTURE 2
-#define NAMED_FONT 3
+#define NAMED_LIST 1
+#define NAMED_QUADRIC 2
+#define NAMED_TEXTURE 3
+#define NAMED_FONT 4
 
 extern const char *SymbVarTypeName[];
 
-extern const CmdHashEntry *GetCmd(const char *Name);
+extern const CmdListEntry *GetCmd(const char *Name);
 extern void DumpCommandList(FILE* DestStream);
 
-extern const IntConstHashEntry *GetIntConst(const char *Name);
+extern const IntConstListEntry *GetIntConst(const char *Name);
 extern void DumpConstList(FILE* DestStream);
 
 extern SymbVarEntry *CreateSymbVar(const char *Name, int Type);

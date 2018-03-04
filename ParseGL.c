@@ -3,6 +3,7 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <SDL.h>
+#include <assert.h>
 #include "GlHeaders.h"
 #include "ParseGL.h"
 #include "Server.h"
@@ -17,54 +18,52 @@ bool FrameInProgress= false;  // True after any gl command, until cglSwapBuffers
 // Setup Functions
 //
 COMMAND(glMatrixMode, "i") {
-	glMatrixMode((GLint) argv[0].as_long);
+	glMatrixMode((GLint) parsed->ints[0]);
 	return true;
 }
 COMMAND(glEnable, "i*") {
-	int i;
-	for (i=0; i<argc; i++)
-		glEnable(argv[i].as_long);
+	while (parsed->iCnt > 0)
+		glEnable(parsed->ints[--parsed->iCnt]);
 	return true;
 }
 COMMAND(glDisable, "i*") {
-	int i;
-	for (i=0; i<argc; i++)
-		glDisable(argv[i].as_long);
+	while (parsed->iCnt > 0)
+		glDisable(parsed->ints[--parsed->iCnt]);
 	return true;
 }
 COMMAND(glHint, "ii") {
-	glHint(argv[0].as_long, argv[1].as_long);
+	glHint(parsed->ints[0], parsed->ints[1]);
 	return true;
 }
 COMMAND(glClear, "i*") {
 	int flags= 0;
-	while (argc--)
-		flags|= argv[argc].as_long;
+	while (parsed->iCnt > 0)
+		flags|= parsed->ints[--parsed->iCnt];
 	glClear(flags);
 	FrameInProgress= true;
 	return true;
 }
 COMMAND(glClearColor, "c") {
-	glClearColor(argv[0].as_color[0], argv[0].as_color[1], argv[0].as_color[2], argv[0].as_color[3]);
+	glClearColor(parsed->floats[0], parsed->floats[1], parsed->floats[2], parsed->floats[3]);
 	return true;
 }
-COMMAND(glClearDepth, "f") {
-	glClearDepth(argv[0].as_double);
+COMMAND(glClearDepth, "d") {
+	glClearDepth(parsed->doubles[0]);
 	return true;
 }
 COMMAND(glBegin, "i") {
 	if (PointsInProgress) {
-		fprintf(stderr, "Error: multiple calls to glBegin without glEnd\n");
+		parsed->errmsg= "multiple calls to glBegin without glEnd";
 		return false;
 	}
-	glBegin(argv[0].as_long);
+	glBegin(parsed->ints[0]);
 	PointsInProgress= true;
 	FrameInProgress= true;
 	return true;
 }
 COMMAND(glEnd, "") {
 	if (!PointsInProgress) {
-		fprintf(stderr, "Error: glEnd without glBegin\n");
+		parsed->errmsg= "glEnd without glBegin";
 		return false;
 	}
 	glEnd();
@@ -80,17 +79,17 @@ COMMAND(glFlush, "") {
 // Vertex Functions
 //
 COMMAND(glVertex, "ddd?d?") {
-	switch (argc) {
-	case 2: glVertex2d(argv[0].as_double, argv[1].as_double); break;
-	case 3: glVertex3d(argv[0].as_double, argv[1].as_double, argv[2].as_double); break;
-	case 4: glVertex4d(argv[0].as_double, argv[1].as_double, argv[2].as_double, argv[3].as_double); break;
+	switch (parsed->dCnt) {
+	case 2: glVertex2dv(parsed->doubles); break;
+	case 3: glVertex3dv(parsed->doubles); break;
+	case 4: glVertex4dv(parsed->doubles); break;
 	default:
 		return false;
 	}
 	return true;
 }
 COMMAND(glNormal, "ddd") {
-	glNormal3d(argv[0].as_double, argv[1].as_double, argv[2].as_double);
+	glNormal3dv(parsed->doubles);
 	return true;
 }
 
@@ -98,59 +97,57 @@ COMMAND(glNormal, "ddd") {
 // Color Functions
 //
 COMMAND(glColor, "c") {
-	glColor4fv(argv[0].as_color);
+	glColor4fv(parsed->floats);
 	return true;
 }
 COMMAND(glFog, "ib") {
-	int mode= argv[0].as_long, n_params= 1;
-	ParamUnion pTemp[1];
+	int mode= parsed->ints[0];
 
 	// The parameter to this one really matters, since floats get fixed-point
 	//  multiplied, and colors need special treatment.
 	switch (mode) {
 	case GL_FOG_MODE:
 	case GL_FOG_INDEX:
-		if (!ParseParams("glFog", argv[1].as_str, "i", pTemp, &n_params))
+		if (!ParseParams(&parsed->strings[0], "i", parsed))
 			return false;
-		glFogi(mode, pTemp[0].as_long);
+		glFogi(mode, parsed->ints[1]);
 		return true;
 	case GL_FOG_DENSITY:
 	case GL_FOG_START:
 	case GL_FOG_END:
-		if (!ParseParams("glFog", argv[1].as_str, "f", pTemp, &n_params))
+		if (!ParseParams(&parsed->strings[0], "f", parsed))
 			return false;
-		glFogf(mode, pTemp[0].as_double);
+		glFogf(mode, parsed->floats[0]);
 		return true;
 	case GL_FOG_COLOR:
-		if (!ParseParams("glFog", argv[1].as_str, "c", pTemp, &n_params))
+		if (!ParseParams(&parsed->strings[0], "c", parsed))
 			return false;
-		glFogfv(mode, pTemp[0].as_color);
+		glFogfv(mode, parsed->floats);
 		return true;
 	default:
-		fprintf(stderr, "Unsupported mode constant for glFog: %d", mode);
-		fflush(stderr);
+		snprintf(parsed->errmsg_buf, sizeof(parsed->errmsg_buf), "Unsupported mode constant for glFog: %d", mode);
+		parsed->errmsg= parsed->errmsg_buf;
 	}
 	return false;
 }
 COMMAND(glLight, "iib") {
-	int mode= argv[0].as_long, light= argv[1].as_long, n_params= 4, i;
-	ParamUnion pTemp[4];
-	float fTemp[4];
+	int light= parsed->ints[0], pname= parsed->ints[1];
 
-	switch (mode) {
+	switch (pname) {
 	case GL_AMBIENT:
 	case GL_DIFFUSE:
 	case GL_SPECULAR:
-		if (!ParseParams("glLight", argv[2].as_str, "c", pTemp, &n_params))
+		if (!ParseParams(&parsed->strings[0], "c", parsed))
 			return false;
-		glLightfv(light, mode, pTemp[0].as_color);
-		return true;
+		assert(parsed->fCnt == 4);
+		break;
 	case GL_POSITION:
 	#ifdef GL_SPOT_DIRECTION
 	case GL_SPOT_DIRECTION:
 	#endif
-		if (!ParseParams("glLight", argv[2].as_str, "ffff*", pTemp, &n_params))
+		if (!ParseParams(&parsed->strings[0], "ffff?", parsed))
 			return false;
+		assert(parsed->fCnt >= 3 && parsed->fCnt <= 4);
 		break;
 	#ifdef GL_SPOT_EXPONENT
 	case GL_SPOT_EXPONENT:
@@ -161,89 +158,81 @@ COMMAND(glLight, "iib") {
 	case GL_LINEAR_ATTENUATION:
 	case GL_QUADRATIC_ATTENUATION:
 	#endif
-		if (!ParseParams("glLight", argv[2].as_str, "f", pTemp, &n_params))
+		if (!ParseParams(&parsed->strings[0], "f", parsed))
 			return false;
+		assert(parsed->fCnt == 1);
+		break;
 	default:
-		fprintf(stderr, "Unsupported mode constant for glLight: %d", mode);
-		fflush(stderr);
+		snprintf(parsed->errmsg_buf, sizeof(parsed->errmsg_buf), "Unsupported pname constant for glLight: %d", pname);
+		parsed->errmsg= parsed->errmsg_buf;
 		return false;
 	}
-	for (i= 0; i < 4; i++)
-		fTemp[i]= i < n_params? pTemp[i].as_double : 0.0;
-	glLightfv(light, mode, fTemp);
+	glLightfv(light, pname, parsed->floats);
 	return true;
 }
 COMMAND(glLightModel, "ib") {
-	ParamUnion pTemp[4];
-	GLint iTemp[1];
-	int pname= argv[0].as_long, n_params= 4;
+	int pname= parsed->ints[0];
 
 	switch (pname) {
 	case GL_LIGHT_MODEL_AMBIENT:
-		if (!ParseParams("glLightModel", argv[1].as_str, "c", pTemp, &n_params))
+		if (!ParseParams(&parsed->strings[0], "c", parsed))
 			return false;
-		glLightModelfv(pname, pTemp[0].as_color);
+		glLightModelfv(pname, parsed->floats);
 		return true;
 	#ifdef GL_LIGHT_MODEL_COLOR_CONTROL
 	case GL_LIGHT_MODEL_COLOR_CONTROL:
 	#endif
 	case GL_LIGHT_MODEL_LOCAL_VIEWER:
 	case GL_LIGHT_MODEL_TWO_SIDE:
-		if (!ParseParams("glLightModel", argv[1].as_str, "i", pTemp, &n_params))
+		if (!ParseParams(&parsed->strings[0], "i", parsed))
 			return false;
-		iTemp[0]= pTemp[0].as_long;
-		glLightModeliv(pname, iTemp);
+		glLightModeliv(pname, parsed->ints+1);
 		return true;
 	default:
-		fprintf(stderr, "Unsupported pname constant for glLightModel: %d", pname);
-		fflush(stderr);
+		snprintf(parsed->errmsg_buf, sizeof(parsed->errmsg_buf), "Unsupported pname constant for glLightModel: %d", pname);
+		parsed->errmsg= parsed->errmsg_buf;
 	}
 	return false;
 }
 COMMAND(glShadeModel, "i") {
-	glShadeModel(argv[0].as_long);
+	glShadeModel(parsed->ints[0]);
 	return true;
 }
 COMMAND(glMaterial, "iib") {
-	GLint iTemp[4];
-	GLfloat fTemp[4];
-	ParamUnion pTemp[4];
-	int face= argv[0].as_long, pname= argv[1].as_long, n_params= 4, i;
+	int face= parsed->ints[0], pname= parsed->ints[1];
 	
 	switch (pname) {
 	case GL_COLOR_INDEXES:
-		if (!ParseParams("glMaterial", argv[2].as_str, "iii", pTemp, &n_params))
+		if (!ParseParams(&parsed->strings[0], "iii", parsed))
 			return false;
-		for (i= 0; i < 3; i++) iTemp[i]= pTemp[i].as_long;
-		glMaterialiv(face, pname, iTemp);
+		glMaterialiv(face, pname, parsed->ints+2);
 		return true;
 	case GL_AMBIENT:
 	case GL_DIFFUSE:
 	case GL_AMBIENT_AND_DIFFUSE:
 	case GL_SPECULAR:
 	case GL_EMISSION:
-		if (!ParseParams("glMaterial", argv[2].as_str, "c", pTemp, &n_params))
+		if (!ParseParams(&parsed->strings[0], "c", parsed))
 			return false;
-		glMaterialfv(face, pname, pTemp[0].as_color);
+		glMaterialfv(face, pname, parsed->floats);
 		return true;
 	case GL_SHININESS:
-		if (!ParseParams("glMaterial", argv[2].as_str, "f", pTemp, &n_params))
+		if (!ParseParams(&parsed->strings[0], "f", parsed))
 			return false;
-		fTemp[0]= pTemp[0].as_double;
-		glMaterialfv(face, pname, fTemp);
+		glMaterialfv(face, pname, parsed->floats);
 		return true;
 	default:
-		fprintf(stderr, "Unsupported pname constant for glMaterial: %d", pname);
-		fflush(stderr);
+		snprintf(parsed->errmsg_buf, sizeof(parsed->errmsg_buf), "Unsupported pname constant for glMaterial: %d", pname);
+		parsed->errmsg= parsed->errmsg_buf;
 	}
-	return 0;
+	return false;
 }
 COMMAND(glColorMaterial, "ii") {
-	glColorMaterial(argv[0].as_long, argv[1].as_long);
+	glColorMaterial(parsed->ints[0], parsed->ints[1]);
 	return true;
 }
 COMMAND(glBlendFunc, "ii") {
-	glBlendFunc(argv[0].as_long, argv[1].as_long);
+	glBlendFunc(parsed->ints[0], parsed->ints[1]);
 	return true;
 }
 
@@ -251,14 +240,11 @@ COMMAND(glBlendFunc, "ii") {
 // Texture Functions
 //
 COMMAND(glBindTexture, "iT!") {
-	glBindTexture(argv[0].as_long, argv[1].as_sym->Value);
+	glBindTexture(parsed->ints[0], parsed->objects[0]->Value);
 	return true;
 }
 COMMAND(glTexParameter, "iib") {
-	GLint iTemp[4];
-	GLfloat fTemp[4];
-	ParamUnion pTemp[4];
-	int target= argv[0].as_long, pname= argv[1].as_long, n_params= 4;
+	int target= parsed->ints[0], pname= parsed->ints[1];
 	
 	switch (pname) {
 	/* one enum */
@@ -276,9 +262,9 @@ COMMAND(glTexParameter, "iib") {
 	/* one integer */
 	case GL_TEXTURE_BASE_LEVEL:
 	case GL_TEXTURE_MAX_LEVEL:
-		if (!ParseParams("glTexParameter", argv[2].as_str, "i", pTemp, &n_params))
+		if (!ParseParams(&parsed->strings[0], "i", parsed))
 			return false;
-		glTexParameteri(target, pname, pTemp->as_long);
+		glTexParameteri(target, pname, parsed->ints[2]);
 		return true;
 
 	/* one float */
@@ -287,37 +273,30 @@ COMMAND(glTexParameter, "iib") {
 	case GL_TEXTURE_MAX_LOD:
 	#endif
 	case GL_TEXTURE_PRIORITY:
-		if (!ParseParams("glTexParameter", argv[2].as_str, "f", pTemp, &n_params))
+		if (!ParseParams(&parsed->strings[0], "f", parsed))
 			return false;
-		glTexParameterf(target, pname, pTemp->as_double);
+		glTexParameterf(target, pname, parsed->floats[0]);
 		return true;
 
 	/* one color */
 	case GL_TEXTURE_BORDER_COLOR:
-		if (!ParseParams("glTexParameter", argv[2].as_str, "c", pTemp, &n_params))
+		if (!ParseParams(&parsed->strings[0], "c", parsed))
 			return false;
-		glTexParameterfv(target, pname, pTemp->as_color);
+		glTexParameterfv(target, pname, parsed->floats);
 		return true;
 	default:
-		fprintf(stderr, "Unsupported pname constant for glTexparameter: %d", pname);
-		fflush(stderr);
+		snprintf(parsed->errmsg_buf, sizeof(parsed->errmsg_buf), "Unsupported pname constant for glTexparameter: %d", pname);
+		parsed->errmsg= parsed->errmsg_buf;
 	}
 	return false;
 }
-COMMAND(glTexCoord, "dd*") {
-	GLdouble dTemp[4];
-	int i;
-	for (i= 0; i < 4 && i < argc; i++)
-		dTemp[i]= argv[i].as_double;
-	switch (argc) {
-	case 1: glTexCoord1dv(dTemp); break;
-	case 2: glTexCoord2dv(dTemp); break;
-	case 3: glTexCoord3dv(dTemp); break;
-	case 4: glTexCoord4dv(dTemp); break;
-	default:
-		fprintf(stderr, "incorrect number of arguments to glTexCoord");
-		fflush(stderr);
-		return false;
+COMMAND(glTexCoord, "dd?d?d?") {
+	assert( parsed->dCnt >= 1 && parsed->dCnt <= 4 );
+	switch (parsed->dCnt) {
+	case 1: glTexCoord1dv(parsed->doubles); break;
+	case 2: glTexCoord2dv(parsed->doubles); break;
+	case 3: glTexCoord3dv(parsed->doubles); break;
+	case 4: glTexCoord4dv(parsed->doubles); break;
 	}
 	return true;
 }
@@ -330,11 +309,7 @@ COMMAND(glLoadIdentity, "") {
 	return true;
 }
 COMMAND(glLoadMatrix, "dddddddddddddddd") {
-	GLdouble dTemp[16];
-	int i;
-	for (i= 0; i < 16; i++)
-		dTemp[i]= argv[i].as_double;
-	glLoadMatrixd(dTemp);
+	glLoadMatrixd(parsed->doubles);
 	return true;
 }
 COMMAND(glPushMatrix, "") {
@@ -346,37 +321,26 @@ COMMAND(glPopMatrix, "") {
 	return true;
 }
 COMMAND(glMultMatrix, "dddddddddddddddd") {
-	GLdouble dTemp[16];
-	int i;
-	for (i= 0; i < 16; i++)
-		dTemp[i]= argv[i].as_double;
-	glMultMatrixd(dTemp);
+	glMultMatrixd(parsed->doubles);
 	return true;
 }
-COMMAND(glScale, "dd*") {
-	switch (argc) {
-	case 3: glScaled(argv[0].as_double, argv[1].as_double, argv[2].as_double); break;
-	case 2: glScaled(argv[0].as_double, argv[1].as_double, 1); break;
-	case 1: glScaled(argv[0].as_double, argv[0].as_double, argv[0].as_double); break;
-	default:
-		fprintf(stderr, "incorrect number of arguments to glTexCoord");
-		fflush(stderr);
-		return false;
-	}
+COMMAND(glScale, "dd?d?") {
+	assert( parsed->dCnt >= 1 && parsed->dCnt <= 3 );
+	if (parsed->dCnt == 1)
+		parsed->doubles[2]= parsed->doubles[1]= parsed->doubles[0];
+	else if (parsed->dCnt == 2)
+		parsed->doubles[2]= 1.0;
+	glScaled(parsed->doubles[0], parsed->doubles[1], parsed->doubles[2]);
 	return true;
 }
-COMMAND(glTranslate, "ddd*") {
-	if (argc == 3) {
-		glTranslated(argv[0].as_double, argv[1].as_double, argv[2].as_double);
-	}
-	else if (argc == 2) {
-		glTranslated(argv[0].as_double, argv[1].as_double, 0);
-	}
-	else return false;
+COMMAND(glTranslate, "ddd?") {
+	assert( parsed->dCnt >= 2 && parsed->dCnt <= 3 );
+	if (parsed->dCnt == 2) parsed->doubles[2]= 0.0;
+	glTranslated(parsed->doubles[0], parsed->doubles[1], parsed->doubles[2]);
 	return true;
 }
 COMMAND(glRotate, "dddd") {
-	glRotated(argv[0].as_double, argv[1].as_double, argv[2].as_double, argv[3].as_double);
+	glRotated(parsed->doubles[0], parsed->doubles[1], parsed->doubles[2], parsed->doubles[3]);
 	return true;
 }
 
@@ -384,15 +348,15 @@ COMMAND(glRotate, "dddd") {
 // Projectionview Matrix Functions
 //
 COMMAND(glViewport, "iiii") {
-	glViewport(argv[0].as_long, argv[1].as_long, argv[2].as_long, argv[3].as_long);
+	glViewport(parsed->ints[0], parsed->ints[1], parsed->ints[2], parsed->ints[3]);
 	return true;
 }
 COMMAND(glOrtho, "dddddd") {
-	glOrtho(argv[0].as_double, argv[1].as_double, argv[2].as_double, argv[3].as_double, argv[4].as_double, argv[5].as_double);
+	glOrtho(parsed->doubles[0], parsed->doubles[1], parsed->doubles[2], parsed->doubles[3], parsed->doubles[4], parsed->doubles[5]);
 	return true;
 }
 COMMAND(glFrustum, "dddddd") {
-	glOrtho(argv[0].as_double, argv[1].as_double, argv[2].as_double, argv[3].as_double, argv[4].as_double, argv[5].as_double);
+	glFrustum(parsed->doubles[0], parsed->doubles[1], parsed->doubles[2], parsed->doubles[3], parsed->doubles[4], parsed->doubles[5]);
 	return true;
 }
 
@@ -400,7 +364,7 @@ COMMAND(glFrustum, "dddddd") {
 // Display List Functions
 //
 COMMAND(glNewList, "L!i") {
-	glNewList(argv[0].as_sym->Value, argv[1].as_long);
+	glNewList(parsed->objects[0]->Value, parsed->ints[0]);
 	return true;
 }
 COMMAND(glEndList, "") {
@@ -408,7 +372,7 @@ COMMAND(glEndList, "") {
 	return true;
 }
 COMMAND(glCallList, "L") {
-	glCallList(argv[0].as_sym->Value);
+	glCallList(parsed->objects[0]->Value);
 	return true;
 }
 
@@ -417,51 +381,54 @@ COMMAND(glCallList, "L") {
 //
 COMMAND(gluLookAt, "ddddddddd") {
 	gluLookAt(
-		argv[0].as_double, argv[1].as_double, argv[2].as_double,
-		argv[3].as_double, argv[4].as_double, argv[5].as_double,
-		argv[6].as_double, argv[7].as_double, argv[8].as_double
+		parsed->doubles[0], parsed->doubles[1], parsed->doubles[2],
+		parsed->doubles[3], parsed->doubles[4], parsed->doubles[5],
+		parsed->doubles[6], parsed->doubles[7], parsed->doubles[8]
 	);
 	return true;
 }
 COMMAND(gluNewQuadric, "Q!") {
+	/* auto-create handled by ParseParams */
 	return true;
 }
 COMMAND(gluQuadricDrawStyle, "Qi") {
-	gluQuadricDrawStyle((GLUquadric*)argv[0].as_sym->Data, argv[1].as_long);
+	gluQuadricDrawStyle((GLUquadric*) parsed->objects[0]->Data, parsed->ints[0]);
 	return true;
 }
 COMMAND(gluQuadricNormals, "Qi") {
-	gluQuadricNormals((GLUquadric*)argv[0].as_sym->Data, argv[1].as_long);
+	gluQuadricNormals((GLUquadric*) parsed->objects[0]->Data, parsed->ints[0]);
 	return true;
 }
 COMMAND(gluQuadricOrientation, "Qi") {
-	gluQuadricOrientation((GLUquadric*)argv[0].as_sym->Data, argv[1].as_long);
+	gluQuadricOrientation((GLUquadric*) parsed->objects[0]->Data, parsed->ints[0]);
 	return true;
 }
 COMMAND(gluQuadricTexture, "Qi") {
-	gluQuadricTexture((GLUquadric*)argv[0].as_sym->Data, argv[1].as_long);
+	gluQuadricTexture((GLUquadric*) parsed->objects[0]->Data, parsed->ints[0]);
 	return true;
 }
 COMMAND(gluCylinder, "Qdddii") {
-	gluCylinder((GLUquadric*)argv[0].as_sym->Data,
-		argv[1].as_double, argv[2].as_double, argv[3].as_double,
-		argv[4].as_long, argv[5].as_long);
+	gluCylinder((GLUquadric*) parsed->objects[0]->Data,
+		parsed->doubles[0], parsed->doubles[1], parsed->doubles[2],
+		parsed->ints[3], parsed->ints[4]);
 	FrameInProgress= true;
 	return true;
 }
 COMMAND(gluSphere, "Qdii") {
-	gluSphere((GLUquadric*)argv[0].as_sym->Data, argv[1].as_double, argv[2].as_long, argv[3].as_long);
+	gluSphere((GLUquadric*) parsed->objects[0]->Data, parsed->doubles[0],
+		parsed->ints[0], parsed->ints[1]);
 	FrameInProgress= true;
 	return true;
 }
 COMMAND(gluDisk, "Qddii") {
-	gluDisk((GLUquadric*)argv[0].as_sym->Data, argv[1].as_double, argv[2].as_double, argv[3].as_long, argv[4].as_long);
+	gluDisk((GLUquadric*) parsed->objects[0]->Data, parsed->doubles[0], parsed->doubles[1],
+		parsed->ints[0], parsed->ints[1]);
 	FrameInProgress= true;
 	return true;
 }
 COMMAND(gluPartialDisk, "Qddiidd") {
-	gluPartialDisk((GLUquadric*)argv[0].as_sym->Data, argv[1].as_double, argv[2].as_double,
-		argv[3].as_long, argv[4].as_long, argv[5].as_double, argv[6].as_double);
+	gluPartialDisk((GLUquadric*) parsed->objects[0]->Data, parsed->doubles[0], parsed->doubles[1],
+		parsed->ints[0], parsed->ints[1], parsed->doubles[2], parsed->doubles[3]);
 	FrameInProgress= true;
 	return true;
 }

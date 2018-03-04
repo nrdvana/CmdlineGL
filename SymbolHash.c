@@ -2,37 +2,40 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <stdint.h>
 #include "SymbolHash.h"
 
-const char *SymbVarTypeName[]= { "Display List", "Quadric", "Texture", "Font" };
+const char *SymbVarTypeName[]= { "?", "Display List", "Quadric", "Texture", "Font" };
 bool SymbVarTreeInit= false;
 RBTree SymbVarTree;
 
-extern int CmdHashFunc(const char *Str);
-extern const int CmdHashTableSize;
-extern const CmdHashEntry CmdHashTable[];
-extern int IntConstHashFunc(const char *Str);
+/* ConstList dynamically generated variables */
+extern const int IntConstListCount;
+extern const IntConstListEntry IntConstList[];
 extern const int IntConstHashTableSize;
-extern const IntConstHashEntry IntConstHashTable[];
+extern const uint16_t IntConstHashTable[];
 
-const CmdHashEntry *GetCmd(const char *Name) {
-	int code= CmdHashFunc(Name);
-	if (CmdHashTable[code].Name && strcmp(CmdHashTable[code].Name, Name) == 0)
-		return &CmdHashTable[code];
-	else
-		return NULL;
+void DumpConstList(FILE* DestStream) {
+	int i;
+	for (i=1; i<=IntConstListCount; i++) /* 1-based list, since hashtable 0 isn't a valid item */
+		if (IntConstList[i].Name)
+			fprintf(DestStream, "%s %d\n", IntConstList[i].Name, IntConstList[i].Value);
 }
 
-const IntConstHashEntry *GetIntConst(const char *Name) {
-	int code= IntConstHashFunc(Name);
-	int lim= code + 5;
-	while (code < lim) {
-		if (IntConstHashTable[code].Name && strcmp(IntConstHashTable[code].Name, Name) == 0)
-			return &IntConstHashTable[code];
-		code++;
-	}
-	return NULL;
+/* CmdList dynamically generated variables */
+extern const int CmdListCount;
+extern const CmdListEntry CmdList[];
+extern const int CmdHashTableSize;
+extern const uint16_t CmdHashTable[];
+
+void DumpCommandList(FILE* DestStream) {
+	int i;
+	for (i=1; i<=CmdListCount; i++) /* 1-based list, since hashtable 0 isn't a valid item */
+		if (CmdList[i].Name)
+			fprintf(DestStream, "%s\n", CmdList[i].Name);
 }
+
+/* The rest is related to the red/black tree that stored dynamic named objects */
 
 unsigned int CalcHash(const char* str) {
 	unsigned int Result= 0;
@@ -116,18 +119,6 @@ void DeleteSymbVar(SymbVarEntry *Entry) {
 	free(Entry);
 }
 
-void DumpCommandList(FILE* DestStream) {
-	int i;
-	for (i=0; i<CmdHashTableSize; i++)
-		if (CmdHashTable[i].Name)
-			fprintf(DestStream, "%s\n", CmdHashTable[i].Name);
-}
-void DumpConstList(FILE* DestStream) {
-	int i;
-	for (i=0; i<IntConstHashTableSize; i++)
-		if (IntConstHashTable[i].Name)
-			fprintf(DestStream, "%s %d\n", IntConstHashTable[i].Name, IntConstHashTable[i].Value);
-}
 void DumpVarList(FILE* DestStream) {
 	RBTreeNode *Current= RBTree_GetLeftmost(SymbVarTree.RootSentinel.Left);
 	while (Current != &Sentinel) {

@@ -26,7 +26,8 @@
 
 #define MAX_GL_PARAMS 32
 
-#define COMMAND(name,fmt) bool cmd_##name(int argc, ParamUnion* argv)
+struct ParseParamsResult;
+#define COMMAND(name,fmt) bool cmd_##name(struct ParseParamsResult *parsed)
 
 #ifndef NDEBUG
   #define DEBUGMSG(a) DebugMsg a

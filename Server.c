@@ -102,7 +102,7 @@ int main(int Argc, char**Args) {
 		close(0); // Done with stdin.
 	}
 	else if (isatty(InputFD)) {
-		fprintf(stderr, "Warning: STDIN is a terminal; will use blocking reads");
+		fprintf(stderr, "Warning: STDIN is a terminal; will use blocking reads\n");
 	}
 	else {
 		DEBUGMSG(("Enabling nonblocking mode on stdin\n"));
@@ -263,7 +263,7 @@ but maybe that's what you want)
 =cut
 */
 COMMAND(cglEcho, "b") {
-	printf("%s\n", argv[0].as_str);
+	printf("%s\n", parsed->strings[0]);
 	fflush(stdout);
 	return true;
 }
@@ -273,11 +273,19 @@ COMMAND(cglEcho, "b") {
 
 Cause CmdlineGL to terminate (with error code 0)
 
+=item cglQuit
+
+Alias for cglExit
+
 =cut
 */
 COMMAND(cglExit, "") {
 	Shutdown= true;
-	return 0;
+	return true;
+}
+COMMAND(cglQuit, "") {
+	Shutdown= true;
+	return true;
 }
 
 /*
@@ -299,19 +307,25 @@ COMMAND(cglGetTime, "") {
 	long t= SDL_GetTicks() - StartTime;
 	printf("t=%ld\n", t);
 	fflush(stdout);
-	return 0;
-}
-
-COMMAND(cglSleep, "l") {
-	SDL_Delay(argv[0].as_long);
 	return true;
 }
 
-COMMAND(cglSync, "l") {
-	long target= argv[0].as_long;
-	long t= SDL_GetTicks() - StartTime;
-	if (target - t > 0)
+COMMAND(cglSleep, "i") {
+	fflush(stdout);
+	fflush(stderr);
+	SDL_Delay(parsed->ints[0]);
+	return true;
+}
+
+COMMAND(cglSync, "i") {
+	int target= parsed->ints[0];
+	int t= SDL_GetTicks() - StartTime;
+	if (target - t > 0) {
+		fprintf(stderr, "sleeping for %lld\n", target - t);
+		fflush(stdout);
+		fflush(stderr);
 		SDL_Delay(target - t);
+	}
 	return true;
 }
 
@@ -340,7 +354,9 @@ void CheckInput() {
 	CmdCount= 0;
 	while ((CmdCount < MAX_COMMAND_BATCH || PointsInProgress) && (Line= ReadLine())) {
 		if (*Line && *Line != '#') {
+			//fprintf(stderr, "Starting '%s'\n", Line);
 			ProcessCommand(Line);
+			//fprintf(stderr, "Ending '%s'\n", Line);
 			CmdCount++;
 		}
 	}

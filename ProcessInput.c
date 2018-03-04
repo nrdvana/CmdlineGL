@@ -26,7 +26,7 @@ const int DivisorStackMax= sizeof(DivisorStack)/sizeof(double) - 1;
 /*
 =item cglPushDivisor DIVISOR
 
-All future floating-point numbers should have an implied "/DIVISOR" on them.
+All future floating-point numbers receive this implied "/DIVISOR".
 This does not replace a divisor that is manually specified.
 
 For example,
@@ -40,22 +40,22 @@ becomes
 
 =item cglPopDivisor
 
-Clear the previous divisor, returning to whatever default was set before that.
-The initial default is 1.
+Clear the current default  divisor, returning to whatever default
+was set before that.  The initial default is 1.
 
 =cut
 */
-COMMAND(cglPushDivisor, "s") {
+COMMAND(cglPushDivisor, "t") {
 	char *EndPtr;
 	double newval;
 	if (DivisorStackPos >= DivisorStackMax) {
-		fprintf(stderr, "cglPushDivisor: stack overflow");
+		parsed->errmsg= "divisor stack overflow";
 		return false;
 	}
-	// We don't want to scale the new scale... so don't use ParseParams("f").
-	newval= strtod(argv[0].as_str, &EndPtr);
+	// We don't want to scale the new scale... so don't use ParseParams("d").
+	newval= strtod(parsed->strings[0], &EndPtr);
 	if (*EndPtr != '\0') {
-		fprintf(stderr, "cglPushDivisor: expected Float");
+		parsed->errmsg= "expected Float";
 		return false;
 	}
 	DivisorStack[++DivisorStackPos]= newval;
@@ -65,7 +65,7 @@ COMMAND(cglPushDivisor, "s") {
 
 COMMAND(cglPopDivisor, "") {
 	if (DivisorStackPos < 0)  {
-		fprintf(stderr, "cglPpopDivisor: stack underflow");
+		parsed->errmsg= "divisor stack underflow";
 		return false;
 	}
 	FixedPtMultiplier= (--DivisorStackPos >= 0)? 1.0 / DivisorStack[DivisorStackPos] : 1.0;
@@ -167,8 +167,9 @@ char* ReadLine(/* LineBuffer *this */) {
 }
 
 char * next_token(char **input) {
-	char q, *out, *in= input? *input : NULL;
-	if (!in) return NULL;
+	char q, *out, *in;
+	if (!input) return NULL;
+	in= *input;
 	/* skip delim characters */
 	while (*in == ' ' || *in == '\t') in++;
 	/* quoting support */
@@ -191,7 +192,7 @@ char * next_token(char **input) {
 	/* else just look for end of token */
 	else {
 		while (*in && *in != ' ' && *in != '\t') in++;
-		*in= '\0';
+		if (*in) *in++= '\0';
 		if (!*out) out= NULL; /* return null unless found a token */
 	}
 	while (*in == ' ' || *in == '\t') in++;
@@ -210,10 +211,13 @@ char *sanitize_for_print(char *string) {
  * It destroys "Line" with strtok in the process.
  */
 int ProcessCommand(char *Line) {
-	const CmdHashEntry *Cmd;
-	ParamList params;
-	int GLErr, n_params;
+	const CmdListEntry *Cmd;
+	struct ParseParamsResult parsed;
+	int GLErr;
 	
+	parsed.iCnt= parsed.lCnt= parsed.fCnt= parsed.dCnt= parsed.sCnt= parsed.oCnt= 0;
+	parsed.errmsg= NULL;
+
 	char *command= next_token(&Line);
 	// Ignore blank lines or comments
 	if (!command || !*command || *command == '#')
@@ -227,11 +231,15 @@ int ProcessCommand(char *Line) {
 	}
 	
 	/* use command's format string to parse each argument to the correct type */
-	if (!ParseParams(command, Line, Cmd->ArgFormat, params, &n_params))
+	if (!ParseParams(&Line, Cmd->ArgFormat, &parsed)) {
+		fprintf(stderr, "Error parsing params of %s%s%s\n", command,
+			parsed.errmsg? ": ":"\n", parsed.errmsg? parsed.errmsg : "");
 		return P_CMD_ERR;
-	/* dispatch command */
-	if (!Cmd->Handler(n_params, params)) {
-		fprintf(stderr, "Error during execution of %s\n", command);
+	}
+	/* dispatch command. Command may return extra error info in errbuf */
+	if (!Cmd->Handler(&parsed)) {
+		fprintf(stderr, "Error during execution of %s%s%s\n", command,
+			parsed.errmsg? ": ":"\n", parsed.errmsg? parsed.errmsg : "");
 		return P_CMD_ERR;
 	}
 	
@@ -252,32 +260,62 @@ int ProcessCommand(char *Line) {
 
 SymbVarEntry* CreateNamedObj(const char* Name, int Type);
 
-bool ParseParams(char *command, char *line, const char *format, ParamUnion *params, int *n_params) {
-	char errbuf[128];
-	if (!ParseParamsCapErr(line, format, params, n_params, errbuf, sizeof(errbuf))) {
-		fprintf(stderr, "Error parsing params of %s: %s", command, errbuf);
-		return false;
-	}
-	return true;
-}
-
-bool ParseParamsCapErr(char *line, const char *format, ParamUnion *params, int *n_params, char* errbuf, int errbufsize) {
-	const char *tok= "", *err= NULL, *err1= NULL;
-	ParamUnion *ppos= params, *plim= params + *n_params;
-	float cfloat[4];
-	int consumed, objtyp;
+bool ParseParams(char **line, const char *format, struct ParseParamsResult *parsed) {
+	const char *tok= "", *fmt_next;
+	SymbVarEntry *obj;
+	const char *autocreate_name[sizeof(parsed->objects)/sizeof(parsed->objects[0])];
+	int autocreate_type[sizeof(parsed->objects)/sizeof(parsed->objects[0])];
+	int objtyp, autocreate= 0, optional= 0, repeat= 0, oCnt_start= parsed->oCnt, i;
 	
-	while (*format && *line && ppos < plim) {
-		consumed= 1; // default
+	while (*format) {
+		//DEBUGMSG(("Parse %s from \"%s\"\n", format, *line));
+		/* parse out the next format specifier */
+		fmt_next= format+1;
+		autocreate= (*fmt_next == '!');
+		if (autocreate) fmt_next++;
+		optional= (*fmt_next == '?');
+		if (optional) fmt_next++;
+		repeat= (*fmt_next == '*');
+		if (repeat) {
+			++fmt_next;
+			/* repeat must be end of list, otherwise no way to know how many it captured */
+			assert(*fmt_next == '\0');
+		}
+		
+		/* if there is no input left to parse, consider 'optional' and return accordingly */
+		if (!**line) {
+			if (optional || repeat) break;
+			else {
+				parsed->errmsg= "Not enough arguments";
+				return false;
+			}
+		}
+		
 		switch (*format) {
 		// Integer value
-		case 'i':
-		case 'l': if (!ParseLong(tok= next_token(&line), &ppos->as_long)) err= "expected Integer"; break;
+		case 'i': if (!ParseInt(line, parsed)) return false; break;
+		//case 'l': if (!ParseLong(line, parsed)) return false; break;
 		// Floating value
-		case 'f':
-		case 'd': if (!ParseDouble(tok= next_token(&line), &ppos->as_double)) err= "expected Float"; break;
-		// single token
-		case 't': if (!(tok= next_token(&line))) err= "expected Token"; break;
+		case 'f': if (!ParseFloat(line, parsed)) return false; break;
+		case 'd': if (!ParseDouble(line, parsed)) return false; break;
+		// Color, either "#xxxxxx" or 3xFloat or 4xFloat (always stored as 4x float)
+		case 'c': if (!ParseColor(line, parsed)) return false; break;
+		// Single Token string
+		case 't': if (!ParseToken(line, parsed)) return false; break;
+		// remainder of buffer
+		case 'b': if (!CaptureRemainder(line, parsed)) return false; break;
+		// string, either one token or rest of line if quoted
+		case 's':
+		// File name, same as string but check that it exists
+		case '/':
+			if (!(**line == '"'? ParseToken(line, parsed) : CaptureRemainder(line, parsed)))
+				return false;
+			if (*format == '/' && !FileExists(tok)) {
+				snprintf(parsed->errmsg_buf, sizeof(parsed->errmsg_buf), "No such file '%s'", tok);
+				parsed->errmsg= parsed->errmsg_buf;
+				return false;
+			}
+			break;
 		// Display list
 		case 'L': objtyp= NAMED_LIST; if (0)
 		// Quadric
@@ -286,150 +324,195 @@ bool ParseParamsCapErr(char *line, const char *format, ParamUnion *params, int *
 		case 'T': objtyp= NAMED_TEXTURE; if (0)
 		// Font
 		case 'F': objtyp= NAMED_FONT;
-			tok= next_token(&line);
-			if (format[1] == '!') /* auto-create */
-				++format;
-			if (!ParseSymbVar(tok, objtyp, format[0] == '!', &ppos->as_sym)) {
-				err= "Named %s '%s' does not exist";
-				err1= SymbVarTypeName[objtyp];
+			
+			if (parsed->oCnt >= sizeof(parsed->objects)/sizeof(parsed->objects[0])) {
+				parsed->errmsg= "Argument count exceeded (object)";
+				return false;
 			}
-			break;
-		// Color, either "#xxxxxx" or 3xFloat or 4xFloat
-		case 'c':
-			tok= line;
-			if (!ParseColor(&line, ppos->as_color))
-				err= "expected Color";
-			break;
-		// remainder of buffer
-		case 'b':
-			tok= line;
-			line += strlen(line);
-			break;
-		// string, either one token or rest of line if quoted
-		case 's':
-		// Stat a path
-		case '/':
-			if (*line == '"') tok= next_token(&line);
+			tok= next_token(line);
+			if (!tok || !*tok) {
+				snprintf(parsed->errmsg_buf, sizeof(parsed->errmsg_buf), "Expected named %s", SymbVarTypeName[objtyp]);
+				parsed->errmsg= parsed->errmsg_buf;
+				return false;
+			}
+			else if ((obj= GetSymbVar(tok, objtyp))) {
+				parsed->objects[parsed->oCnt++]= obj;
+			}
+			else if (autocreate) {
+				/* Doesn't exist.  If autocreate, wait until rest of parsing has succeeded.
+				   Otherwise the handler won't get to see it, and could end up with dangling
+				   NULL pointers in the variables tree for things like fonts. */
+				autocreate_name[parsed->oCnt]= tok;
+				autocreate_type[parsed->oCnt]= objtyp;
+				parsed->objects[parsed->oCnt++]= NULL;
+			}
 			else {
-				tok= line;
-				line += strlen(line);
-			}
-			if (*format == '/' && !FileExists(tok)) {
-				err= "no such file '%s'";
-				err1= tok;
+				snprintf(parsed->errmsg_buf, sizeof(parsed->errmsg_buf), "Named %s '%s' does not exist",
+					SymbVarTypeName[objtyp], tok);
+				parsed->errmsg= parsed->errmsg_buf;
+				return false;
 			}
 			break;
 		default:
 			assert(0 == "all formats handled");
 			return false;
 		}
-		
-		if (err) {
-			// allow parse failure to move past '*' or '?', unless it is the end.
-			if ((format[1] == '*' || format[1] == '?') && format[2] != '\0') {
-				format += 2;
-				err= NULL;
-			}
-			else
-				break;
-		}
-		else {
-			++ppos;
-			// Advance format, unless it is a repeating element
-			if (format[1] != '*')
-				format += format[1] == '?'? 2 : 1;
-			// but if repeating an auto-create, back up to the actual format code
-			else if (format[0] == '!')
-				--format;
-		}
+		/* advance to next format specifier */
+		if (!repeat) format= fmt_next;
 	}
-	// Check for argument count errors
-	if (!err) {
-		if (ppos == plim)
-			err= "exceeded max number of arguments";
-		else if (*line)
-			err= "unpexpected extra arguments";
-		else {
-			/* skip past optional args to see if we missed a mandatory one */
-			while (*format && !err) {
-				if (format[1] == '*' || format[1] == '?')
-					format+= 2;
-				else if (format[1] == '!')
-					format++;
-				else
-					err= "not enough arguments";
-			}
-		}
-	}
-	// If error, format it into the caller's buffer
-	if (err) {
-		snprintf(errbuf, errbufsize, err, err1, tok);
+	/* all format specifiers have been satisfied.  Check for leftover input */
+	if (**line) {
+		parsed->errmsg= "unpexpected extra arguments";
 		return false;
 	}
-	*n_params= ppos - params;
+	/* Now, for any object that didn't exist and was marked autocreate, create it. */
+	for (i= oCnt_start; i < parsed->oCnt; i++) {
+		if (!parsed->objects[i]) {
+			assert(autocreate_type[i] >= 1 && autocreate_type[i] <= 4);
+			assert(autocreate_name[i] != NULL && *autocreate_name[i]);
+			parsed->objects[i]= CreateSymbVar(autocreate_name[i], autocreate_type[i]);
+			switch (autocreate_type[i]) {
+			case NAMED_LIST:    parsed->objects[i]->Value= glGenLists(1); break;
+			case NAMED_QUADRIC: parsed->objects[i]->Data= gluNewQuadric(); break;
+			case NAMED_TEXTURE: glGenTextures(1, &(parsed->objects[i]->Value)); break;
+			/* can't auto-create FTfont* object.  Caller needs to handle that. */
+			default:            parsed->objects[i]->Data= NULL; break;
+			}
+		}
+	}
 	return true;
 }
 
-bool ParseLong(const char* Text, long *Result) {
-	const IntConstHashEntry *SymConst;
-	char *EndPtr;
+bool ParseInt(char **line, struct ParseParamsResult *parsed) {
+	const IntConstListEntry *SymConst;
+	char *tok, *EndPtr;
+	long l;
+
+	if (parsed->iCnt >= sizeof(parsed->ints)/sizeof(parsed->ints[0])) {
+		parsed->errmsg= "Argument count exceeded (int)";
+		return false;
+	}
+	if (!(tok= next_token(line)) || !*tok) {
+		parsed->errmsg= "expected Integer";
+		return false;
+	}
 	
-	if ((Text[0] == 'G' && Text[1] == 'L')
-		|| (Text[0] == 'C' && Text[1] == 'G' && Text[2] == 'L'))
-	{
-		DEBUGMSG(("Searching for %s...", Text));
-		SymConst= GetIntConst(Text);
-		if (SymConst) {
-			DEBUGMSG((" Found: %i\n", SymConst->Value));
-			*Result= SymConst->Value;
+	if (tok[0] >= '0' && tok[0] <= '9') {
+		l= strtol(tok, &EndPtr, (tok[0] == '0' && tok[1] == 'x')? 16 : 10);
+		if (*EndPtr == '\0') {
+			parsed->ints[parsed->iCnt++]= l;
 			return true;
-		}
-		else {
-			DEBUGMSG(("not found.\n"));
+		} else {
+			snprintf(parsed->errmsg_buf, sizeof(parsed->errmsg_buf), "Can't parse int '%s'", tok);
+			parsed->errmsg= parsed->errmsg_buf;
 			return false;
 		}
 	}
-	else if (Text[0] == '0' && Text[1] == 'x') {
-		*Result= strtol(Text, &EndPtr, 16);
-		return (*EndPtr == '\0');
-	}
 	else {
-		*Result= strtol(Text, &EndPtr, 10);
-		DEBUGMSG((*EndPtr == '\0'? "" : "%s is not a constant.\n", Text));
-		return (*EndPtr == '\0');
+		//DEBUGMSG(("Searching for %s...", tok));
+		if ((SymConst= GetIntConst(tok))) {
+			//DEBUGMSG((" Found: %i\n", SymConst->Value));
+			parsed->ints[parsed->iCnt++]= SymConst->Value;
+			return true;
+		}
+		else {
+			//DEBUGMSG(("not found.\n"));
+			snprintf(parsed->errmsg_buf, sizeof(parsed->errmsg_buf), "Unknown constant '%s'", tok);
+			parsed->errmsg= parsed->errmsg_buf;
+			return false;
+		}
 	}
 }
 
-bool ParseDouble(const char* Text, double *Result) {
-	char *EndPtr;
-	double num, denom;
-	if (Text[0] == '-' && Text[1] == '-') Text+= 2; // be nice about double negatives
-	num= strtod(Text, &EndPtr);
-	if (*EndPtr == '/') {
-		denom= strtod(EndPtr+1, &EndPtr);
-		if (!denom) return 0;
-		*Result= num / denom;
-	} else {
-		*Result= num * FixedPtMultiplier;
+bool ParseFloat(char **line, struct ParseParamsResult *parsed) {
+	if (parsed->fCnt >= sizeof(parsed->floats)/sizeof(parsed->floats[0])) {
+		parsed->errmsg= "Argument count exceeded (float)";
+		return false;
 	}
-	return (*EndPtr == '\0');
-}
-bool ParseFloat(const char *Text, float *Result) {
-	double x;
-	if (!ParseDouble(Text, &x)) return false;
-	*Result= x;
+	if (!ParseDouble(line, parsed)) return false;
+	parsed->floats[parsed->fCnt++]= parsed->doubles[--parsed->dCnt];
 	return true;
 }
 
-bool ParseColor(char **line, float color[4]) {
-	double d;
+bool ParseDouble(char **line, struct ParseParamsResult *parsed) {
+	char *tok, *EndPtr;
+	double num, denom;
+	
+	if (parsed->dCnt >= sizeof(parsed->doubles)/sizeof(parsed->doubles[0])) {
+		parsed->errmsg= "Argument count exceeded (double)";
+		return false;
+	}
+	if (!(tok= next_token(line))) {
+		parsed->errmsg= "expected Float";
+		return false;
+	}
+	/* ignore double negatives */
+	if (tok[0] == '-' && tok[1] == '-') tok+= 2;
+	num= strtod(tok, &EndPtr);
+	if (*EndPtr == '/') {
+		denom= strtod(EndPtr+1, &EndPtr);
+		if (!denom) {
+			parsed->errmsg= "Division by zero";
+			return false;
+		}
+		num /= denom;;
+	} else {
+		num *= FixedPtMultiplier;
+	}
+	if (*EndPtr != '\0') {
+		snprintf(parsed->errmsg_buf, sizeof(parsed->errmsg_buf), "Can't parse float '%s'", tok);
+		parsed->errmsg= parsed->errmsg_buf;
+		return false;
+	}
+	parsed->doubles[parsed->dCnt++]= num;
+	return true;
+}
+
+bool ParseToken(char **line, struct ParseParamsResult *parsed) {
+	char *tok;
+	/* buffer space check */
+	if (parsed->sCnt >= sizeof(parsed->strings)/sizeof(parsed->strings[0])) {
+		parsed->errmsg= "Argument count exceeded (string)";
+		return false;
+	}
+	if (!(tok= next_token(line))) {
+		parsed->errmsg= "expected Token";
+		return false;
+	}
+	parsed->strings[parsed->sCnt++]= tok;
+	return true;
+}
+
+bool CaptureRemainder(char **line, struct ParseParamsResult *parsed) {
+	if (parsed->sCnt >= sizeof(parsed->strings)/sizeof(parsed->strings[0])) {
+		parsed->errmsg= "Argument count exceeded (string)";
+		return false;
+	}
+	parsed->strings[parsed->sCnt++]= *line;
+	*line += strlen(*line);
+	return true;
+}
+
+bool ParseHexByte(const char *str, float *Result);
+bool ParseHexColor(const char* str, float Result[4]);
+bool ParseColor(char **line, struct ParseParamsResult *parsed) {
+	double c;
 	int n;
 	
-	if (!line || !*line || !**line)
+	/* always stored as four floating point components */
+	if (parsed->fCnt + 4 > sizeof(parsed->floats)/sizeof(parsed->floats[0])) {
+		parsed->errmsg= "Argument count exceeded (float)";
 		return false;
+	}
 	// hash indicates a hex code
 	if (**line == '#') {
-		return ParseHexColor(next_token(line), color);
+		if (!ParseHexColor(next_token(line), parsed->floats + parsed->fCnt)) {
+			parsed->errmsg= "Invalid color code";
+			return false;
+		} else {
+			parsed->fCnt+= 4;
+			return true;
+		}
 	}
 	else {
 		// else look for 3 or 4 numbers
@@ -437,16 +520,19 @@ bool ParseColor(char **line, float color[4]) {
 			/* avoid calling next_token unless it does look like a valid number */
 			if (!((**line >= '0' && **line <= '9') || **line == '+' || **line == '-'))
 				break;
-			if (!ParseDouble(next_token(line), &d))
+			if (!ParseFloat(line, parsed))
 				break;
-			color[n]= (float) d;
 		}
-		if (n < 3) return false;
-		if (n < 4) color[3]= 1.0;
+		if (n < 3) {
+			parsed->fCnt -= n;
+			parsed->errmsg= "Not enough components for color";
+			return false;
+		}
+		/* alpha= 1.0 unless specified otherwise */
+		if (n < 4) parsed->floats[parsed->fCnt++]= 1.0;
+		return true;
 	}
-	return true;
 }
-bool ParseHexByte(const char *str, float *Result);
 bool ParseHexColor(const char* Text, float Result[4]) {
 	if (!Text || Text[0] != '#') return false;
 	// could use strtol instead of this, but then would have to worry about endian issues,
@@ -473,30 +559,6 @@ bool ParseHexByte(const char *str, float *Result) {
 	else if (l >= 'a' && l <= 'f') x|= l - ('a' - 10);
 	else return false;
 	*Result= x * 1.0/255;
-	return true;
-}
-
-bool ParseSymbVar(const char* Text, int Type, bool autocreate, SymbVarEntry **Result) {
-	SymbVarEntry *Entry= GetSymbVar(Text, Type);
-	if (Entry) {
-		*Result= Entry;
-		return true;
-	}
-	if (!autocreate || !*Text) /* need a non-empty name, for autocreate */
-		return false;
-	/* We can auto-create every object type except fonts.  For fonts, return a NULL pointer */
-	if (Type == NAMED_FONT)
-		Entry= NULL;
-	else {
-		Entry= CreateSymbVar(Text, Type); // entry is added to RB tree at this point
-		switch (Type) {
-		case NAMED_LIST: Entry->Value= glGenLists(1); break;
-		case NAMED_QUADRIC: Entry->Data= gluNewQuadric(); break;
-		case NAMED_TEXTURE: glGenTextures(1, &(Entry->Value)); break;
-		default: Entry->Data= NULL; break;
-		}
-	}
-	*Result= Entry;
 	return true;
 }
 

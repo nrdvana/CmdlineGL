@@ -5,8 +5,8 @@
 #include "FTGL/ftgl.h"
 
 COMMAND(ftglCreateTextureFont, "F!/") {
-	SymbVarEntry *sym= argv[0].as_sym;
-	FTGLfont *font= ftglCreateTextureFont(argv[1].as_str);
+	SymbVarEntry *sym= parsed->objects[0];
+	FTGLfont *font= ftglCreateTextureFont(parsed->strings[0]);
 	if (!font) {
 		/* if newly created, remove the tree node so we don't have a null pointer dangling around */
 		if (!sym->Data)
@@ -22,5 +22,7 @@ COMMAND(ftglCreateTextureFont, "F!/") {
 }
 
 COMMAND(ftglDestroyFont, "F") {
-	ftglDestroyFont( (FTGLfont*) argv[0].as_sym->Data );
+	SymbVarEntry *sym= parsed->objects[0];
+	ftglDestroyFont( (FTGLfont*) sym->Data );
+	DeleteSymbVar(sym);
 }

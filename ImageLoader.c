@@ -102,10 +102,10 @@ bool LoadImgIntoTexture(SDL_Surface *Img) {
 }
 
 COMMAND(cglLoadImage2D, "/") {
-	int i, j, success;
+	int success;
 	SDL_Surface *Img;
 
-	if (!(Img= LoadImg(argv[0].as_str)))
+	if (!(Img= LoadImg(parsed->strings[0])))
 		return false;
 	// Then, load the image data into OpenGL
 	SDL_LockSurface(Img);
