@@ -410,7 +410,7 @@ COMMAND(gluQuadricTexture, "Qi") {
 COMMAND(gluCylinder, "Qdddii") {
 	gluCylinder((GLUquadric*) parsed->objects[0]->Data,
 		parsed->doubles[0], parsed->doubles[1], parsed->doubles[2],
-		parsed->ints[3], parsed->ints[4]);
+		parsed->ints[0], parsed->ints[1]);
 	FrameInProgress= true;
 	return true;
 }

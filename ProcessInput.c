@@ -310,6 +310,8 @@ bool ParseParams(char **line, const char *format, struct ParseParamsResult *pars
 		case '/':
 			if (!(**line == '"'? ParseToken(line, parsed) : CaptureRemainder(line, parsed)))
 				return false;
+			assert(parsed->sCnt > 0);
+			tok= parsed->strings[parsed->sCnt - 1];
 			if (*format == '/' && !FileExists(tok)) {
 				snprintf(parsed->errmsg_buf, sizeof(parsed->errmsg_buf), "No such file '%s'", tok);
 				parsed->errmsg= parsed->errmsg_buf;
@@ -518,7 +520,7 @@ bool ParseColor(char **line, struct ParseParamsResult *parsed) {
 		// else look for 3 or 4 numbers
 		for (n= 0; n < 4; n++) {
 			/* avoid calling next_token unless it does look like a valid number */
-			if (!((**line >= '0' && **line <= '9') || **line == '+' || **line == '-'))
+			if (!((**line >= '0' && **line <= '9') || **line == '+' || **line == '-' || **line == '.'))
 				break;
 			if (!ParseFloat(line, parsed))
 				break;
