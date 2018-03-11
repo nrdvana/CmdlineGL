@@ -4,10 +4,59 @@ CmdlineGL - Interpreter for subset of OpenGL 1.4 API
 
 =head1 SYNOPSIS
 
-  TODO
+  CmdlineGL [OPTIONS] <opengl_commands >user_events
+
+  # Play some recorded 3D graphics
+  bzcat graphics.txt.bz2 | CmdlineGL >/dev/null
+  
+  # Experiment from Bash
+  source CmdlineGL.lib
+  glClearColor '#00FF00'
+  glClear GL_COLOR_BUFFER_BIT
+  cglSwapBuffers
 
 =head1 DESCRIPTION
 
-  TODO
+CmdlineGL is an interpreter for parsing and executing OpenGL functions, which also simplifies
+the OpenGL API in several ways to make it more user-friendly.  It comes with shell bindings for
+bash, allowing for experiments right from the terminal (if you have a graphical desktop).
+It only covers the functions a beginner would need, and doesn't aspire to anything newer than
+the 1.4 API.  It also provides some basic access to the GLU, SDL_image, and FTGL libraries,
+for the ability to make useful demos that the raw OpenGL API can't provide on its own.
+
+=head1 OPTIONS
+
+=head1 COMMANDS
+
+All commands take arguments separated by whitespace, in much the same way as a shell would
+break its arguments.  There is also a quoting mechanism that may be used for any type of
+argument.  If the argument begins with C<'> or C<">, then whitespace (other than newlines) will
+be included in the argument until the matching quote character.  Literal newline characters
+always end the command.  Within the string, C<\n> will be converted to newline charachers, and
+any other character preceeded by a backslash will be included as-is, allowing you to escape
+the quote character and the backslash.
+
+=head3 Integers
+
+All integer arguments of commands may be given as decimal, hexidecimal or symbolic C<GL_>
+constants.  If an integer argument does not begin with a number, CmdlineGL will look it up in
+the table of symbolic codes, and if it is not found, the command will fail and not execute.
+
+=head3 Floats
+
+All floating point values may be specified as a normal decimal notation.  However, to make
+things easier for Bash scripts, they may also contain a divisor, like "34/100".  To facilitate
+fixed-point math on lots of arguments, CmdlineGL supports a feature of a "default divisor" that
+will be applied to EVERY floating point argument of every command, unless the argument contains
+a divisor already.  See C<cglPushDivisor> below.
+
+=head3 Colors
+
+Many OpenGL commands take a color argument, usually as 3 or 4 floating point numbers in the
+range [0..1].  In each case, you may supply a single HTML-style hex code like '#RRGGBB' or
+'#RRGGBBAA' in their place.  The floating point values ARE affected by any implied divisor
+in effect (see above) but the HTML color codes are NOT.
+
+=head2 Default Divisors
 
 =cut

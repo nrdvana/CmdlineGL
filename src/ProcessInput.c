@@ -15,10 +15,7 @@ double DivisorStack[16];
 int DivisorStackPos= -1;
 const int DivisorStackMax= sizeof(DivisorStack)/sizeof(double) - 1;
 
-/*
-=head2 Implied Divisors
-
-=over
+/*=head2 Default Divisors
 
 =item cglPushDivisor DIVISOR
 
@@ -28,21 +25,19 @@ This does not replace a divisor that is manually specified.
 For example,
 
     cglPushDivisor 100
-    glRotate 12/10000 100 100 100
+    glRotate 12/1 100 100 100
 
 becomes
 
-    glRotated(.0012, 1, 1, 1);
+    glRotated(12, 1, 1, 1);
 
 =item cglPopDivisor
 
 Clear the current default  divisor, returning to whatever default
 was set before that.  The initial default is 1.
 
-=back
+=cut*/
 
-=cut
-*/
 COMMAND(cglPushDivisor, "t") {
 	char *EndPtr;
 	double newval;

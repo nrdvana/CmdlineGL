@@ -24,8 +24,7 @@ mandir = @mandir@
 
 OBJ_FILES=SymbolHash.o Server.o ProcessInput.o ParseGL.o Global.o Contained_RBTree.o IntConstHash.autogen.o CmdHash.autogen.o ImageLoader.o Font.o
 AUTOGEN_SRC=IntConstHash.autogen.c CmdHash.autogen.c Version.autogen.c ConstList.txt
-# order matters here, for the man page
-COMMAND_SOURCES=$(srcdir)/Server.c $(srcdir)/ProcessInput.c $(srcdir)/ImageLoader.c $(srcdir)/SymbolHash.c $(srcdir)/ParseGL.c $(srcdir)/Font.c
+COMMAND_SOURCES:=$(shell grep -l COMMAND $(srcdir)/*.c | sort -r )
 
 CFLAGS = @CFLAGS@ -MMD -MP -Wall
 CPPFLAGS = @CPPFLAGS@ -I. -I$(srcdir)
@@ -65,7 +64,7 @@ Version.autogen.c: $(srcdir)/../Changes $(scriptdir)/build-version.sh
 	PROJROOT="$(srcdir)/.." $(scriptdir)/build-version.sh >$@.tmp && mv $@.tmp $@
 
 CmdlineGL.1: $(srcdir)/manual.head.pod $(COMMAND_SOURCES) $(srcdir)/manual.tail.pod Version.autogen.c
-	cat $^ | $(POD2MAN) --section=1 --center="General Commands" --name=CmdlineGL --release="CmdlineGL `sed -n '/CGLVer_String=/s/.*="(.*)"/\1/p' Version.autogen.c`" >$@.tmp && mv $@.tmp $@
+	$(PERL) $(scriptdir)/build-manual.pl --as=man --version="`sed -n '/CGLVER_String=/s/.*="\(.*\)".*/\1/p' Version.autogen.c`" $^ >$@.tmp && mv $@.tmp $@
 
 CmdlineGL.1.gz: CmdlineGL.1
 	$(GZIP) < daemonproxy.1 > $@.tmp && mv $@.tmp $@

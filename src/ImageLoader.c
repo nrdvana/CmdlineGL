@@ -102,6 +102,16 @@ bool LoadImgIntoTexture(SDL_Surface *Img) {
 	return true;
 }
 
+/*=head2 Texture Commands
+
+=item cglLoadImage2D "FILE_PATH"
+
+Load image data into the texture currently bound to GL_TEXTURE_2D.  If compiled with support
+for the SDL_image library, you may supply any image format handled by that library, else you
+are limited to Windows Bitmaps ".BMP".  The image must contain RGB or RGBA pixels.
+
+=cut */
+
 COMMAND(cglLoadImage2D, "/") {
 	int success;
 	SDL_Surface *Img;

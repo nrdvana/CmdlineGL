@@ -214,6 +214,59 @@ void ReadParams(char **Args, CmdlineOptions *Options) {
 	}
 }
 
+/*
+=head1 OPTIONS
+
+=over
+
+=item -t
+
+Terminate after a zero-length read (EOF)
+
+=item --manual-viewport
+
+Don't automatically reinitialize glViewport after the window has changed size.
+This allows the application to control the viewport area.
+
+=item --manual-projection
+
+Don't automatically set up a projection matrix or rescale it after the window
+changes size.
+
+=item -f FIFO
+
+Create a named pipe at this path, and read from it.  This option is not available on Windows.
+
+=item --title TEXT
+
+Set the title of the window.
+
+=item --noevents
+
+Don't report user input activity on stdout.  (other messages and events will still be printed)
+
+=item --showcmds
+
+Dump a list of all available commands on stdout.
+
+=item --showconsts
+
+Dump a list of all symbolic constants on stdout.  These constants may be given to any command
+which takes an integer argument.
+
+=item -v
+
+=item --version
+
+Print the version and exit.
+
+=item -h
+
+Print a brief usage summary
+
+=back
+
+=cut */
 void PrintUsage(bool error) {
 	fprintf(error? stderr : stdout,
 	"CmdlineGL %s\n"
@@ -226,9 +279,9 @@ void PrintUsage(bool error) {
 	"  --manual-viewport   No automatic glViewport on window resize\n"
 	"  --manual-projection No default GL_PROJECTION matrix\n"
 	#ifndef WIN32
-	"  -f <fifo>           Create the named fifo (file path+name) and read from it.\n"
+	"  -f FIFO             Create the named fifo (file path+name) and read from it.\n"
 	#endif
-	"  --title <text>      Set the title of the window to \"text\".\n"
+	"  --title TEXT        Set the title of the window to \"text\".\n"
 	"  --noevents          Don't print any input event messages to stdout.\n"
 	"  --showcmds          List all the available commands in this version of CmdlineGL.\n"
 	"  --showconsts        List all the constants (GL_xxxx) that are available.\n"
@@ -242,26 +295,25 @@ void PrintUsage(bool error) {
 	);
 }
 
-/*
+/*=head1 COMMANDS
+
 =head2 Render Loop Commands
 
-=over
+These commands control CmdlineGL itself, and assist with setting up a render loop.
 
 =item cglEcho ANY_TEXT
 
 Repeat a string of text on stdout (may be confused for user input events,
 but maybe that's what you want)
 
-=cut
-*/
+=cut */
 COMMAND(cglEcho, "b") {
 	printf("%s\n", parsed->strings[0]);
 	fflush(stdout);
 	return true;
 }
 
-/*
-=item cglExit
+/*=item cglExit
 
 Cause CmdlineGL to terminate (with error code 0)
 
@@ -269,8 +321,7 @@ Cause CmdlineGL to terminate (with error code 0)
 
 Alias for cglExit
 
-=cut
-*/
+=cut */
 COMMAND(cglExit, "") {
 	Shutdown= true;
 	return true;
@@ -280,8 +331,7 @@ COMMAND(cglQuit, "") {
 	return true;
 }
 
-/*
-=item cglGetTime
+/*=item cglGetTime
 
 Return the number of milliseconds since start of the program.
 
@@ -293,8 +343,7 @@ Sleep for a number of milliseconds from when the command is received
 
 Sleep until the specified time, measured as milliseconds from start of program.
 
-=cut
-*/
+=cut */
 COMMAND(cglGetTime, "") {
 	long t= SDL_GetTicks() - StartTime;
 	printf("t=%ld\n", t);
@@ -321,17 +370,13 @@ COMMAND(cglSync, "i") {
 	return true;
 }
 
-/*
-=item cglSwapBuffers
+/*=item cglSwapBuffers
 
 Swap front and back buffer, showing the frame you were drawing and beginning
 a new frame.  (you still need to call glClear yourself)
 If a window resize is pending, it will be performed at this point.
 
-=back
-
-=cut
-*/
+=cut */
 COMMAND(cglSwapBuffers, "") {
 	SDL_GL_SwapBuffers();
 	FrameInProgress= false;
