@@ -10,13 +10,26 @@
 bool PointsInProgress= false; // Whenever glBegin is active, until glEnd
 bool FrameInProgress= false;  // True after any gl command, until cglSwapBuffers
 
-//----------------------------------------------------------------------------
-// Setup Functions
-//
-COMMAND(glMatrixMode, "i") {
-	glMatrixMode((GLint) parsed->ints[0]);
-	return true;
-}
+/*----------------------------------------------------------------------------
+=head2 Setup Functions
+
+=over
+
+=item glEnable FEATURE [FEATURE...]
+
+Enable one or more GL feature bits.
+
+=item glDisable FEATURE [FEATURE...]
+
+Disable one or more GL feature bits.
+
+=item glHint TARGET MODE
+
+Adjust GL optional behavior.
+
+=cut
+*/
+
 COMMAND(glEnable, "i*") {
 	while (parsed->iCnt > 0)
 		glEnable(parsed->ints[--parsed->iCnt]);
@@ -232,9 +245,12 @@ COMMAND(glBlendFunc, "ii") {
 	return true;
 }
 
-//----------------------------------------------------------------------------
-// Texture Functions
-//
+/*----------------------------------------------------------------------------
+=head2 Texture Functions
+
+=back
+*/
+
 COMMAND(glBindTexture, "iT!") {
 	glBindTexture(parsed->ints[0], parsed->objects[0]->Value);
 	return true;
@@ -297,9 +313,72 @@ COMMAND(glTexCoord, "dd?d?d?") {
 	return true;
 }
 
-//----------------------------------------------------------------------------
-// Matrix Functions
-//
+/*----------------------------------------------------------------------------
+=head2 Matrix Functions
+
+=over
+
+=item glMatrixMode MODE
+
+Select which matrix will be changed by other matrix functions.
+
+=item glLoadIdentity
+
+Reset the matrix to the identity
+
+=item glLoadMatrix I1 I2 I3 I4 J1 J2 J3 J4 K1 K2 K3 K4 L1 L2 L3 L4
+
+Directly overwrite the matrix with 16 values.
+
+=item glPushMatrix
+
+Save a copy of the current matrix.
+
+=item glPopMatrix
+
+Restore the previous saved matrix.
+
+=item glMultMatrix I1 I2 I3 I4 J1 J2 J3 J4 K1 K2 K3 K4 L1 L2 L3 L4
+
+Multiply the current matrix by this specified matrix
+
+=item glScale SCALE [SCALE_Y [SCALE_Z]]
+
+When given one argument, scale the X, Y, and Z axis by the specified value.
+When given two arguments, scale X and Y, leaving Z unchanged.
+When given three arguments,scale X, Y, and Z.
+
+=item glTranslate X Y [Z]
+
+Apply a translation to the matrix.  The Z coordinate is optional and
+defaults to 0.
+
+=item glRotate DEGREES X Y Z
+
+Rotate DEGREES around the axis defined by (X,Y,Z)
+
+=item glViewport X Y WIDTH HEIGHT
+
+Define the 2D region of the screen to be rendered by the current matrix.
+
+=item glOrtho
+
+Set up a projection matrix that maps the given coordinate values to the
+edges of the viewport, and sets the near and far clipping plane.
+
+=item glFrustum
+
+Set up a projection matrix where the given coordinates are the edges of the
+screen B<at> the near clipping plane, and scale proportionally as the Z
+coordinate gets farther from the near plane.
+
+=back
+*/
+
+COMMAND(glMatrixMode, "i") {
+	glMatrixMode((GLint) parsed->ints[0]);
+	return true;
+}
 COMMAND(glLoadIdentity, "") {
 	glLoadIdentity();
 	return true;
@@ -340,9 +419,6 @@ COMMAND(glRotate, "dddd") {
 	return true;
 }
 
-//----------------------------------------------------------------------------
-// Projectionview Matrix Functions
-//
 COMMAND(glViewport, "iiii") {
 	glViewport(parsed->ints[0], parsed->ints[1], parsed->ints[2], parsed->ints[3]);
 	return true;
@@ -352,13 +428,33 @@ COMMAND(glOrtho, "dddddd") {
 	return true;
 }
 COMMAND(glFrustum, "dddddd") {
-	glFrustum(parsed->doubles[0], parsed->doubles[1], parsed->doubles[2], parsed->doubles[3], parsed->doubles[4], parsed->doubles[5]);
+	glFrustum(parsed->doubles[0], parsed->doubles[1], parsed->doubles[2],
+	          parsed->doubles[3], parsed->doubles[4], parsed->doubles[5]);
 	return true;
 }
 
-//----------------------------------------------------------------------------
-// Display List Functions
-//
+/*----------------------------------------------------------------------------
+=head2 Display List Functions
+
+=over
+
+=item glNewList LISTNAME MODE
+
+Begin recording a new display list, either creating or overwriting LISTNAME.
+MODE can either be GL_COMPILE or GL_COMPILE_AND_EXECUTE.  LISTNAME can be any
+string of text and is not limited to OpenGL's integer "names".
+
+=item glEndList
+
+End the recording.
+
+=item glCallList LISTNAME
+
+Replay a recorded list.
+
+=back
+*/
+
 COMMAND(glNewList, "L!i") {
 	glNewList(parsed->objects[0]->Value, parsed->ints[0]);
 	return true;
@@ -372,9 +468,36 @@ COMMAND(glCallList, "L") {
 	return true;
 }
 
-//----------------------------------------------------------------------------
-// Glu Functions
-//
+/*----------------------------------------------------------------------------
+=head2 Glu Functions
+
+=over
+
+=item gluLookAt
+
+=item gluNewQuadric NAME
+
+Quadric objects must be created before they can be used.
+
+=item gluQuadricDrawStyle NAME MODE
+
+=item gluQuadricNormals NAME MODE
+
+=item gluQuadricOrientation NAME ORIENTATION
+
+=item gluQuadricTexture NAME MODE
+
+=item gluCylinder
+
+=item gluSphere
+
+=item gluDisk
+
+=item gluPartialDisk
+
+=back
+*/
+
 COMMAND(gluLookAt, "ddddddddd") {
 	gluLookAt(
 		parsed->doubles[0], parsed->doubles[1], parsed->doubles[2],
