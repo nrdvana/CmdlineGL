@@ -1,11 +1,6 @@
-*.o
-config.*
-configure
-autom4te.cache
-*.autogen.c
-Makefile
-ConstList.txt
-Version.parts
-GlHeaders.h
-HashTableGenUtil
-bin
+/build/
+/src/*.autogen.*
+/src/ConstList.txt
+/script/configure
+/script/autom4te.cache
+

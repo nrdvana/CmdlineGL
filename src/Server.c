@@ -1,20 +1,8 @@
+#define INCLUDE_GL
+#define INCLUDE_SDL
+#include <config.h>
 #include "Global.h"
-#include <sys/types.h>
-#include <sys/stat.h>
-#include <fcntl.h>
-#include <stdio.h>
-#include <stdlib.h>
-#include <errno.h>
-#include <string.h>
-#include <assert.h>
-#include "GlHeaders.h"
-#include <SDL/SDL.h>
 #include "Version.h"
-
-#ifndef _WIN32
-#include <unistd.h>
-#endif
-
 #include "Server.h"
 #include "ProcessInput.h"
 #include "SymbolHash.h"
@@ -255,6 +243,10 @@ void PrintUsage(bool error) {
 }
 
 /*
+=head2 Render Loop Commands
+
+=over
+
 =item cglEcho ANY_TEXT
 
 Repeat a string of text on stdout (may be confused for user input events,
@@ -335,6 +327,8 @@ COMMAND(cglSync, "i") {
 Swap front and back buffer, showing the frame you were drawing and beginning
 a new frame.  (you still need to call glClear yourself)
 If a window resize is pending, it will be performed at this point.
+
+=back
 
 =cut
 */

@@ -1,0 +1,9 @@
+#! /bin/sh
+
+# if run from outside proj root, inform user whats going on
+if [ ! -d script -o ! -d src ]; then
+	echo "For out-of-tree builds, run ./script/configure directly."
+	exit 1;
+fi
+
+mkdir -p build && cd build && ../script/configure --enable-debug "$@"

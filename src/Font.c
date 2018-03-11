@@ -1,8 +1,8 @@
+#include <config.h>
 #include "Global.h"
 #include "ParseGL.h"
 #include "ProcessInput.h"
 #include "SymbolHash.h"
-#include "GlHeaders.h"
 
 #ifdef HAVE_LIBFTGL
 

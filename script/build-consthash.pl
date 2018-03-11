@@ -84,11 +84,9 @@ print <<END;
 //
 // ${\scalar @constlist} constants
 // table size is $table_size, mul is $mul, shift is $shift, scan_dist is $scan_dist
+#define INCLUDE_SDL
+#define INCLUDE_GL
 #include "config.h"
-#include <inttypes.h>
-#include <string.h>
-#include <stdio.h>
-#include "GlHeaders.h"
 #include "ProcessInput.h"
 #include "SymbolHash.h"
 

@@ -20,7 +20,7 @@ Credits:
   I also got the sentinel node idea from this book.
 
 */
-
+#include <config.h>
 #include "Contained_RBTree.h"
 
 //namespace ContainedClass {
@@ -161,20 +161,6 @@ RBTreeNode* RBTree_GetNext( RBTreeNode* Node ) {
 	}
 }
 
-inline void RBTree_RightRotate( RBTreeNode* Node ) {
-	if (Node->Parent->Left == Node)
-		RBTree_LeftSide_RightRotate( Node );
-	else
-		RBTree_RightSide_RightRotate( Node );
-}
-
-inline void RBTree_LeftRotate( RBTreeNode* Node ) {
-	if (Node->Parent->Left == Node)
-		RBTree_LeftSide_LeftRotate( Node );
-	else
-		RBTree_RightSide_LeftRotate( Node );
-}
-
 void RBTree_RightSide_RightRotate( RBTreeNode* Node ) {
 	RBTreeNode* temp= Node->Parent; // temp is used for parent
 	RBTreeNode* child= Node->Left;
@@ -265,7 +251,10 @@ void RBTree_Balance( RBTreeNode* Current ) {
 				RBTree_RightSide_RightRotate( Current );
 
 			// Now we can do our left rotation to balance the tree.
-			RBTree_LeftRotate( Parent );
+			if (Parent->Parent->Left == Parent)
+				RBTree_LeftSide_LeftRotate( Parent );
+			else
+				RBTree_RightSide_LeftRotate( Parent );
 			Parent->Color= RBTreeNode_Red;
 			Parent->Parent->Color= RBTreeNode_Black;
 			return;
@@ -287,7 +276,10 @@ void RBTree_Balance( RBTreeNode* Current ) {
 				RBTree_LeftSide_LeftRotate( Current );
 
 			// Now we can do our left rotation to balance the tree.
-			RBTree_RightRotate( Parent );
+			if (Parent->Parent->Left == Parent)
+				RBTree_LeftSide_RightRotate( Parent );
+			else
+				RBTree_RightSide_RightRotate( Parent );
 			Parent->Color= RBTreeNode_Red;
 			Parent->Parent->Color= RBTreeNode_Black;
 			return;
@@ -392,11 +384,17 @@ void RBTree_PruneLeaf( RBTreeNode* Node ) {
 			Parent->Color= RBTreeNode_Red;
 			Sibling->Color= RBTreeNode_Black;
 			if (LeftSide) {
-				RBTree_LeftRotate(Parent);
+				if (Parent->Parent->Left == Parent)
+					RBTree_LeftSide_LeftRotate( Parent );
+				else
+					RBTree_RightSide_LeftRotate( Parent );
 				Sibling= Parent->Right;
 			}
 			else {
-				RBTree_RightRotate(Parent);
+				if (Parent->Parent->Left == Parent)
+					RBTree_LeftSide_RightRotate( Parent );
+				else
+					RBTree_RightSide_RightRotate( Parent );
 				Sibling= Parent->Left;
 			}
 			continue;

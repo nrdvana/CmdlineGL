@@ -1,0 +1,88 @@
+SHELL = /bin/sh
+PERL = perl
+POD2MAN = pod2man
+GZIP = gzip
+INSTALL = install
+CURRENT_UNIX_TIMESTAMP = $(shell date "+%s")
+
+all: CmdlineGL CmdlineGL.1
+
+.SUFFIXES:
+.SUFFIXES: .c .o
+
+prefix = @prefix@
+exec_prefix = @exec_prefix@
+bindir = @bindir@
+srcdir = @srcdir@/../src
+scriptdir = @srcdir@
+docdir = @srcdir@/../doc
+datarootdir = @datarootdir@
+sysconfdir = @sysconfdir@
+localstatedir = @localstatedir@
+runstatedir = $(localstatedir)/run
+mandir = @mandir@
+
+OBJ_FILES=SymbolHash.o Server.o ProcessInput.o ParseGL.o Global.o Contained_RBTree.o IntConstHash.autogen.o CmdHash.autogen.o ImageLoader.o Font.o
+AUTOGEN_SRC=IntConstHash.autogen.c CmdHash.autogen.c Version.autogen.c ConstList.txt
+# order matters here, for the man page
+COMMAND_SOURCES=$(srcdir)/Server.c $(srcdir)/ProcessInput.c $(srcdir)/ImageLoader.c $(srcdir)/SymbolHash.c $(srcdir)/ParseGL.c $(srcdir)/Font.c
+
+CFLAGS = @CFLAGS@ -MMD -MP -Wall
+CPPFLAGS = @CPPFLAGS@ -I. -I$(srcdir)
+LDFLAGS = @LDFLAGS@
+LIBS = @LIBS@
+
+DEP_FILES := $(shell touch _empty.d; echo *.d)
+include $(DEP_FILES)
+
+%.autogen.o: %.autogen.c
+	$(CC) -o $@ $(CPPFLAGS) -c $< $(CFLAGS)
+
+%.o: $(srcdir)/%.c
+	$(CC) -o $@ $(CPPFLAGS) -c $< $(CFLAGS)
+
+CmdlineGL: $(AUTOGEN_SRC) $(OBJ_FILES)
+	$(CC) -o $@ $(CPPFLAGS) -DCURRENT_UNIX_TIMESTAMP=$(CURRENT_UNIX_TIMESTAMP) $(OBJ_FILES) Version.autogen.c $(CFLAGS) $(LDFLAGS) $(LIBS)
+
+# no deps for ConstList.txt because users might need to edit it by hand
+ConstList.txt:
+	@echo "-> Attempting to get the useful #define'd constants from your GL headers..."
+	PROJROOT="$(srcdir)/.." CPP="$(CPP)" CFLAGS="$(CFLAGS)" CPPFLAGS="$(CPPFLAGS)" $(scriptdir)/build-constlist.sh <$(srcdir)/ConstList.works_for_me >$@.tmp && mv $@.tmp $@
+
+IntConstHash.autogen.o: IntConstHash.autogen.c
+
+IntConstHash.autogen.c: ConstList.txt $(scriptdir)/build-consthash.pl
+	@echo "-> Regenerating IntConstHash.autogen.c from the names in ConstList.txt"
+	$(PERL) $(scriptdir)/build-consthash.pl <ConstList.txt >$@.tmp && mv $@.tmp $@
+
+CmdHash.autogen.o: CmdHash.autogen.c
+
+CmdHash.autogen.c: $(COMMAND_SOURCES) $(scriptdir)/build-cmdhash.pl
+	@echo "-> Regenerating CmdHash.autogen.c from the \"COMMAND\" functions in *.c"
+	cat $(COMMAND_SOURCES) | $(PERL) $(scriptdir)/build-cmdhash.pl >$@.tmp && mv $@.tmp $@
+
+Version.autogen.c: $(srcdir)/../Changes $(scriptdir)/build-version.sh
+	PROJROOT="$(srcdir)/.." $(scriptdir)/build-version.sh >$@.tmp && mv $@.tmp $@
+
+CmdlineGL.1: $(srcdir)/manual.head.pod $(COMMAND_SOURCES) $(srcdir)/manual.tail.pod Version.autogen.c
+	cat $^ | $(POD2MAN) --section=1 --center="General Commands" --name=CmdlineGL --release="CmdlineGL `sed -n '/CGLVer_String=/s/.*="(.*)"/\1/p' Version.autogen.c`" >$@.tmp && mv $@.tmp $@
+
+CmdlineGL.1.gz: CmdlineGL.1
+	$(GZIP) < daemonproxy.1 > $@.tmp && mv $@.tmp $@
+
+install: CmdlineGL CmdlineGL.1.gz
+	$(INSTALL) -d ?$(DESTDIR)$(bindir)/"
+	$(INSTALL) -d ?$(DESTDIR)$(mandir)/man1/"
+	$(INSTALL) -d ?$(DESTDIR)$(datadir)/CmdlineGL/"
+	$(INSTALL) -m 755 CmdlineGL "$(DESTDIR)$(bindir)/"
+	$(INSTALL) -m 644 CmdlineGL.1.gz "$(DESTDIR)$(mandir)/man1/"
+	rm -r "$(DESTDIR)$(datadir)/CmdlineGL/"*
+	cp -r "$(srcdir)/../share/"* "$(DESTDIR)$(datadir)/CmdlineGL/"
+
+clean:
+	rm -f -- *.o
+	rm -f -- *.d
+	rm -f -- CmdlineGL*
+	rm -f -- *.tmp
+
+.PHONY: install test

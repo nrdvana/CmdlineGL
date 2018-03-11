@@ -1,10 +1,6 @@
+#define INCLUDE_GL
+#include <config.h>
 #include "Global.h"
-#include <ctype.h>
-#include <stdlib.h>
-#include <stdio.h>
-#include <SDL.h>
-#include <assert.h>
-#include "GlHeaders.h"
 #include "ParseGL.h"
 #include "Server.h"
 #include "SymbolHash.h"

@@ -1,0 +1,85 @@
+/* This header pulls in everything system-dependent.  No other files in the project
+ * should depend on any header other than this and the headers in the src/ directory.
+ */
+
+/* contains autoconf -D equivalents */
+#include <config-defs.h>
+
+/* ------------------------------------
+ * Basics
+ */
+
+#ifdef _WIN32
+#  define WIN32_LEAN_AND_MEAN
+#  include <windows.h>
+#else
+#  ifndef _GNU_SOURCE
+#    define _GNU_SOURCE
+#  endif
+#  include <sys/un.h>
+#  include <sys/types.h>
+#  include <sys/stat.h>
+#  include <unistd.h>
+#  include <fcntl.h>
+#  include <errno.h>
+#endif
+
+#include <stdint.h>
+#include <stdio.h>
+#include <string.h>
+#include <ctype.h>
+#include <stdlib.h>
+#include <string.h>
+#include <assert.h>
+#include <stdarg.h>
+
+/* ------------------------------------
+ * Caller can set INCLUDE_GL before config.h to pull in all the GL headers
+ */
+
+#include <@gl_header@>
+#include <@glu_header@>
+
+/* These were missing on some platforms and this worked to solve it... */
+#ifndef GL_BGR
+#  define GL_BGR GL_BGR_EXT
+#  define GL_BGRA GL_BGRA_EXT
+#endif
+
+#ifdef HAVE_LIBFTGL
+#  include <@ftgl_header@>
+#endif
+
+/* ------------------------------------
+ * Caller can set INCLUDE_SDL before config.h to pull in SDL headers
+ */
+
+#ifdef INCLUDE_SDL
+#  include <@sdl_header@>
+#  ifdef HAVE_LIBSDL_IMAGE
+#    include <@sdl_image_header@>
+#  endif
+#endif
+
+/* ------------------------------------
+ * Now muck around with things we shouldn't, since we're not including
+ * any more system headers beyond this point.
+ */
+
+#ifndef NULL
+#  define NULL ((void*)0)
+#endif
+
+#if HAVE_STDBOOL
+#  include <stdbool.h>
+#else
+#  ifndef bool
+#    define bool int
+#  endif
+#  ifndef true
+#    define true 1
+#  endif
+#  ifndef false
+#    define false 0
+#  endif
+#endif

@@ -1,7 +1,6 @@
 #ifndef SYMBOL_HASH_H
 #define SYMBOL_HASH_H
 
-#include <stdio.h>
 #include "ProcessInput.h"
 
 struct ParseParamsResult;

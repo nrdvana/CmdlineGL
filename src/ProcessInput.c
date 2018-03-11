@@ -1,14 +1,6 @@
-#include "Global.h"
-#include "GlHeaders.h"
+#define INCLUDE_GL
+#include <config.h>
 
-#include <assert.h>
-#include <stdlib.h>
-#ifndef _WIN32
-#include <sys/un.h>
-#include <sys/stat.h>
-#include <unistd.h>
-#endif
-#include <stdio.h>
 #include "ProcessInput.h"
 #include "ParseGL.h"
 #include "SymbolHash.h"
@@ -24,6 +16,10 @@ int DivisorStackPos= -1;
 const int DivisorStackMax= sizeof(DivisorStack)/sizeof(double) - 1;
 
 /*
+=head2 Implied Divisors
+
+=over
+
 =item cglPushDivisor DIVISOR
 
 All future floating-point numbers receive this implied "/DIVISOR".
@@ -42,6 +38,8 @@ becomes
 
 Clear the current default  divisor, returning to whatever default
 was set before that.  The initial default is 1.
+
+=back
 
 =cut
 */

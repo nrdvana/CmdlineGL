@@ -1,36 +1,22 @@
 #ifndef GLOBAL_H
 #define GLOBAL_H
 
-#include "config.h"
+/* ------------------------------------
+ * Settings for the program.
+ */
 
-#ifdef _WIN32
-#define WIN32_LEAN_AND_MEAN
-#include <windows.h>
+#ifndef MAX_COMMAND_BATCH
+#  define MAX_COMMAND_BATCH 8
 #endif
-
-#ifndef NULL
-  #define NULL ((void*)0)
+#ifndef MAX_GL_PARAMS
+#  define MAX_GL_PARAMS 32
 #endif
-
-#ifndef bool
-  #define bool int
-#endif
-#ifndef true
-  #define true 1
-#endif
-#ifndef false
-  #define false 0
-#endif
-
-#define MAX_COMMAND_BATCH 8
-
-#define MAX_GL_PARAMS 32
 
 struct ParseParamsResult;
 #define COMMAND(name,fmt) bool cmd_##name(struct ParseParamsResult *parsed)
 
 #ifndef NDEBUG
-  #define DEBUGMSG(a) DebugMsg a
+#  define DEBUGMSG(a) DebugMsg a
   void DebugMsg(char *str, ...);
 #else
   #define DEBUGMSG(a) do{}while(0)

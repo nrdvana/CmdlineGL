@@ -1,7 +1,7 @@
+#include <config.h>
 #include "Global.h"
 
 #ifdef _WIN32
-#include <stdio.h>
 void WinPerror(char *msg) {
 	char* BuffPtr= NULL;
 	FormatMessage(
@@ -18,9 +18,6 @@ void WinPerror(char *msg) {
 #endif
 
 #ifndef NDEBUG
-#include <stdio.h>
-#include <stdarg.h>
-
 void DebugMsg(char *msg, ...) {
 	va_list ap;
 	va_start(ap, msg);
@@ -28,6 +25,5 @@ void DebugMsg(char *msg, ...) {
 	va_end(ap);
 	fflush(stderr);
 }
-
 #endif
 

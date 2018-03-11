@@ -28,8 +28,6 @@ struct SymbVarEntry_t;
  * the union is of the type you think it is.
  */
 
-#include "GlHeaders.h"
-
 #define PARSEPARAMS_MAX_OBJECTS 32
 #define PARSEPARAMS_MAX_FLOATS  32
 #define PARSEPARAMS_MAX_STRINGS 32

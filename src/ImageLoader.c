@@ -1,8 +1,9 @@
+#define INCLUDE_GL
+#define INCLUDE_SDL
+#include <config.h>
 #include "Global.h"
 #include "ParseGL.h"
 #include "ImageLoader.h"
-#include "GlHeaders.h"
-#include "SDLHeaders.h"
 #include "ProcessInput.h"
 
 bool UsableByGL(SDL_Surface *Img) {
