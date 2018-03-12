@@ -1,9 +1,17 @@
 #! /bin/sh
 
+# This configure script is just a place-holder that sets up an out-of-tree
+# build in a directory named "build".  The real autoconf configure script is
+# located in ./script/
+#
+# When checked out of git, this enables options "--enable-dev" and
+# "--enable-debug" by default.  When distributed as a tarball, this script is
+# altered to remove those options.
+
 # if run from outside proj root, inform user whats going on
 if [ ! -d script -o ! -d src ]; then
 	echo "For out-of-tree builds, run ./script/configure directly."
 	exit 1;
 fi
 
-mkdir -p build && cd build && ../script/configure --enable-debug "$@"
+mkdir -p build && cd build && ../script/configure --enable-dev --enable-debug "$@"

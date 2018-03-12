@@ -2,5 +2,6 @@
 /src/*.autogen.*
 /src/ConstList.txt
 /script/configure
+/script/config-defs.h.in
 /script/autom4te.cache
-
+/dist/

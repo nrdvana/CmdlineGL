@@ -1,6 +1,7 @@
 SHELL = /bin/sh
 PERL = perl
 POD2MAN = pod2man
+PROVE = prove
 GZIP = gzip
 INSTALL = install
 CURRENT_UNIX_TIMESTAMP = $(shell date "+%s")
@@ -32,7 +33,7 @@ LDFLAGS = @LDFLAGS@
 LIBS = @LIBS@
 
 DEP_FILES := $(shell touch _empty.d; echo *.d)
-include $(DEP_FILES)
+include $(DEP_FILES) @dev_include_makefile@
 
 %.autogen.o: %.autogen.c
 	$(CC) -o $@ $(CPPFLAGS) -c $< $(CFLAGS)
@@ -70,13 +71,22 @@ CmdlineGL.1.gz: CmdlineGL.1
 	$(GZIP) < daemonproxy.1 > $@.tmp && mv $@.tmp $@
 
 install: CmdlineGL CmdlineGL.1.gz
-	$(INSTALL) -d ?$(DESTDIR)$(bindir)/"
-	$(INSTALL) -d ?$(DESTDIR)$(mandir)/man1/"
-	$(INSTALL) -d ?$(DESTDIR)$(datadir)/CmdlineGL/"
+	$(INSTALL) -d "$(DESTDIR)$(bindir)/"
+	$(INSTALL) -d "$(DESTDIR)$(mandir)/man1/"
+	$(INSTALL) -d "$(DESTDIR)$(datadir)/CmdlineGL/"
 	$(INSTALL) -m 755 CmdlineGL "$(DESTDIR)$(bindir)/"
 	$(INSTALL) -m 644 CmdlineGL.1.gz "$(DESTDIR)$(mandir)/man1/"
 	rm -r "$(DESTDIR)$(datadir)/CmdlineGL/"*
 	cp -r "$(srcdir)/../share/"* "$(DESTDIR)$(datadir)/CmdlineGL/"
+
+Makefile: config.status $(scriptdir)/Makefile.in $(scriptdir)/config.h.in $(scriptdir)/config-defs.h.in
+	./config.status && touch Makefile
+
+config.status: $(scriptdir)/configure $(scriptdir)/config-defs.h.in
+	$(scriptdir)/configure $$(./config.status --config)
+
+test: CmdlineGL
+	$(PROVE) -j4 $(srcdir)/../test
 
 clean:
 	rm -f -- *.o
@@ -84,4 +94,4 @@ clean:
 	rm -f -- CmdlineGL*
 	rm -f -- *.tmp
 
-.PHONY: install test
+.PHONY: install test clean

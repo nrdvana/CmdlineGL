@@ -7,10 +7,10 @@ AC_ARG_ENABLE(debug,  AS_HELP_STRING([debug], [enable assertions and debug symbo
  [ if test "$enableval" != "no"; then CFLAGS="$CFLAGS -O0 -g3"; else CFLAGS="$CFLAGS -O2 -DNDEBUG"; fi; ],
  [ CFLAGS="$CFLAGS -O0 -g3"; ])
 
-# AC_ARG_ENABLE(dev,    AS_HELP_STRING([dev], [enable source generators (requires perl)]),
-# [ if test "$enableval" != "no"; then dev_include_makefile="\$(scriptdir)/dev_rules.mak"; fi; ],
-# [ dev_include_makefile="\$(scriptdir)/dev_rules.mak"; ])
-# AC_SUBST(dev_include_makefile)
+AC_ARG_ENABLE(dev,    AS_HELP_STRING([dev], [enable source generators (requires perl)]),
+ [ if test "$enableval" != "no"; then dev_include_makefile="\$(scriptdir)/dev-rules.mak"; fi; ],
+ [ dev_include_makefile=""; ])
+AC_SUBST(dev_include_makefile)
 
 # Checks for programs.
 AC_PROG_CC
