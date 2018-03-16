@@ -70,6 +70,9 @@ CmdlineGL.lib: $(srcdir)/
 CmdlineGL.1: $(srcdir)/manual.head.pod $(COMMAND_SOURCES) $(srcdir)/manual.tail.pod Version.autogen.c
 	$(PERL) $(scriptdir)/build-manual.pl --as=man --version="`sed -n '/CGLVER_String=/s/.*="\(.*\)".*/\1/p' Version.autogen.c`" $^ >$@.tmp && mv $@.tmp $@
 
+CmdlineGL.html: CmdlineGL.1
+	man ./$^ | man2html >$@.tmp && mv $@.tmp $@
+
 CmdlineGL.1.gz: CmdlineGL.1
 	$(GZIP) < CmdlineGL.1 > $@.tmp && mv $@.tmp $@
 
@@ -81,7 +84,7 @@ install: CmdlineGL CmdlineGL.1.gz
 	$(INSTALL) -m 644 CmdlineGL.1.gz "$(DESTDIR)$(mandir)/man1/"
 	touch "$(DESTDIR)$(datarootdir)/CmdlineGL/something" && rm -r "$(DESTDIR)$(datarootdir)/CmdlineGL/"*
 	cp -r "$(projroot)/share/"* "$(DESTDIR)$(datarootdir)/CmdlineGL/"
-	sed -i -e 's|@share_path@|$(DESTDIR)$(datarootdir)/CmdlineGL|g' '$(DESTDIR)$(datarootdir)/CmdlineGL/CmdlineGL.lib'
+	sed -e 's|@share_path@|$(DESTDIR)$(datarootdir)/CmdlineGL|g' <'$(projroot)/share/CmdlineGL.lib' >'$(DESTDIR)$(datarootdir)/CmdlineGL/CmdlineGL.lib'
 	ln -sf "$(DESTDIR)$(datarootdir)/CmdlineGL/CmdlineGL.lib" "$(DESTDIR)$(bindir)/"
 
 Makefile: config.status $(scriptdir)/Makefile.in $(scriptdir)/config.h.in $(scriptdir)/config-defs.h.in
