@@ -14,6 +14,7 @@ all: CmdlineGL CmdlineGL.1
 prefix = @prefix@
 exec_prefix = @exec_prefix@
 bindir = @bindir@
+projroot= @srcdir@/..
 srcdir = @srcdir@/../src
 scriptdir = @srcdir@
 docdir = @srcdir@/../doc
@@ -47,7 +48,7 @@ CmdlineGL: $(AUTOGEN_SRC) $(OBJ_FILES)
 # no deps for ConstList.txt because users might need to edit it by hand
 ConstList.txt:
 	@echo "-> Attempting to get the useful #define'd constants from your GL headers..."
-	PROJROOT="$(srcdir)/.." CPP="$(CPP)" CFLAGS="$(CFLAGS)" CPPFLAGS="$(CPPFLAGS)" $(scriptdir)/build-constlist.sh <$(srcdir)/ConstList.works_for_me >$@.tmp && mv $@.tmp $@
+	PROJROOT="$(projroot)" CPP="$(CPP)" CFLAGS="$(CFLAGS)" CPPFLAGS="$(CPPFLAGS)" $(scriptdir)/build-constlist.sh <$(srcdir)/ConstList.works_for_me >$@.tmp && mv $@.tmp $@
 
 IntConstHash.autogen.o: IntConstHash.autogen.c
 
@@ -61,23 +62,27 @@ CmdHash.autogen.c: $(COMMAND_SOURCES) $(scriptdir)/build-cmdhash.pl
 	@echo "-> Regenerating CmdHash.autogen.c from the \"COMMAND\" functions in *.c"
 	cat $(COMMAND_SOURCES) | $(PERL) $(scriptdir)/build-cmdhash.pl >$@.tmp && mv $@.tmp $@
 
-Version.autogen.c: $(srcdir)/../Changes $(scriptdir)/build-version.sh
-	PROJROOT="$(srcdir)/.." $(scriptdir)/build-version.sh >$@.tmp && mv $@.tmp $@
+Version.autogen.c: $(projroot)/Changes $(scriptdir)/build-version.sh
+	PROJROOT="$(projroot)" $(scriptdir)/build-version.sh >$@.tmp && mv $@.tmp $@
+
+CmdlineGL.lib: $(srcdir)/
 
 CmdlineGL.1: $(srcdir)/manual.head.pod $(COMMAND_SOURCES) $(srcdir)/manual.tail.pod Version.autogen.c
 	$(PERL) $(scriptdir)/build-manual.pl --as=man --version="`sed -n '/CGLVER_String=/s/.*="\(.*\)".*/\1/p' Version.autogen.c`" $^ >$@.tmp && mv $@.tmp $@
 
 CmdlineGL.1.gz: CmdlineGL.1
-	$(GZIP) < daemonproxy.1 > $@.tmp && mv $@.tmp $@
+	$(GZIP) < CmdlineGL.1 > $@.tmp && mv $@.tmp $@
 
 install: CmdlineGL CmdlineGL.1.gz
 	$(INSTALL) -d "$(DESTDIR)$(bindir)/"
 	$(INSTALL) -d "$(DESTDIR)$(mandir)/man1/"
-	$(INSTALL) -d "$(DESTDIR)$(datadir)/CmdlineGL/"
+	$(INSTALL) -d "$(DESTDIR)$(datarootdir)/CmdlineGL/"
 	$(INSTALL) -m 755 CmdlineGL "$(DESTDIR)$(bindir)/"
 	$(INSTALL) -m 644 CmdlineGL.1.gz "$(DESTDIR)$(mandir)/man1/"
-	rm -r "$(DESTDIR)$(datadir)/CmdlineGL/"*
-	cp -r "$(srcdir)/../share/"* "$(DESTDIR)$(datadir)/CmdlineGL/"
+	touch "$(DESTDIR)$(datarootdir)/CmdlineGL/something" && rm -r "$(DESTDIR)$(datarootdir)/CmdlineGL/"*
+	cp -r "$(projroot)/share/"* "$(DESTDIR)$(datarootdir)/CmdlineGL/"
+	sed -i -e 's|@share_path@|$(DESTDIR)$(datarootdir)/CmdlineGL|g' '$(DESTDIR)$(datarootdir)/CmdlineGL/CmdlineGL.lib'
+	ln -sf "$(DESTDIR)$(datarootdir)/CmdlineGL/CmdlineGL.lib" "$(DESTDIR)$(bindir)/"
 
 Makefile: config.status $(scriptdir)/Makefile.in $(scriptdir)/config.h.in $(scriptdir)/config-defs.h.in
 	./config.status && touch Makefile

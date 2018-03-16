@@ -1,10 +1,66 @@
 =head1 EXAMPLE
 
-  TODO
+The typical render loop, taking advantage of CmdlineGL's ability to
+synchronize frames to a clock, looks like this:
 
-=head2 Other Examples
+    1) read output of CmdlineGL until "t=" event indicating current timestamp
+    2) clear frame buffer
+    3) render OpenGL graphics
+    4) call glFlush and cglSwapBuffers to show the rendering
+    5) call cglSync telling it to delay until T + framerate_period
+    6) call cglGetTime, so that new timestamp will be available immediately after sleep
+    7) repeat
 
-  TODO
+There are many examples in the C<./share/examples> directory that ships with this project,
+though you may or may not have them installed.  Reproduced below, SpinText.sh is a minimal
+example of something visually interesting.  It requires variables C<$font> (a path to a
+.ttf font file) and C<$text> (the text to render).
+
+    spin_rate=70  # Degree per second
+    R=0           # current rotation
+    T=0           # "game-time", in milliseconds
+    
+    # Initialize CmdlineGL for rendering only (no input or feedback)
+    source CmdlineGL.lib
+    CmdlineGL_Start ro
+    glEnable GL_NORMALIZE GL_DEPTH_TEST GL_CULL_FACE
+    glShadeModel GL_SMOOTH
+    
+    # Load font file and configure font rendering parameters
+    ftglCreateExtrudeFont font1 "$font"
+    ftglSetFontFaceSize   font1 72 72
+    ftglSetFontDepth      font1 20
+    
+    # Prepare the graphics in a display list.  Need to call once first since
+    # ftgl creates its own display lists, then again to capture those in the
+    # second display list.
+    ftglRenderFont font1 "$text" FTGL_ALIGN_CENTER FTGL_RENDER_ALL
+    glNewList mytext GL_COMPILE
+    glTranslate -$(( ${#text}/2 * 40 )) -36 10  # flaky guess at string mid
+    ftglRenderFont font1 "$text" FTGL_RENDER_ALL
+    glEndList
+    
+    # set up lighting (otherwise no change as it rotates)
+    glEnable GL_LIGHTING GL_LIGHT0
+    glLight GL_LIGHT0 GL_AMBIENT .8 .8 .8 0
+    glLight GL_LIGHT0 GL_DIFFUSE 1 .8 .8 0
+    glLight GL_LIGHT0 GL_SPECULAR .8 .8 .8 0
+    glLight GL_LIGHT0 GL_POSITION 10 10 10 1
+    
+    while true; do
+        glClear GL_COLOR_BUFFER_BIT GL_DEPTH_BUFFER_BIT
+        glLoadIdentity
+        glRotate $((R+=spin_rate))/60 0 1 0  # assuming 60fps
+        glScale 10/$((40 * ${#text} / 2))    # flaky guess at window width
+        glCallList mytext
+        glFlush
+        cglSwapBuffers
+        cglSync $((T+=16)) # blindly assume we can maintain 60fps
+    done
+
+More advanced timing and handling of user input can be seen in ModelViewer.sh, usage of
+Quadrics for quick rendering of solids can be seen in Robot.sh, and direct manipulation
+of the modelview matrix as a coordinate system can be seen in FlightSim.sh
 
 =head1 BUGS
 

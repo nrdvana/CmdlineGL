@@ -107,7 +107,7 @@ CmdlineGL_Start() {
 		CmdlineGL_Recv(){ read -r -u $CmdlineGL_In CmdlineGL_InputLine; };
 	else
 		if [[ "${BASH_VERSINFO[0]}" -ge 4 ]]; then
-			coproc CmdlineGL -t --nouimsg || return 1
+			coproc CmdlineGL -t --noevents || return 1
 			CmdlineGL_Out="${COPROC[1]}"
 		else
 			# In dark ages of bash, need to find free FDs and connect them to fifos
