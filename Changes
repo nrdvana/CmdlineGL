@@ -1,3 +1,16 @@
+Version 2.0.0 - 2018-01-01
+  * Replace homebrew font support with ftgl library API
+  * Rewrote most parsing code to eliminate some buggy edge cases
+  * New quoting syntax for command arguments
+  * New Divisor syntax and cglPushDivisor replace cglFixedPt
+  * Each type of named object is now in its own namespace
+  * Use SDL_image in cglLoadImage for broader image format support
+  * Stricter parsing of OpenGL calls with open-end argument lists
+  * Default projection sets model farther from near clipping plane
+  * Option to disable default projection matrix or viewport
+  * Notification for window status events
+  * Manual page
+
 Version 1.1.0 - 2006-04-05
   * Added font support
   * Added version numbering
