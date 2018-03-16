@@ -503,7 +503,7 @@ bool ParseColor(char **line, struct ParseParamsResult *parsed) {
 		return false;
 	}
 	// hash indicates a hex code
-	if (**line == '#') {
+	if (**line == '#' || ((**line == '"' || **line == '\'') && (*line)[1] == '#')) {
 		if (!ParseHexColor(next_token(line), parsed->floats + parsed->fCnt)) {
 			parsed->errmsg= "Invalid color code";
 			return false;
@@ -515,9 +515,6 @@ bool ParseColor(char **line, struct ParseParamsResult *parsed) {
 	else {
 		// else look for 3 or 4 numbers
 		for (n= 0; n < 4; n++) {
-			/* avoid calling next_token unless it does look like a valid number */
-			if (!((**line >= '0' && **line <= '9') || **line == '+' || **line == '-' || **line == '.'))
-				break;
 			if (!ParseFloat(line, parsed))
 				break;
 		}
