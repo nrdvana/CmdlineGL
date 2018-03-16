@@ -53,9 +53,6 @@ int DefaultSDLFlags= SDL_OPENGL | SDL_ANYFORMAT | SDL_RESIZABLE;
 CmdlineOptions Options;
 
 int main(int Argc, char**Args) {
-	const SDL_VideoInfo* SdlVid;
-	int bpp;
-
 	SetParamDefaults(&Options);
 	ReadParams(Args, &Options);
 	
@@ -362,7 +359,7 @@ COMMAND(cglSync, "i") {
 	int target= parsed->ints[0];
 	int t= SDL_GetTicks() - StartTime;
 	if (target - t > 0) {
-		fprintf(stderr, "sleeping for %lld\n", target - t);
+		DEBUGMSG(("sleeping for %d\n", target - t));
 		fflush(stdout);
 		fflush(stderr);
 		SDL_Delay(target - t);
@@ -386,8 +383,8 @@ COMMAND(cglSwapBuffers, "") {
 }
 
 void CheckInput() {
-	int result, TokenCount, CmdCount;
-	char *Line, *TokenPointers[MAX_GL_PARAMS+1];
+	int CmdCount;
+	char *Line;
 
 	errno= 0;
 	CmdCount= 0;

@@ -111,7 +111,6 @@ void ShiftBuffer(/* LineBuffer *this */) {
 }
 
 char* ReadLine(/* LineBuffer *this */) {
-	int success;
 	int red;
 	char *Result;
 
@@ -175,7 +174,7 @@ char * next_token(char **input) {
 				case 'n': *in= '\n'; break;
 				case 'r': *in= '\r'; break;
 				case '\0': --in; break; /* don't run over end of string */
-				default: 0; /* every other value remains itself */
+				default: break; /* every other value remains itself */
 				}
 			}
 			*rewrite++ = *in++;
@@ -315,13 +314,13 @@ bool ParseParams(char **line, const char *format, struct ParseParamsResult *pars
 			}
 			break;
 		// Display list
-		case 'L': objtyp= NAMED_LIST; if (0)
+		if (0) case 'L': objtyp= NAMED_LIST;
 		// Quadric
-		case 'Q': objtyp= NAMED_QUADRIC; if (0)
+		if (0) case 'Q': objtyp= NAMED_QUADRIC;
 		// Texture
-		case 'T': objtyp= NAMED_TEXTURE; if (0)
+		if (0) case 'T': objtyp= NAMED_TEXTURE;
 		// Font
-		case 'F': objtyp= NAMED_FONT;
+		if (0) case 'F': objtyp= NAMED_FONT;
 			
 			if (parsed->oCnt >= sizeof(parsed->objects)/sizeof(parsed->objects[0])) {
 				parsed->errmsg= "Argument count exceeded (object)";
@@ -372,7 +371,7 @@ bool ParseParams(char **line, const char *format, struct ParseParamsResult *pars
 			switch (autocreate_type[i]) {
 			case NAMED_LIST:    parsed->objects[i]->Value= glGenLists(1); break;
 			case NAMED_QUADRIC: parsed->objects[i]->Data= gluNewQuadric(); break;
-			case NAMED_TEXTURE: glGenTextures(1, &(parsed->objects[i]->Value)); break;
+			case NAMED_TEXTURE: glGenTextures(1, (GLuint*) &(parsed->objects[i]->Value)); break;
 			/* can't auto-create FTfont* object.  Caller needs to handle that. */
 			default:            parsed->objects[i]->Data= NULL; break;
 			}
@@ -494,7 +493,6 @@ bool CaptureRemainder(char **line, struct ParseParamsResult *parsed) {
 bool ParseHexByte(const char *str, float *Result);
 bool ParseHexColor(const char* str, float Result[4]);
 bool ParseColor(char **line, struct ParseParamsResult *parsed) {
-	double c;
 	int n;
 	
 	/* always stored as four floating point components */
@@ -540,6 +538,7 @@ bool ParseHexColor(const char* Text, float Result[4]) {
 	} else {
 		Result[3]= 0xFF;
 	}
+	return true;
 }
 bool ParseHexByte(const char *str, float *Result) {
 	GLubyte x;
