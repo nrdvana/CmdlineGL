@@ -27,6 +27,9 @@ else
 	fi
 fi
 
+R=0
+T=0
+spin_rate=9 # degrees per second
 
 # Initialize CmdlineGL for rendering only (no input or feedback)
 CmdlineGL_Start ro
