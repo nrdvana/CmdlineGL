@@ -34,7 +34,13 @@ CmdlineGL_LoadLib() {
 	IFS=':' read -ra CmdlineGL_LibPathAry <<< "$CmdlineGL_LibPath";
 	for lib in "$@"; do
 		if [[ "$CmdlineGL_LibLoaded" != *:"$lib":* ]]; then
-			local fname=`find "${CmdlineGL_LibPathAry[@]}" -name "$lib".lib | head -n 1` || { echo "Can't find lib '$lib' in path '$CmdlineGL_LibPath'"; return 2; }
+			local fname;
+			# If full path name is given, load it directly
+			if [[ "$lib" = */* ]]; then
+				fname="$lib"
+			else
+				fname=`find "${CmdlineGL_LibPathAry[@]}" -name "$lib".lib | head -n 1` || { echo "Can't find lib '$lib' in path '$CmdlineGL_LibPath'"; return 2; }
+			fi
 			source "$fname" || { echo "Failed to load '$lib'"; return 2; }
 			CmdlineGL_LibLoaded="$CmdlineGL_LibLoaded$lib:"
 		fi
