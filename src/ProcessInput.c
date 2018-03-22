@@ -196,7 +196,8 @@ char * next_token(char **input) {
 }
 
 char *sanitize_for_print(char *string) {
-	for (char *c= string; *c; c++)
+	char *c;
+	for (c= string; *c; c++)
 		if (*c <= ' ' || *c == 0x7F)
 			*c= '_';
 	return string;
