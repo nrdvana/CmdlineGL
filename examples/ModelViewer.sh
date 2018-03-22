@@ -54,11 +54,15 @@ if (( $# != 1 )); then
 	echo
 elif ! CmdlineGL_LoadLib "$1"; then
 	echo 'Failed to load model "$1"'
-elif ! [[ "$( type -t "$1" )" == function ]]; then
-	echo 'Library "$1.lib" does not define a function named "$1"'
+fi
+Model=$1;
+Model=${Model##*/}
+Model=${Model%.*}
+
+if ! [[ "$( type -t "$Model" )" == function ]]; then
+	echo "Library \"$1\" does not define a function named \"$Model\""
 	echo 'This is required'
 else
-	Model=$1
 	CmdlineGL_Start rw || die "Can't init CmdlineGL"
 	Init
 	RenderLoop_Run
