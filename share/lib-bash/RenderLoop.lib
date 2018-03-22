@@ -32,7 +32,7 @@ RenderLoop_Run() {
 		# For write-only mode, assume a constant max frame rate.
 		# If we get too far ahead, the pipe will fill and pause us.
 		while (( !RenderLoop_Done )); do
-			RenderLoop_Render
+			RenderLoop_Render || true
 			Timing_SyncNextFrame
 			Timing_AssumeNextFrame
 		done
@@ -43,7 +43,7 @@ RenderLoop_Run() {
 		# reads.
 		cglGetTime
 		while (( !RenderLoop_Done )); do
-			RenderLoop_Render
+			RenderLoop_Render || true
 			Timing_SyncNextFrame
 			RenderLoop_ProcessInput
 			cglGetTime
