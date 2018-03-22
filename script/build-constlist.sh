@@ -1,6 +1,5 @@
 #! /bin/sh
 set -eu
-set -o pipefail
 
 [ -n "${CPP}" ] && [ -n "$PROJROOT" ] \
 	|| { echo "Require variables PROJROOT, CPP, CFLAGS, CPPFLAGS" >&2; exit 1; }
