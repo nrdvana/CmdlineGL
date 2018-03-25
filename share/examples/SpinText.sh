@@ -7,7 +7,7 @@ text="$1";
 font="$2";
 set -eu
 
-source CmdlineGL.lib
+source "${BASH_SOURCE%/*}/../CmdlineGL.lib" || die "Can't find CmdlineGL.lib (${BASH_SOURCE%/*}/../CmdlineGL.lib)";
 
 if [[ -z "$text" ]]; then
 	echo "Usage: SpinText.sh STRING_OF_TEXT [FONT_FILE]";
@@ -29,7 +29,7 @@ fi
 
 R=0
 T=0
-spin_rate=9 # degrees per second
+spin_rate=12 # degrees per second
 
 # Initialize CmdlineGL for rendering only (no input or feedback)
 CmdlineGL_Start ro

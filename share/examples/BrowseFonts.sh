@@ -7,7 +7,7 @@
 text="$1";
 set -eu
 
-source CmdlineGL.lib
+source "${BASH_SOURCE%/*}/../CmdlineGL.lib" || die "Can't find CmdlineGL.lib (${BASH_SOURCE%/*}/../CmdlineGL.lib)";
 CmdlineGL_LoadLib RenderLoop ModelViewer
 
 fonts=( `find /usr/share -name '*.ttf' | grep -i mono` )
@@ -16,7 +16,7 @@ font_i=
 
 swap_font() {
 	if [[ -n "$font_i" ]]; then ftglDestroyFont font1; else font_i=0; true; fi
-	echo "${fonts[font_i]}"
+	echo "$font_i/$font_n  ${fonts[font_i]}"
 	# Load font file and configure font rendering parameters
 	ftglCreateExtrudeFont font1 "${fonts[font_i]}"
 	ftglSetFontFaceSize   font1 72 72

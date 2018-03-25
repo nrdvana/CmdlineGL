@@ -5,7 +5,7 @@
 die() { echo "$@" >&2; exit 2; }
 set -u
 # Load bash libraries
-source "${BASH_SOURCE%/*}/../share/CmdlineGL.lib" || die "Can't find ../share directory (from $PWD via ${BASH_SOURCE%/*})";
+source "${BASH_SOURCE%/*}/../CmdlineGL.lib" || die "Can't find CmdlineGL.lib (${BASH_SOURCE%/*}/../CmdlineGL.lib)";
 
 CmdlineGL_LoadLib RenderLoop Geom Ship LaserBeam Cube
 FixedPt=$Geom_FixedPt
@@ -74,6 +74,7 @@ SetLights() {
 
 BuildCubeField() {
 	glNewList CubeField GL_COMPILE
+	glShadeModel GL_FLAT
 	glTranslate -22.5 -22.5 -22.5
 	for (( x=0; x<10; x++)); do
 		for (( y=0; y<10; y++)); do
@@ -87,6 +88,7 @@ BuildCubeField() {
 		glTranslate 0 -50 0
 		glTranslate 5 0 0
 	done
+	glShadeModel GL_SMOOTH
 	glEndList
 }
 
@@ -168,14 +170,15 @@ Shoot() {
 #
 UpdateShip() {
 	local dT=Timing_dT Dist
-	if ((InpAimLf)); then Ship_RelativeYaw $((-dT*3)); Ship_RelativeRoll $((-dT*2)); fi
-	if ((InpAimRt)); then Ship_RelativeYaw $((dT*3)); Ship_RelativeRoll $((dT*2)); fi
-	if ((InpAimUp)); then Ship_RelativePitch $((dT*6));  fi
-	if ((InpAimDn)); then Ship_RelativePitch $((-dT*6)); fi
+	if ((InpAimLf)); then Ship_RelativeYaw $((-dT*5)); Ship_RelativeRoll $((-dT*3)); fi
+	if ((InpAimRt)); then Ship_RelativeYaw $((dT*5)); Ship_RelativeRoll $((dT*3)); fi
+	if ((InpAimUp)); then Ship_RelativePitch $((dT*8));  fi
+	if ((InpAimDn)); then Ship_RelativePitch $((-dT*8)); fi
 	Ship_Normalize
 
 	if ((InpAccel && ShipSpeed<20)); then let ShipSpeed++; fi
 	if ((InpDeaccel && ShipSpeed>0)); then let ShipSpeed--; fi
+	Ship_Throttle=$ShipSpeed;
 	((Dist=Timing_dT*ShipSpeed))
 	((Ship_Pos_x+=Ship_KV_x*Dist/$FixedPt, Ship_Pos_y+=Ship_KV_y*Dist/$FixedPt, Ship_Pos_z+=Ship_KV_z*Dist/$FixedPt))
 
@@ -262,7 +265,6 @@ RenderLoop_Render() {
 	DrawLasers
 	glFlush
 	cglSwapBuffers
-	sleep .1;
 }
 
 main() {
@@ -290,4 +292,12 @@ else
 	echo '   Recordings can be played by piping them into CmdlineGL.'
 	echo '   For instance:'
 	echo '         $ CmdlineGL <replay >/dev/null'
+	echo
+	echo 'Controls:'
+	echo '    Up   / Down   Pitch of ship'
+	echo '    Left / Right  Roll+Yaw of ship'
+	echo '    +    / -      Speed of ship'
+	echo '    Space         Fire lasers'
+	echo '    q             Quit'
+	echo
 fi

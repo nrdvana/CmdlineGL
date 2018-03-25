@@ -4,8 +4,7 @@ set -u
 # Define our handy die function
 die() { echo "$@" >&2; exit 2; }
 
-source "${BASH_SOURCE%/*}/../share/CmdlineGL.lib" || die "Can't load CmdlineGL.lib  ('${BASH_SOURCE%/*}/../share/CmdlineGL.lib')";
-
+source "${BASH_SOURCE%/*}/../CmdlineGL.lib" || die "Can't find CmdlineGL.lib (${BASH_SOURCE%/*}/../CmdlineGL.lib)";
 CmdlineGL_LoadLib RenderLoop ModelViewer
 
 #------------------------------------------------------------------------------
@@ -14,15 +13,7 @@ CmdlineGL_LoadLib RenderLoop ModelViewer
 #
 # Actually, the program is somewhat improved, since it uses display lists now
 #
-
-#*****************************************************************************\
-# Project: Computer Graphics Final Exam                                       *
-# Title:   Robot.cpp                                                          *
-# Descrip: GLut-driven animated OpenGL rendering of a robot.                  *
-# Author:  Michael Conrad                                                     *
-#*****************************************************************************/
-
-#---------------------------------------------------------------------------
+#------------------------------------------------------------------------------
 # Constants for the dimensions of the robot's body
 #
 #                   ___
@@ -101,7 +92,7 @@ Robot_Joints=0;
 Robot_MoveProgress=0;
 Robot_Animate=true;
 
-# Variables related to the camers
+# Variables related to the camera
 #
 View_Direction=0;
 View_Pitch=0;

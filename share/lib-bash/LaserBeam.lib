@@ -4,13 +4,13 @@ LaserBeam_InitGfx() {
 	# Front
 	glBegin GL_TRIANGLE_FAN
 	glColor 1 0.7 0.7
-	glVertex 0 0 2
+	glVertex 0 0 10
 	glColor 1 0.2 0.2
-	glVertex 0 0.3 1.6
-	glVertex -0.3 0 1.6
-	glVertex 0 -0.3 1.6
-	glVertex 0.3 0 1.6
-	glVertex 0 0.3 1.6
+	glVertex 0 0.2 9
+	glVertex -0.2 0 9
+	glVertex 0 -0.2 9
+	glVertex 0.2 0 9
+	glVertex 0 0.2 9
 	glEnd
 
 	# Tail
@@ -18,11 +18,11 @@ LaserBeam_InitGfx() {
 	glColor 0.6 0 0
 	glVertex 0 0 0
 	glColor 1 0.2 0.2
-	glVertex 0 0.3 1.6
-	glVertex 0.3 0 1.6
-	glVertex 0 -0.3 1.6
-	glVertex -0.3 0 1.6
-	glVertex 0 0.3 1.6
+	glVertex 0 0.2 9
+	glVertex 0.2 0 9
+	glVertex 0 -0.2 9
+	glVertex -0.2 0 9
+	glVertex 0 0.2 9
 	glEnd
 
 	glEndList

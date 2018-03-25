@@ -6,7 +6,7 @@
 
 CmdlineGL_LoadLib Trig Geom
 
-Ship_Throttle=0
+Ship_Throttle=1
 Ship_Initialized=0
 Ship_GunXOffset=( -$((12*Geom_FixedPt/10)) $((12*Geom_FixedPt/10)) -$((16*Geom_FixedPt/10)) $((16*Geom_FixedPt/10)) )
 Ship_GunYOffset=$((3*Geom_FixedPt/10))
@@ -100,25 +100,25 @@ Ship_BuildThrustLists() {
 
 	glNewList Thrust1 GL_COMPILE
 	glDisable GL_LIGHTING
-	glBlendFunc GL_SRC_ALPHA GL_ONE_MINUS_SRC_ALPHA
-	glEnable GL_BLEND
+	glDisable GL_CULL_FACE
 	glBegin GL_TRIANGLE_FAN
-	glColor '#DD5500'
+	glColor '#CC3300'
 	glVertex 0 0 1.5
-	glColor '#773300'
+	glColor '#551100'
 	for ((i=0; i<8; i++)); do
 		sincos $((-36000*i/7))
 		glVertex $((Result*18))/1000000 $((Result2*18))/1000000 1.7
 	done
 	glEnd
-	glDisable GL_CULL_FACE
+	glBlendFunc GL_SRC_ALPHA GL_ONE
+	glEnable GL_BLEND
 	glBegin GL_TRIANGLE_STRIP
 	for ((i=0; i<8; i++)); do
 		sincos $((36000*i/7))
-		glColor '#000088'
+		glColor '#AA0000DD'
 		glVertex $((Result*18))/1000000 $((Result2*18))/1000000 1.7
-		glColor .5 .5 .5 .5
-		glVertex $((Result*8))/1000000 $((Result2*8))/1000000 2.0333
+		glColor '#33000000'
+		glVertex $((Result*8))/1000000 $((Result2*8))/1000000 2.3
 	done
 	glEnd
 	glEnable GL_CULL_FACE

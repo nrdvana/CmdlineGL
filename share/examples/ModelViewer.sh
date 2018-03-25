@@ -4,8 +4,7 @@ set -u
 # Define our handy die function
 die() { echo "$@" >&2; exit 2; }
 
-source "${BASH_SOURCE%/*}/../share/CmdlineGL.lib" || die "Can't load CmdlineGL.lib  ('${BASH_SOURCE%/*}/../share/CmdlineGL.lib')";
-
+source "${BASH_SOURCE%/*}/../CmdlineGL.lib" || die "Can't find CmdlineGL.lib (${BASH_SOURCE%/*}/../CmdlineGL.lib)";
 CmdlineGL_LoadLib RenderLoop ModelViewer
 
 Init() {
