@@ -1,4 +1,4 @@
-Version 2.0.0 - 2018-01-01
+Version 2.0.0 - 2018-03-25
   * Replace homebrew font support with ftgl library API
   * Rewrote most parsing code to eliminate some buggy edge cases
   * New quoting syntax for command arguments
@@ -10,6 +10,8 @@ Version 2.0.0 - 2018-01-01
   * Option to disable default projection matrix or viewport
   * Notification for window status events
   * Manual page
+  * Converted static hash table generator to perl
+  * Overhaul of build scripts, mostly borrowed from daemonproxy
 
 Version 1.1.0 - 2006-04-05
   * Added font support

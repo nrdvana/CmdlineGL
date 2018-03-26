@@ -29,7 +29,7 @@ $uncommitted =~ /\S/
 # Git HEAD should be tagged same as Changes file
 
 chomp(my $git_head= run('git','log','-n','1','--format=format:%H%d'));
-$git_head =~ /tag: v([^)]+)/ or die "HEAD lacks a tag: \"$git_head\"\n";
+$git_head =~ /tag: v([^,) ]+)/ or die "HEAD lacks a tag: \"$git_head\"\n";
 my $git_ver= $1;
 open(my $changes_fh, '<', "$proj_root/Changes") or die "open(Changes): $!";
 my $changes_ver_line= <$changes_fh>;
