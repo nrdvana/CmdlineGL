@@ -2,15 +2,17 @@ MAKE = make
 PROVE = prove
 PERL = perl
 
-all:
-	[ -f script/configure ] || { cd script; autoheader; autoconf; }
-	[ -d build ] || ./configure
+all: build
 	$(MAKE) -C build all
 
-clean:
+clean: build
 	$(MAKE) -C build clean
 
-install:
+install: build
 	$(MAKE) -C build install
+
+build:
+	[ -f script/configure ] || { cd script; autoheader; autoconf; }
+	[ -d build ] || ./configure
 
 .PHONY: test all clean dist install

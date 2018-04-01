@@ -38,7 +38,7 @@ a pass-through Makefile and ./configure script that set up an out-of-tree
 (well, technically still in the project tree) build in a directory named
 "./build".  Anyway, you can just run
 
-    make install
+    make && sudo make install
 
 from the root of the project and maybe everything will just work.  If you are
 running from the distribution tarball, this will create a "production build",
