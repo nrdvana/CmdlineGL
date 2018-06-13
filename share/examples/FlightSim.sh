@@ -273,6 +273,12 @@ main() {
 	cglQuit
 }
 
+# TODO: Write better options processing
+if (( $# > 1 )) && [[ "$1" == "--geometry" ]]; then
+	CmdlineGL_Options=("${CmdlineGL_Options[@]}" "$1" "$2");
+	shift;
+	shift;
+fi
 if (( $# < 1 )); then
 	CmdlineGL_Start rw || die "Can't init CmdlineGL"
 	main

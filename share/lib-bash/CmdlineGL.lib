@@ -12,6 +12,7 @@
 #   cgl*
 #
 # Variables:
+#   CmdlineGL_Options - array variable of options to pass to CmdlineGL
 #   CmdlineGL_LibPath - ':' separated list of directories where *.lib can be found
 #   CmdlineGL_TexPath - same for *.png
 #   CmdlineGL_FontPath - same for *.ttf
@@ -21,6 +22,7 @@
 #   CmdlineGL_InputLine: str - Most recent input event
 #
 
+declare -a CmdlineGL_Options
 CmdlineGL_Mode=
 CmdlineGL_In=
 CmdlineGL_Out=
@@ -96,7 +98,7 @@ CmdlineGL_Start() {
 		CmdlineGL_Recv(){ return 1; }
 	elif [[ $# > 0 && "$1" == rw ]]; then
 		if [[ "${BASH_VERSINFO[0]}" -ge 4 ]]; then
-			coproc CmdlineGL -t || return 1
+			coproc CmdlineGL "${CmdlineGL_Options[@]}" -t || return 1
 			CmdlineGL_In="${COPROC[0]}"
 			CmdlineGL_Out="${COPROC[1]}"
 		else
@@ -105,7 +107,7 @@ CmdlineGL_Start() {
 			CmdlineGL_NextFreeFD CmdlineGL_Out || return 1
 			eval "exec $CmdlineGL_Out<>\"\$CMDLINEGL_FIFO_DIR/out\""
 			# Start CmdlineGL before we open the input fifo, else it would block us
-			CmdlineGL -t <&$CmdlineGL_Out >"$CMDLINEGL_FIFO_DIR/in" &
+			CmdlineGL "${CmdlineGL_Options[@]}" -t <&$CmdlineGL_Out >"$CMDLINEGL_FIFO_DIR/in" &
 			CmdlineGL_NextFreeFD CmdlineGL_In || return 1
 			eval "exec $CmdlineGL_In<\"\$CMDLINEGL_FIFO_DIR/in\""
 		fi
@@ -113,14 +115,14 @@ CmdlineGL_Start() {
 		CmdlineGL_Recv(){ read -r -u $CmdlineGL_In CmdlineGL_InputLine; };
 	else
 		if [[ "${BASH_VERSINFO[0]}" -ge 4 ]]; then
-			coproc CmdlineGL -t --noevents || return 1
+			coproc CmdlineGL "${CmdlineGL_Options[@]}" -t --noevents || return 1
 			CmdlineGL_Out="${COPROC[1]}"
 		else
 			# In dark ages of bash, need to find free FDs and connect them to fifos
 			CmdlineGL_CreateFifo || return 1
 			CmdlineGL_NextFreeFD CmdlineGL_Out || return 1
 			eval "exec $CmdlineGL_Out<>\"\$CMDLINEGL_FIFO_DIR/out\""
-			CmdlineGL -t <&$CmdlineGL_Out &
+			CmdlineGL "${CmdlineGL_Options[@]}" -t <&$CmdlineGL_Out &
 		fi
 		CmdlineGL_Mode=w
 		CmdlineGL_Recv(){ return 1; }
@@ -130,7 +132,7 @@ CmdlineGL_Start() {
 		{ echo -n "$1"; shift; for x; do x="${x//\\/\\\\}"; x="${x//$'\n'/\\n}"; echo -n ' "'"${x//\"/\\\"}"'"'; done; echo; } >&$CmdlineGL_Out;
 	};
 	# Performance optimization! whee!  But not for the functions that need quoted arguments...
-	for cmd in ${CmdlineGL_Commands[@]}; do
+	for cmd in "${CmdlineGL_Commands[@]}"; do
 		if [[ "$cmd" != ftgl* && "$cmd" != cglEcho && "$cmd" != cglLoadImage2D  ]]; then
 			eval "$cmd(){ echo $cmd \"\$@\" >&$CmdlineGL_Out; }";
 		fi
