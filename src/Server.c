@@ -24,6 +24,7 @@ typedef struct {
 	bool ManualProjection;
 	int Width;
 	int Height;
+	int X, Y;
 	int Bpp;
 } CmdlineOptions;
 
@@ -55,6 +56,7 @@ CmdlineOptions Options;
 int main(int Argc, char**Args) {
 	SetParamDefaults(&Options);
 	ReadParams(Args, &Options);
+	char wnd_xy_buf[48];
 	
 	if (Options.WantHelp || Options.NeedHelp) {
 		PrintUsage(!Options.WantHelp);
@@ -113,6 +115,11 @@ int main(int Argc, char**Args) {
 		SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER, 1);
 
 		DEBUGMSG(("Setting video mode\n"));
+		// Silly, but don't see a better way right now
+		if (Options.X || Options.Y) {
+			snprintf(wnd_xy_buf, sizeof(wnd_xy_buf), "%d,%d", Options.X, Options.Y);
+			setenv("SDL_VIDEO_WINDOW_POS", wnd_xy_buf, 1);
+		}
 		MainWnd= SDL_SetVideoMode(Options.Width, Options.Height, Options.Bpp, DefaultSDLFlags);
 		if (!MainWnd) {
 			fprintf(stderr, "Couldn't set video mode: %s\n", SDL_GetError());
@@ -166,8 +173,9 @@ void PrintMissingParamMessage(char* ArgName, CmdlineOptions *Options) {
 }
 
 void ReadParams(char **Args, CmdlineOptions *Options) {
-	char **NextArg= Args+1;
+	char **NextArg= Args+1, *tmp;
 	bool ReadingArgs= true;
+	int n, w, h, x, y;
 	// Note: this function takes advantage of the part of the program argument specification
 	//   that says all argv lists must end with a NULL pointer.
 	while (ReadingArgs && *NextArg && (*NextArg)[0] == '-') {
@@ -202,6 +210,18 @@ void ReadParams(char **Args, CmdlineOptions *Options) {
 				break;
 			}
 			if (strcmp(*NextArg, "--version") == 0) { Options->VersionOnly= true; break; }
+			if (strcmp(*NextArg, "--geometry") == 0) {
+				tmp= *++NextArg;
+				if (!tmp || (n=sscanf(tmp, "%dx%d%d%d", &w, &h, &x, &y)) < 2) {
+					PrintMissingParamMessage("--geometry", Options);
+					return;
+				}
+				Options->Width= w;
+				Options->Height= h;
+				if (n > 2) Options->X= x;
+				if (n > 3) Options->Y= y;
+				break;
+			}
 		default:
 			fprintf(stderr, "Unrecognized argument: %s\n", *NextArg);
 			Options->NeedHelp= true;
@@ -233,6 +253,10 @@ changes size.
 =item -f FIFO
 
 Create a named pipe at this path, and read from it.  This option is not available on Windows.
+
+=item --geometry WIDTHxHEIGHT+X+Y
+
+Using Unix X11 notation, specify the window geometry.  Negative X and Y are not yet supported.
 
 =item --title TEXT
 
@@ -278,6 +302,7 @@ void PrintUsage(bool error) {
 	#ifndef WIN32
 	"  -f FIFO             Create the named fifo (file path+name) and read from it.\n"
 	#endif
+	"  --geometry WxH+X+Y  Set initial window geometry (defaults to 640x480+0+0)\n"
 	"  --title TEXT        Set the title of the window to \"text\".\n"
 	"  --noevents          Don't print any input event messages to stdout.\n"
 	"  --showcmds          List all the available commands in this version of CmdlineGL.\n"
