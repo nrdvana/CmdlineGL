@@ -15,7 +15,7 @@ double DivisorStack[16];
 int DivisorStackPos= -1;
 const int DivisorStackMax= sizeof(DivisorStack)/sizeof(double) - 1;
 
-/*=head2 Default Divisors
+/*=head2 Default-Divisor Commands
 
 =item cglPushDivisor DIVISOR
 

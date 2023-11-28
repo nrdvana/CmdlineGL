@@ -20,7 +20,7 @@ and the development headers for each.  On Debian/Ubuntu/Mint, these are:
         libsdl1.2-dev libsdl-image1.2-dev \
         libgl1-mesa-dev libftgl-dev
 
-and on Fedora/RHEL they are
+and on Fedora they are
 
     sudo yum install \
         SDL-devel SDL_image-devel \

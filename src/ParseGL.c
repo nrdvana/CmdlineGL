@@ -366,7 +366,7 @@ Select the current texture object for purpose TARGET.  (TARGET is usually GL_TEX
 
 Change an attribute of the texture object currently bount to TARGET.  PNAME is the name of
 the attribute, and PARAMS depend on PNAME.  If PARAMS is a color, you may use HTML hex
-notation; see L</Color>.
+notation; see L</Colors>.
 
 =cut */
 

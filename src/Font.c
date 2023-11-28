@@ -10,7 +10,8 @@
 
 These functions come from the FTGL library.  They can open any font file that the FreeType
 library can open.  A symbolic name takes the place of FTGL's C<FTfont*> pointer. You must
-call one of the Create methods to initialize a symbolic name (and it must succeed).
+call one of the Create methods (and it must succeed) to initialize a symbolic name before
+it can be used in any of the rendering functions.
 
 =item ftglCreateBitmapFont NAME "FONT_FILE_PATH"
 

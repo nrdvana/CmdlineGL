@@ -18,7 +18,7 @@ my %head1_by_name;
 my $current_h1;
 my $current_h2;
 my $current_pod;
-while (<>) { # there's nicer ways to do this, but I'm aiming for no non-core deps
+while (<>) { # there are nicer ways to do this, but I'm aiming for no non-core deps
 	if ($_ =~ m{^(/\*)?=(\w+)\s*(.*?)\s*$}) {
 		$_= substr($_, 2) if $1;
 		if ($2 eq 'head1') {
@@ -39,8 +39,7 @@ while (<>) { # there's nicer ways to do this, but I'm aiming for no non-core dep
 			};
 			$current_pod= \$current_h2->{pod};
 		}
-		elsif ($2 eq 'item' and $current_h1->{name} eq 'COMMANDS') { # only capture =item if it was part of COMMAND section
-			defined $current_h2 or die "got item before head2";
+		elsif ($2 eq 'item' and $current_h1->{name} eq 'COMMANDS' && defined $current_h2) { # only capture =item if it was part of COMMAND section
 			my $i= { name => $3, pod => '' };
 			push @{ $current_h2->{items} }, $i;
 			$current_pod= \$i->{pod};
@@ -93,6 +92,41 @@ elsif (lc($opt_as) eq 'man') {
 		center => 'General Commands',
 		errors => 'die',
 	)->parse_from_file($doc_fh);
+}
+elsif (lc($opt_as) eq 'html') {
+	require Pod::Html;
+	require File::Temp;
+	my $tmp= File::Temp->new;
+	$tmp->print($doc);
+	$tmp->seek(0,0);
+	my $html_tmp= File::Temp->new;
+	Pod::Html::pod2html("--infile=$tmp", "--outfile=$html_tmp", "--title=CmdlineGL");
+	$html_tmp->seek(0,0);
+	local $/= undef;
+	my $html= <$html_tmp>;
+	my $html_head= <<END;
+<!DOCTYPE html>
+<html>
+<head>
+  <title>CmdlineGL</title>
+  <link rel="stylesheet" href="yamb.css" type="text/css" />
+  <meta http-equiv="content-type" content="text/html; charset=utf-8" />
+  <style>
+  html { margin: 0 2%; }
+  body { margin: .5em auto 2em auto; max-width: 60em; }
+  dl { margin: 0 .5em 0 0; }
+  dt { margin: 0; font-family: "Consolas", "Inconsolata", "Courier New", monospace; }
+  dd { margin: .5em 1em 1em 2em; }
+  ul, ol { padding-left: 2.5em; list-style-position: outside; }
+  #index { float: right; margin: 2em 1em;}
+  #index, #index ul { list-style-type: none; padding-left: 1em; }
+  code { max-width: 50em; }
+  pre { margin: .5em 0; }
+  </style>
+</head>
+END
+	$html =~ s,.*?</head>,$html_head,s;
+	print $html;
 }
 else {
 	die "Unknown format $opt_as"
