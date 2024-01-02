@@ -1,5 +1,6 @@
-Version 2.1.0 -
+Version 2.1.0 - 2024-01-02
   * New option "--geometry"
+  * Documentation improvements
 
 Version 2.0.0 - 2018-03-25
   * Replace homebrew font support with ftgl library API
